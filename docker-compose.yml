@@ -1,0 +1,10 @@
+services:
+  japanese-freq:
+    image: japanese-freq:latest
+    volumes:
+      - ./output:/usr/src/app/output
+      - ./input:/usr/src/app/input
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"

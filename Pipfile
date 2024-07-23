@@ -4,9 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+mecab-python3 = "*"
 
 [dev-packages]
 
+[scripts]
+main = "python src/main.py"
+
 [requires]
 python_version = "3.12"
-python_full_version = "3.12.4"
