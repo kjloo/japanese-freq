@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 # Inputs and Outputs
-input/sub.srt
+input/
 output/

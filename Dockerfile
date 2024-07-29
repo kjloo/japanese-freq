@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     mecab \
     libmecab-dev \
     mecab-ipadic-utf8 \
+    ffmpeg \
     git \
     make \
     curl \
@@ -16,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MeCab UniDic
-RUN pip install unidic mecab-python3
+RUN pip install unidic mecab-python3 ffmpeg-python
 
 RUN python -m unidic download
 
