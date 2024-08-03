@@ -1,4 +1,5 @@
 import ffmpeg
+import os
 
 
 class VideoDownloader:
@@ -9,6 +10,8 @@ class VideoDownloader:
     def extract(self, start_time: str, end_time: str, output_file: str) -> str:
         try:
             final_output_file = output_file + '.mp3'
+            if os.path.exists(final_output_file):
+                return final_output_file
             (
                 self.in_file
                 .filter('atrim', start=start_time, end=end_time)

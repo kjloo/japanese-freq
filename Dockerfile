@@ -22,7 +22,7 @@ RUN pip install unidic mecab-python3 ffmpeg-python
 RUN python -m unidic download
 
 # Set environment variable for MeCab dictionary path
-ENV MECABRC /usr/local/etc/mecabrc
+ENV MECABRC=/usr/local/etc/mecabrc
 
 # # Copy scripts
 COPY app /usr/src/app

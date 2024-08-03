@@ -1,9 +1,12 @@
 services:
   japanese-freq:
     image: japanese-freq:latest
+    env_file:
+      - .env
     volumes:
       - ./output:/usr/src/app/output
       - ./input:/usr/src/app/input
+      - ./.ignorelist:/usr/src/app/.ignorelist
     stdin_open: true
     tty: true
     ports:
