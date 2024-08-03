@@ -33,14 +33,32 @@ def parse_file(content_manager: ContentManager) -> list[JapaneseContent]:
     with open(input_file) as f:
         data = f.readlines()
 
-    pattern = re.compile(
+    start_pattern = re.compile(r'^\d+$')
+    time_pattern = re.compile(
         r'(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})')
 
+    build_sentence: list[str] | None = None
     timestamp: Timestamp = None
     content: list[JapaneseContent] = []
     counter = 0
     for line in data:
-        ts = pattern.match(line)
+        # Look for sections
+        if build_sentence is None and start_pattern.match(line):
+            # Section start
+            build_sentence = []
+        elif not build_sentence is None and not line.strip():
+            # Found section break. Store and reset
+            jc = JapaneseContent(''.join(build_sentence), timestamp)
+            jc.audio = video_downloader.extract(
+                jc.timestamp.start_time, jc.timestamp.end_time, os.path.join(content_manager.output_dir, '%s%d' % (content_manager.get_name(), counter)))
+            counter += 1
+            content.append(jc)
+            build_sentence = None
+
+        if build_sentence is None:
+            continue
+
+        ts = time_pattern.match(line)
         if ts:
             timestamp = Timestamp(ts.group(1), ts.group(2))
             continue
@@ -50,11 +68,8 @@ def parse_file(content_manager: ContentManager) -> list[JapaneseContent]:
         if not clean_sentence:
             continue
 
-        jc = JapaneseContent(clean_sentence, timestamp)
-        jc.audio = video_downloader.extract(
-            jc.timestamp.start_time, jc.timestamp.end_time, os.path.join(content_manager.output_dir, '%s%d' % (content_manager.get_name(), counter)))
-        counter += 1
-        content.append(jc)
+        build_sentence.append(clean_sentence)
+
     return content
 
 
