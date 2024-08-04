@@ -6,9 +6,11 @@ from collections import defaultdict
 from model.japanese_content import JapaneseContent, Timestamp
 from model.file_manager import FileManager, ContentManager
 from model.video_downloader import VideoDownloader
-from util.envlookup import DOWNLOAD_MEDIA, FREQ_MIN
+from model.dictionary import Dictionary
+from util.envlookup import DOWNLOAD_MEDIA, FREQ_MIN, MIN_WORD_LENGTH, REQUIRES_DEFINITION
 
 wakati = MeCab.Tagger("-Owakati")
+dictionary = Dictionary('dictionaries/jmdict_english.zip')
 
 
 def remove_parentheses(text) -> str:
@@ -73,22 +75,26 @@ def parse_file(content_manager: ContentManager) -> list[JapaneseContent]:
 
 
 def analyze_content(content: list[JapaneseContent], ignore_list: list[str]) -> dict:
-    word_freq = defaultdict(lambda: {"frequency": 0, "content": []})
+    word_freq = defaultdict(
+        lambda: {"frequency": 0, "definition": None, "content": []})
     for c in content:
         for word in wakati.parse(c.sentence).split():
-            if len(word) > 1 and word not in ignore_list:
+            if len(word) >= MIN_WORD_LENGTH and word not in ignore_list:
                 word_freq[word]["frequency"] += 1
+                if word_freq[word]["definition"] is None:
+                    word_freq[word]["definition"] = dictionary.lookup(word)
                 word_freq[word]["content"].append(c)
 
-    filtered_word_freq = {
-        w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] > FREQ_MIN}
+    filtered_word_freq = {w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] > FREQ_MIN and (
+        not REQUIRES_DEFINITION or bool(word_freq[w]["definition"]))}
     sorted_word_freq = dict(
         sorted(filtered_word_freq.items(), key=lambda item: item[1]["frequency"], reverse=True))
     return sorted_word_freq
 
 
 def download_media(content_manager: ContentManager, content_dict: dict) -> dict:
-    rc = defaultdict(lambda: {"frequency": 0, "sentences": []})
+    rc = defaultdict(
+        lambda: {"frequency": 0, "definition": None, "sentences": []})
     video_downloader = VideoDownloader(content_manager.get_video())
     for word in content_dict:
         for jc in content_dict[word]["content"]:
@@ -97,8 +103,10 @@ def download_media(content_manager: ContentManager, content_dict: dict) -> dict:
                     jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
 
         rc[word]["frequency"] = content_dict[word]["frequency"]
+        rc[word]["definition"] = content_dict[word]["definition"]
         rc[word]["sentences"] = [jc.to_dict()
                                  for jc in content_dict[word]["content"]]
+
     return rc
 
 

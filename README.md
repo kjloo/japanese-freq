@@ -53,10 +53,10 @@ mkdir -p input
 mkdir -p input/anime
 ```
 
-3. Copy `.ignorelist.example` into `.ignorelist` and add words you wish to ignore to the JSON list.
+3. Copy `.ignorelist.example` into `.ignorelist.json` and add words you wish to ignore to the JSON list.
 
 ```shell
-cat .ignorelist.example > .ignorelist
+cat .ignorelist.example > .ignorelist.json
 ```
 
 4. Copy `.env.example` into `.env` and update the settings

@@ -6,7 +6,8 @@ services:
     volumes:
       - ./output:/usr/src/app/output
       - ./input:/usr/src/app/input
-      - ./.ignorelist:/usr/src/app/.ignorelist
+      - ./dictionaries:/usr/src/app/dictionaries
+      - ./.ignorelist.json:/usr/src/app/.ignorelist
     stdin_open: true
     tty: true
     ports:
