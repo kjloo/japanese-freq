@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MeCab UniDic
-RUN pip install unidic mecab-python3 ffmpeg-python
+RUN pip install unidic ffmpeg-python fugashi[unidic]
 
 RUN python -m unidic download
 

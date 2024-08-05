@@ -30,3 +30,10 @@ class Dictionary:
 
     def lookup(self, word: str):
         return self.dictionary.get(word, False)
+
+    def short_lookup(self, word: str) -> str:
+        definition = self.dictionary.get(word, [None])[0]
+        if definition is None:
+            return None
+        meaning = '; '.join(definition[5])
+        return meaning
