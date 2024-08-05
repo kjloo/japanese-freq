@@ -124,7 +124,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
-.ignorelist
+.ignorelist.json
 env/
 venv/
 ENV/
