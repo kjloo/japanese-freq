@@ -36,9 +36,12 @@ def remove_parentheses(text) -> str:
 
 def parse_file(content_manager: ContentManager) -> list[JapaneseContent]:
     input_file = content_manager.get_subtitles()
+    offset = '00:00:00.000'
     data = []
     with open(input_file) as f:
         data = f.readlines()
+    with open(content_manager.get_offset()) as f:
+        offset = f.read().strip()
 
     start_pattern = re.compile(r'^\d+$')
     time_pattern = re.compile(
@@ -92,8 +95,10 @@ def analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> di
             if len(word) >= MIN_WORD_LENGTH and word not in ignore_list:
                 word_freq[word]["frequency"] += 1
                 if word_freq[word]["definition"] is None:
-                    word_freq[word]["definition"] = dictionary.short_lookup(
-                        word)
+                    sd = dictionary.short_lookup(word)
+                    word_freq[word]["definition"] = sd.to_dict(
+                    ) if sd else False
+
                 word_freq[word]["content"].append(c)
 
     filtered_word_freq = {w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] > FREQ_MIN and (
@@ -106,7 +111,8 @@ def analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> di
 def download_media(content_manager: ContentManager, content_dict: dict) -> dict:
     rc = defaultdict(
         lambda: {"frequency": 0, "definition": None, "sentences": []})
-    video_downloader = VideoDownloader(content_manager.get_video())
+    video_downloader = VideoDownloader(
+        content_manager.get_video(), content_manager.get_offset())
     for word in content_dict:
         for jc in content_dict[word]["content"]:
             if DOWNLOAD_MEDIA:

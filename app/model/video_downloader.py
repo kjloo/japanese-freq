@@ -3,9 +3,12 @@ import os
 
 
 class VideoDownloader:
-    def __init__(self, video_file: str):
+    def __init__(self, video_file: str, offset_file: str):
+        offset = '00:00:00.000'
+        with open(offset_file) as f:
+            offset = f.read().strip()
         self.video_file = video_file
-        self.in_file = ffmpeg.input(self.video_file).audio
+        self.in_file = ffmpeg.input(self.video_file, ss=offset).audio
 
     def extract(self, start_time: str, end_time: str, output_file: str) -> str:
         try:

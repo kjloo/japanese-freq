@@ -1,6 +1,25 @@
 from pathlib import Path
 import zipfile
 import json
+import cutlet
+
+katsu = cutlet.Cutlet()
+
+
+class ShortDef:
+    def __init__(self, definition: str, kanji: str, hiragana: str, romaji: str):
+        self.defintion = definition
+        self.kanji = kanji
+        self.hiragana = hiragana
+        self.romaji = romaji
+
+    def to_dict(self):
+        return {
+            "definition": self.defintion,
+            "kanji": self.kanji,
+            "hiragana": self.hiragana,
+            "romaji": self.romaji
+        }
 
 
 class Dictionary:
@@ -31,9 +50,13 @@ class Dictionary:
     def lookup(self, word: str):
         return self.dictionary.get(word, False)
 
-    def short_lookup(self, word: str) -> str:
+    def short_lookup(self, word: str) -> ShortDef:
         definition = self.dictionary.get(word, [None])[0]
         if definition is None:
             return None
         meaning = '; '.join(definition[5])
-        return meaning
+
+        hiragana = definition[1] if definition[1] else definition[0]
+        kanji = definition[0] if definition[1] else None
+        romaji = katsu.romaji(hiragana).lower()
+        return ShortDef(meaning, kanji, hiragana, romaji)
