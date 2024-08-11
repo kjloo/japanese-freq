@@ -9,6 +9,7 @@ from model.content.source_content import SourceContent
 class FileType(str, Enum):
     SRT = '.srt'
     MP4 = '.mp4'
+    MP3 = '.mp3'
     TXT = '.txt'
     OFFSET = 'offset'
 
@@ -30,7 +31,7 @@ class FileManager:
             for name in os.listdir(full_path):
                 if name.lower().endswith(FileType.SRT):
                     sub = name
-                elif name.lower().endswith(FileType.MP4):
+                elif name.lower().endswith(FileType.MP4) or name.lower().endswith(FileType.MP3):
                     video = name
                 elif name.lower().endswith(FileType.OFFSET):
                     offset = name
