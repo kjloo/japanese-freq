@@ -15,7 +15,7 @@ class TextContent(SourceContent):
         data = []
         with open(input_file) as f:
             data = f.read().strip()
-        lines = re.findall(r'[^。？！」]+.?', data)
+        lines = re.findall(r'[^。？！]+.?', data)
         content: list[JapaneseContent] = []
         for line in lines:
             jc = JapaneseContent(line, None, None)
