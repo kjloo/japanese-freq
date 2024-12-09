@@ -39,7 +39,7 @@ class VideoContent(SourceContent):
                 build_sentence = []
             elif not build_sentence is None and not line.strip():
                 # Found section break. Store and reset
-                jc = JapaneseContent(''.join(build_sentence), timestamp, os.path.join(self.output_dir, '%s%d' % (
+                jc = JapaneseContent(''.join(build_sentence), timestamp, os.path.join(self.output_dir, '%s_%d' % (
                     self.get_name(), counter)))
                 counter += 1
                 content.append(jc)
@@ -118,6 +118,8 @@ class VideoDownloader:
     def extract(self, start_time: str, end_time: str, output_file: str) -> str:
         try:
             final_output_file = output_file + '.mp3'
+            print(f"Create {final_output_file} Start: {
+                  start_time} End: {end_time}")
             if os.path.exists(final_output_file):
                 return final_output_file
             (
