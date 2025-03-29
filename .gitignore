@@ -139,3 +139,4 @@ data/
 # Inputs and Outputs
 input/
 output/
+.ignorelist.json
