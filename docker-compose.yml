@@ -1,14 +1,13 @@
 services:
   japanese-freq:
-    image: japanese-freq:latest
+    container_name: japanese_freq
+    build: .
     env_file:
       - .env
     volumes:
-      - ./output:/usr/src/app/output
-      - ./input:/usr/src/app/input
-      - ./dictionaries:/usr/src/app/dictionaries
-      - ./.ignorelist.json:/usr/src/app/.ignorelist
-    stdin_open: true
-    tty: true
+      - ./output:/app/output
+      - ./input:/app/input
+      - ./dictionaries:/app/dictionaries
+      - ./.ignorelist.json:/app/.ignorelist
     ports:
-      - "8080:8080"
+      - ${FLASK_PORT:-5000}:5000

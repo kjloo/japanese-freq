@@ -14,10 +14,10 @@ brew install mecab
 
 ## Run Locally
 
-1. Install python 3.11
+1. Install python 3.12
 
 ```shell
-brew install python@3.11
+brew install python@3.12
 ```
 
 2. Install pipenv
@@ -31,9 +31,10 @@ pip install pipenv
 ```shell
 sudo apt-get install mecab libmecab-dev mecab-ipadic-utf8
 pipenv install
+npm install
 ```
 
-5. Run program
+4. Run program
 
 ```shell
 pipenv run main -s res/example_sub.srt
