@@ -1,6 +1,6 @@
 services:
   japanese-freq:
-    image: japanese-freq:latest
+    build: .
     env_file:
       - .env
     volumes:

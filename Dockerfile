@@ -1,34 +1,35 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12-slim
-
-# Install necessary system dependencies
-RUN apt-get update && apt-get install -y \
-    mecab \
-    libmecab-dev \
-    mecab-ipadic-utf8 \
-    ffmpeg \
-    git \
-    make \
-    curl \
-    xz-utils \
-    file \
-    sudo \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install MeCab UniDic
-RUN pip install unidic ffmpeg-python fugashi[unidic] cutlet
-
-RUN python -m unidic download
-
-# Set environment variable for MeCab dictionary path
-ENV MECABRC=/usr/local/etc/mecabrc
-
-# # Copy scripts
-COPY app /usr/src/app
+# === CLIENT STAGE ===
+# Use Node.js to build the client
+FROM node:16-alpine AS client-builder
 
 # Set the working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Run the Python script when the container launches
-ENTRYPOINT ["python3", "japanese_freq.py"]
+# Copy client files
+COPY ./src /app
+COPY . /app
+
+# Install dependencies and build the client
+RUN npm ci
+RUN npm run build
+
+# === SERVER STAGE ===
+FROM python:3.11-slim-buster
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built client files from the client stage
+COPY --from=client-builder /app/dist /app/static
+
+# Copy server files
+COPY ./app /app
+
+# Install server dependencies
+RUN pip3 install Flask pymongo pymodm requests gunicorn
+
+# Expose the port for the Flask server
+EXPOSE 5000
+
+# Run the app with Gunicorn
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "main:app"]
