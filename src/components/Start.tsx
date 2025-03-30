@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Start = () => {
+interface StartProps { }
+
+const Start: FunctionComponent<StartProps> = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
 
