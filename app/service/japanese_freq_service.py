@@ -1,4 +1,5 @@
 from collections import defaultdict
+from threading import Event
 import fugashi
 import json
 
@@ -20,9 +21,28 @@ IGNORE_POS = ["助動詞", "補助記号", "助詞"]
 input_dir: str = 'input'
 output_dir: str = 'output'
 ignore_list_file: str = '.ignorelist'
+ignore_list: set[str] = []
+with open(ignore_list_file, 'r') as f:
+    ignore_list = set(json.load(f))
 
 
-def analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> dict:
+def process_inputs():
+    progress: Progress = Progress()
+
+    file_manager = FileManager(input_dir, output_dir)
+    processed: int = 0
+    for sc in file_manager.source_content:
+        content = sc.parse_file()
+        content_dict = _analyze_content(content, ignore_list)
+        short_dict = _ask_user(content_dict, ignore_list_file)
+        data = sc.download_media(short_dict)
+        _write_to_json(data, sc.get_output_file())
+        processed += 1
+        progress.update_progress(processed / len(file_manager.source_content))
+        socketio.emit('progress', progress.to_json())
+
+
+def _analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> dict:
     word_freq = defaultdict(
         lambda: {"frequency": 0, "definition": None, "content": []})
     for c in content:
@@ -48,7 +68,52 @@ def analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> di
     return sorted_word_freq
 
 
-def write_to_json(data: dict, output_file: str):
+def _ask_user(content: dict, ignore_list_file: str) -> dict:
+    """
+    Asks user if they already know the word and waits for their response.
+    Removes words with a True response from the data dictionary and adds them to the ignore list file.
+    """
+    response_event = Event()  # Event to wait for user response
+
+    def handle_response(response: dict):
+        """
+        Callback to handle user response from the client.
+        """
+        word = response.get('word')
+        answer = response.get('answer')  # True or False
+
+        if answer:  # If the user knows the word (True)
+            # Remove the word from the data dictionary
+            content.pop(word, None)
+
+            ignore_list.add(word)
+
+            # Add the word to the ignore list file
+            with open(ignore_list_file, 'w', encoding='utf-8') as f:
+                json.dump(list(ignore_list), f, ensure_ascii=False, indent=4)
+
+        response_event.set()  # Signal that the response has been received
+
+    # Register a temporary SocketIO event listener for 'response'
+    socketio.on_event('word_response', handle_response)
+
+    for word in list(content.keys()):
+        socketio.emit('word_check', {
+            'word': word,
+            'definition': content[word]["definition"]
+        })
+        print("Asking user about word: %s" % word)
+        response_event.clear()  # Reset the event
+        response_event.wait()  # Wait for the user to respond
+        print("Received response for word: %s" % word)
+
+    # Unregister the event listener after processing
+    socketio.off_event('word_response', handle_response)
+    socketio.emit('word_check_complete', {})
+    return content
+
+
+def _write_to_json(data: dict, output_file: str):
     with open(output_file, 'w') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -63,21 +128,3 @@ def _debug():
             if not callable(getattr(word.feature, attr)) and not attr.startswith("_"):
                 l.append(f"{attr}: {getattr(word.feature, attr)}")
         print(','.join(l))
-
-
-def process_inputs():
-    progress: Progress = Progress()
-    ignore_list: set[str] = []
-    with open(ignore_list_file, 'r') as f:
-        ignore_list = set(json.load(f))
-
-    file_manager = FileManager(input_dir, output_dir)
-    processed: int = 0
-    for sc in file_manager.source_content:
-        content = sc.parse_file()
-        content_dict = analyze_content(content, ignore_list)
-        data = sc.download_media(content_dict)
-        write_to_json(data, sc.get_output_file())
-        processed += 1
-        progress.update_progress(processed / len(file_manager.source_content))
-        socketio.emit('progress', progress.to_json())

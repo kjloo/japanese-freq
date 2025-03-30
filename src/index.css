@@ -4,34 +4,35 @@
   justify-content: center;
   height: 100vh;
   background-color: #e8f5e9;
+  padding: 2em; /* Updated padding to use em */
 }
 
 .card {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2em; /* Updated padding to use em */
+  border-radius: 0.75em; /* Updated border-radius to use em */
+  box-shadow: 0 0.25em 0.375em rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 1.5em; /* Updated font-size to use em */
   color: #2e7d32;
-  margin-bottom: 10px;
+  margin-bottom: 0.625em; /* Updated margin-bottom to use em */
 }
 
 .text {
   color: #388e3c;
-  margin-bottom: 20px;
+  margin-bottom: 1.25em; /* Updated margin-bottom to use em */
 }
 
 /* Container for progress bar */
 .progress-bar {
   width: 100%;
   background-color: #e0e0e0;
-  height: 20px;
-  margin-top: 20px;
-  border-radius: 10px;
+  height: 1.25em; /* Updated height to use em */
+  margin-top: 1.25em; /* Updated margin-top to use em */
+  border-radius: 0.625em; /* Updated border-radius to use em */
   overflow: hidden;
 }
 
@@ -44,7 +45,7 @@
 }
 
 /* Button style */
-.start-button {
+button {
   background-color: #4caf50;
   color: white;
   border: none;
@@ -53,13 +54,14 @@
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  margin: 0.625em; /* Updated margin to use em */
 }
 
-.start-button:hover {
+button:hover {
   background-color: #45a049;
 }
 
-.start-button:disabled {
+button:disabled {
   background-color: #9e9e9e;
   cursor: not-allowed;
 }

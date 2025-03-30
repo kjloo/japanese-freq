@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
+import WordCheckForm from './WordCheckForm'; // Import the WordCheckForm component
 
 const socket = io('http://localhost:5000');
 
-const Start = () => {
+interface StartProps { }
+
+const Start: FunctionComponent<StartProps> = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [showWordCheckForm, setShowWordCheckForm] = useState(false);
 
     useEffect(() => {
         // Listen for progress updates from the server
@@ -17,14 +21,20 @@ const Start = () => {
             }
         });
 
+        socket.on('word_check_complete', () => {
+            setShowWordCheckForm(false);
+        });
+
         return () => {
             socket.off('progress');
+            socket.off('word_check_complete');
         };
     }, []);
 
     const startProcess = async () => {
         setIsLoading(true);
         setProgress(0);
+        setShowWordCheckForm(true);
 
         try {
             const response = await axios.post('/api/process', {});
@@ -39,23 +49,29 @@ const Start = () => {
 
     return (
         <div className="container">
-            <div className="card">
-                <h1 className="title">Welcome</h1>
-                <p className="text">Get started by clicking the button below</p>
-                <button className="start-button" onClick={startProcess} disabled={isLoading}>
-                    {isLoading ? 'Processing...' : 'Start'}
-                </button>
+            {showWordCheckForm ? (
+                // Show WordCheckForm when it's active
+                <WordCheckForm />
+            ) : (
+                // Show the main card with progress or start button
+                <div className="card">
+                    <h1 className="title">Welcome</h1>
+                    <p className="text">Get started by clicking the button below</p>
+                    <button className="start-button" onClick={startProcess} disabled={isLoading}>
+                        {isLoading ? 'Processing...' : 'Start'}
+                    </button>
 
-                {isLoading && (
-                    <div className="progress-bar">
-                        <div
-                            className="progress-bar-fill"
-                            style={{ width: `${progress}%` }}
-                        ></div>
-                    </div>
-                )}
-                {progress === 100 && <p>Process complete!</p>}
-            </div>
+                    {isLoading && (
+                        <div className="progress-bar">
+                            <div
+                                className="progress-bar-fill"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                    )}
+                    {progress === 100 && <p>Process complete!</p>}
+                </div>
+            )}
         </div>
     );
 };
