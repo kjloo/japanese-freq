@@ -1,8 +1,11 @@
-from app.routes.server import app_routes
-from flask import jsonify
+from flask import Blueprint, render_template, jsonify
 import threading
-from flask import render_template, jsonify
+
+from module.app_module import app
 from service import japanese_freq_service
+
+# Blueprint for routes
+app_routes = Blueprint('routes', __name__)
 
 
 @app_routes.route("/api/process", methods=["POST"])

@@ -7,7 +7,7 @@ from model.file_manager import FileManager
 from model.dictionary import Dictionary
 from util.envlookup import FREQ_MIN, MIN_WORD_LENGTH, REQUIRES_DEFINITION
 from model.progress import Progress
-from routes.server import socketio
+from module.socket_module import socketio
 
 # wakati = fugashi.Tagger("-Owakati")
 wakati = fugashi.Tagger()

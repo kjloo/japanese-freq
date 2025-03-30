@@ -52,4 +52,4 @@ COPY --from=client-builder /app/dist /app/static
 EXPOSE 5000
 
 # Run the app with Gunicorn
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "routes.server:app"]
+CMD ["gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:5000", "main:app"]
