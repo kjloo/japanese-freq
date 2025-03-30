@@ -34,7 +34,7 @@ def process_inputs():
     for sc in file_manager.source_content:
         content = sc.parse_file()
         content_dict = _analyze_content(content, ignore_list)
-        short_dict = _ask_user(content_dict)
+        short_dict = _ask_user(content_dict, ignore_list_file)
         data = sc.download_media(short_dict)
         _write_to_json(data, sc.get_output_file())
         processed += 1
@@ -87,26 +87,29 @@ def _ask_user(content: dict, ignore_list_file: str) -> dict:
             content.pop(word, None)
 
             ignore_list.add(word)
+
             # Add the word to the ignore list file
-            with open(ignore_list_file, 'w') as f:
-                json.dump(ignore_list, f, indent=4)
+            with open(ignore_list_file, 'w', encoding='utf-8') as f:
+                json.dump(list(ignore_list), f, ensure_ascii=False, indent=4)
 
         response_event.set()  # Signal that the response has been received
 
     # Register a temporary SocketIO event listener for 'response'
-    socketio.on_event('response', handle_response)
+    socketio.on_event('word_response', handle_response)
 
     for word in list(content.keys()):
         socketio.emit('word_check', {
             'word': word,
             'definition': content[word]["definition"]
         })
+        print("Asking user about word: %s" % word)
         response_event.clear()  # Reset the event
         response_event.wait()  # Wait for the user to respond
+        print("Received response for word: %s" % word)
 
     # Unregister the event listener after processing
-    socketio.off_event('response', handle_response)
-
+    socketio.off_event('word_response', handle_response)
+    socketio.emit('word_check_complete', {})
     return content
 
 

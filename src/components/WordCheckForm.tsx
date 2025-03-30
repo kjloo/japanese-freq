@@ -3,9 +3,16 @@ import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
+interface WordDefinition {
+    definition: string;
+    kanji: string;
+    hiragana: string;
+    romaji: string;
+}
+
 interface WordData {
     word: string;
-    definition: string;
+    definition: WordDefinition; // Updated to use the WordDefinition structure
 }
 
 interface WordCheckFormProps { }
@@ -27,7 +34,7 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
     const handleResponse = (answer: boolean) => {
         if (wordData) {
             // Emit the response back to the server
-            socket.emit('response', { word: wordData.word, answer });
+            socket.emit('word_response', { word: wordData.word, answer });
             // Clear the current word data after submitting the response
             setWordData(null);
         }
@@ -36,10 +43,13 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
     return (
         <div>
             {wordData ? (
-                <div>
-                    <h2>Word Check</h2>
+                <div className='card'>
+                    <h2 className="title">Word Check</h2>
                     <p><strong>Word:</strong> {wordData.word}</p>
-                    <p><strong>Definition:</strong> {wordData.definition}</p>
+                    <p><strong>Definition:</strong> {wordData.definition.definition}</p>
+                    <p><strong>Kanji:</strong> {wordData.definition.kanji}</p>
+                    <p><strong>Hiragana:</strong> {wordData.definition.hiragana}</p>
+                    <p><strong>Romaji:</strong> {wordData.definition.romaji}</p>
                     <button onClick={() => handleResponse(true)}>Yes</button>
                     <button onClick={() => handleResponse(false)}>No</button>
                 </div>
