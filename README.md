@@ -68,14 +68,10 @@ cp .env.example .env
 
 ## Run with Docker
 
-1. Build docker
+1. Use Make Commands
 
 ```shell
-docker build -t japanese-freq .
-```
-
-2. Run docker compose
-
-```shell
-docker compose up
+make setup
+make build
+make run
 ```

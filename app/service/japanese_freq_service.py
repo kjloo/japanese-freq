@@ -1,11 +1,13 @@
+from collections import defaultdict
 import fugashi
 import json
-from collections import defaultdict
+
 from model.japanese_content import JapaneseContent
 from model.file_manager import FileManager
 from model.dictionary import Dictionary
 from util.envlookup import FREQ_MIN, MIN_WORD_LENGTH, REQUIRES_DEFINITION
-from pprint import pprint
+from model.progress import Progress
+from routes.server import socketio
 
 # wakati = fugashi.Tagger("-Owakati")
 wakati = fugashi.Tagger()
@@ -64,13 +66,18 @@ def _debug():
 
 
 def process_inputs():
+    progress: Progress = Progress()
     ignore_list: set[str] = []
     with open(ignore_list_file, 'r') as f:
         ignore_list = set(json.load(f))
 
     file_manager = FileManager(input_dir, output_dir)
+    processed: int = 0
     for sc in file_manager.source_content:
         content = sc.parse_file()
         content_dict = analyze_content(content, ignore_list)
         data = sc.download_media(content_dict)
         write_to_json(data, sc.get_output_file())
+        processed += 1
+        progress.update_progress(processed / len(file_manager.source_content))
+        socketio.emit('progress', progress.to_json())

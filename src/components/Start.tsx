@@ -1,29 +1,39 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
-interface StartProps { }
+const socket = io('http://localhost:5000');
 
-const Start: React.FunctionComponent<StartProps> = () => {
-    // State variables to manage loading and completion state
-    const [loading, setLoading] = useState(false);
-    const [complete, setComplete] = useState(false);
+const Start = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
-    // Function to handle the button click
-    const handleStartClick = async () => {
-        setLoading(true); // Start loading
-        setComplete(false); // Reset complete state
+    useEffect(() => {
+        // Listen for progress updates from the server
+        socket.on('progress', (data) => {
+            setProgress(data.progress);
+            if (data.progress >= 100) {
+                setIsLoading(false);
+            }
+        });
+
+        return () => {
+            socket.off('progress');
+        };
+    }, []);
+
+    const startProcess = async () => {
+        setIsLoading(true);
+        setProgress(0);
 
         try {
-            // Make the POST request to /api/process
-            await axios.post('/api/process');
-
-            // On success, update the state to show completion screen
-            setComplete(true);
+            const response = await axios.post('/api/process', {});
+            if (response.status !== 200) {
+                throw new Error('Failed to start process');
+            }
         } catch (error) {
-            // Handle error (you could show an error message here)
-            console.error("Error during POST request", error);
-        } finally {
-            setLoading(false); // End loading regardless of success or error
+            console.error('Error starting process:', error);
+            setIsLoading(false);
         }
     };
 
@@ -32,27 +42,22 @@ const Start: React.FunctionComponent<StartProps> = () => {
             <div className="card">
                 <h1 className="title">Welcome</h1>
                 <p className="text">Get started by clicking the button below</p>
+                <button className="start-button" onClick={startProcess} disabled={isLoading}>
+                    {isLoading ? 'Processing...' : 'Start'}
+                </button>
 
-                {!loading && !complete && (
-                    <button className="start-button" onClick={handleStartClick}>Start</button>
-                )}
-
-                {loading && (
-                    <div className="loading">
-                        <p>Loading...</p>
-                        {/* You can replace the text with an actual loading spinner */}
-                        <div className="spinner"></div>
+                {isLoading && (
+                    <div className="progress-bar">
+                        <div
+                            className="progress-bar-fill"
+                            style={{ width: `${progress}%` }}
+                        ></div>
                     </div>
                 )}
-
-                {complete && (
-                    <div className="complete">
-                        <p>Process Complete!</p>
-                    </div>
-                )}
+                {progress === 100 && <p>Process complete!</p>}
             </div>
         </div>
     );
-}
+};
 
 export default Start;

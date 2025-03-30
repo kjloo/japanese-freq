@@ -32,18 +32,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MeCab UniDic
-RUN pip install unidic ffmpeg-python fugashi[unidic] cutlet Flask pymongo pymodm requests gunicorn
+RUN pip install unidic ffmpeg-python fugashi[unidic] cutlet Flask pymongo pymodm requests gunicorn flask-socketio eventlet
 
 RUN python -m unidic download
 
 # Set environment variable for MeCab dictionary path
 ENV MECABRC=/usr/local/etc/mecabrc
 
-# # Copy scripts
-COPY ./app /app
-
 # Set the working directory
 WORKDIR /app
+
+# Copy scripts
+COPY ./app /app
 
 # Copy the built client files from the client stage
 COPY --from=client-builder /app/dist /app/static
@@ -52,4 +52,4 @@ COPY --from=client-builder /app/dist /app/static
 EXPOSE 5000
 
 # Run the app with Gunicorn
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "main:app"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "routes.server:app"]
