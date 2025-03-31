@@ -1,7 +1,8 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
-import WordCheckForm from './WordCheckForm'; // Import the WordCheckForm component
+import WordCheckForm from './WordCheckForm';
+import WelcomeCard from './WelcomeCard'; // Import the new WelcomeCard component
 
 const socket = io('http://localhost:5000');
 
@@ -13,7 +14,6 @@ const Start: FunctionComponent<StartProps> = () => {
     const [showWordCheckForm, setShowWordCheckForm] = useState(false);
 
     useEffect(() => {
-        // Listen for progress updates from the server
         socket.on('progress', (data) => {
             setProgress(data.progress);
             if (data.progress >= 100) {
@@ -21,13 +21,8 @@ const Start: FunctionComponent<StartProps> = () => {
             }
         });
 
-        socket.on('word_check_complete', () => {
-            setShowWordCheckForm(false);
-        });
-
         return () => {
             socket.off('progress');
-            socket.off('word_check_complete');
         };
     }, []);
 
@@ -50,27 +45,13 @@ const Start: FunctionComponent<StartProps> = () => {
     return (
         <div className="container">
             {showWordCheckForm ? (
-                // Show WordCheckForm when it's active
                 <WordCheckForm />
             ) : (
-                // Show the main card with progress or start button
-                <div className="card">
-                    <h1 className="title">Welcome</h1>
-                    <p className="text">Get started by clicking the button below</p>
-                    <button className="start-button" onClick={startProcess} disabled={isLoading}>
-                        {isLoading ? 'Processing...' : 'Start'}
-                    </button>
-
-                    {isLoading && (
-                        <div className="progress-bar">
-                            <div
-                                className="progress-bar-fill"
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                    )}
-                    {progress === 100 && <p>Process complete!</p>}
-                </div>
+                <WelcomeCard
+                    isLoading={isLoading}
+                    progress={progress}
+                    onStart={startProcess}
+                />
             )}
         </div>
     );
