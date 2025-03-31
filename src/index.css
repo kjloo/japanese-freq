@@ -104,3 +104,24 @@ input[type="checkbox"]:hover {
 input[type="checkbox"]:checked {
   border-color: #4caf50; /* Add a green border when checked */
 }
+
+input[type="number"] {
+  margin-left: 0.5em;
+  padding: 0.25em;
+  font-size: 1em;
+  width: 2em;
+}
+
+.inputs-list {
+  list-style: none;
+  max-height: 15em;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 0.5em;
+  padding: 0.5em;
+  background-color: #f9f9f9;
+}
+
+.settings div{
+  margin-bottom: 1em;
+}

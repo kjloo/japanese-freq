@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import threading
 
 from service import frequency_service
+from module.logging import logger
 
 # Blueprint for routes
 frequency_routes = Blueprint('frequency_routes', __name__)
@@ -13,13 +14,19 @@ def start_process():
     data = request.get_json()
     # Default to an empty list if "inputs" is not provided
     inputs: list[str] = data.get("inputs", [])
+    freq_min: int = int(data.get("freq_min", 0))
+    requires_definition: bool = bool(data.get("requires_definition", True))
+    min_word_length: int = int(data.get("min_word_length", 1))
+
+    logger.debug("Starting frequency process with inputs: %s, freq_min: %d, requires_definition: %s, min_word_length: %d",
+                 inputs, freq_min, requires_definition, min_word_length)
 
     if not isinstance(inputs, list):
         return jsonify({"error": "Invalid input format. 'inputs' must be a list."}), 400
 
     # Start the processing in a separate thread
     thread = threading.Thread(
-        target=frequency_service.process_inputs, args=(inputs))
+        target=frequency_service.process_inputs, args=(inputs, freq_min, requires_definition, min_word_length))
     thread.start()
 
     return jsonify({"status": "started"}), 200

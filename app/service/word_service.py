@@ -2,6 +2,7 @@ from threading import Event
 import json
 
 from module.socket_module import socketio
+from module.logging import logger
 
 ignore_list_file: str = '.ignorelist'
 ignore_list: set[str] = []
@@ -43,6 +44,7 @@ def ask_user(content: dict) -> dict:
     socketio.on_event('word_response', handle_response)
 
     for word in list(content.keys()):
+        logger.debug(f"Requesting user input for word: {word}")
         socketio.emit('word_check', {
             'word': word,
             'frequency': content[word]["frequency"],
