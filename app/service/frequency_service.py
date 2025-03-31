@@ -3,6 +3,7 @@ import fugashi
 
 from service import io_service
 from service import word_service
+from model.content.source_content import SourceContent
 from model.japanese_content import JapaneseContent
 from model.dictionary import Dictionary
 from util.envlookup import FREQ_MIN, MIN_WORD_LENGTH, REQUIRES_DEFINITION
@@ -17,20 +18,24 @@ dictionary = Dictionary('dictionaries/jmdict_english.zip')
 IGNORE_POS = ["助動詞", "補助記号", "助詞"]
 
 
-def process_inputs():
+def process_inputs(inputs: list[str]):
     ignore_list = word_service.get_ignore_list()
     progress: Progress = Progress()
 
     file_manager = io_service.get_file_manager()
     processed: int = 0
-    for sc in file_manager.source_content:
+
+    pending_process: list[SourceContent] = [
+        f for f in file_manager.source_content if f.get_name() in inputs]
+
+    for sc in pending_process:
         content = sc.parse_file()
         content_dict = _analyze_content(content, ignore_list)
         short_dict = word_service.ask_user(content_dict)
         data = sc.download_media(short_dict)
         io_service.write_to_json(data, sc.get_output_file())
         processed += 1
-        progress.update_progress(processed / len(file_manager.source_content))
+        progress.update_progress(processed / len(pending_process))
         socketio.emit('progress', progress.to_json())
 
 
