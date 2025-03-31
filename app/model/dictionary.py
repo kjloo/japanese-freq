@@ -45,18 +45,28 @@ class Dictionary:
             else:
                 # Using headword as key for finding the dictionary entry
                 output_map[entry[0]] = [entry]
+            if (entry[1] in output_map):
+                output_map[entry[1]].append(entry)
+            else:
+                # Add hiragana keys
+                output_map[entry[1]] = [entry]
+
         return output_map
 
-    def lookup(self, word: str):
-        return self.dictionary.get(word, False)
+    def lookup(self, word: str) -> list:
+        return self.dictionary.get(word, [])
 
     def short_lookup(self, word: str) -> ShortDef:
-        definition = self.dictionary.get(word, [None])[0]
-        if definition is None:
+        definitions = self.dictionary.get(word, [])
+        if len(definitions) == 0:
             return None
-        meaning = '; '.join(definition[5])
+        definition = definitions[0]
+        meaning = '\n'.join(
+            [f"({i + 1}): {'; '.join(d[5])}" for i, d in enumerate(definitions)])
 
         hiragana = definition[1] if definition[1] else definition[0]
-        kanji = definition[0] if definition[1] else None
+
+        kanji = '\n'.join(
+            [f"({i + 1}): {d[0] if d[1] else None}" for i, d in enumerate(definitions)])
         romaji = katsu.romaji(hiragana).lower()
         return ShortDef(meaning, kanji, hiragana, romaji)
