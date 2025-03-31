@@ -22,11 +22,15 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
     const [wordData, setWordData] = useState<WordData | null>(null);
 
     useEffect(() => {
-        // Listen for the "word_check" event from the server
         socket.on('word_check', (data: WordData) => {
             setWordData(data);
         });
+        return () => {
+            socket.off('word_check');
+        };
+    }, []);
 
+    useEffect(() => {
         // Add key press listeners
         const handleKeyPress = (event: KeyboardEvent) => {
             console.log('Key pressed:', event.key);
@@ -40,15 +44,11 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
         window.addEventListener('keydown', handleKeyPress);
 
         return () => {
-            // Cleanup listeners
-            socket.off('word_check');
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [wordData]);
 
     const handleResponse = (answer: boolean) => {
-        console.log('Submitting response: ', answer);
-        console.log('Current word data: ', wordData?.word);
         if (wordData) {
             // Emit the response back to the server
             socket.emit('word_response', { word: wordData.word, answer });

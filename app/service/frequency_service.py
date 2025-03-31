@@ -6,9 +6,9 @@ from service import word_service
 from model.content.source_content import SourceContent
 from model.japanese_content import JapaneseContent
 from model.dictionary import Dictionary
-from util.envlookup import FREQ_MIN, MIN_WORD_LENGTH, REQUIRES_DEFINITION
 from model.progress import Progress
 from module.socket_module import socketio
+from module.logging import logger
 
 # wakati = fugashi.Tagger("-Owakati")
 wakati = fugashi.Tagger()
@@ -18,7 +18,9 @@ dictionary = Dictionary('dictionaries/jmdict_english.zip')
 IGNORE_POS = ["助動詞", "補助記号", "助詞"]
 
 
-def process_inputs(inputs: list[str]):
+def process_inputs(inputs: list[str], freq_min: int, requires_definition: bool, min_word_length: int):
+    logger.debug(
+        f"Processing inputs: {inputs}, freq_min: {freq_min}, requires_definition: {requires_definition}, min_word_length: {min_word_length}")
     ignore_list = word_service.get_ignore_list()
     progress: Progress = Progress()
 
@@ -29,8 +31,10 @@ def process_inputs(inputs: list[str]):
         f for f in file_manager.source_content if f.get_name() in inputs]
 
     for sc in pending_process:
+        logger.debug(f"Processing file: {sc.get_name()}")
         content = sc.parse_file()
-        content_dict = _analyze_content(content, ignore_list)
+        content_dict = _analyze_content(
+            content, ignore_list, freq_min, requires_definition, min_word_length)
         short_dict = word_service.ask_user(content_dict)
         data = sc.download_media(short_dict)
         io_service.write_to_json(data, sc.get_output_file())
@@ -39,7 +43,7 @@ def process_inputs(inputs: list[str]):
         socketio.emit('progress', progress.to_json())
 
 
-def _analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> dict:
+def _analyze_content(content: list[JapaneseContent], ignore_list: set[str], freq_min: int, requires_definition: bool, min_word_length: int) -> dict:
     word_freq = defaultdict(
         lambda: {"frequency": 0, "definition": None, "content": []})
     for c in content:
@@ -49,7 +53,7 @@ def _analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> d
             word = word_content.feature.orthBase
             if word is None:
                 continue
-            if len(word) >= MIN_WORD_LENGTH and word not in ignore_list:
+            if len(word) >= min_word_length and word not in ignore_list:
                 word_freq[word]["frequency"] += 1
                 if word_freq[word]["definition"] is None:
                     sd = dictionary.short_lookup(word)
@@ -58,8 +62,8 @@ def _analyze_content(content: list[JapaneseContent], ignore_list: set[str]) -> d
 
                 word_freq[word]["content"].append(c)
 
-    filtered_word_freq = {w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] >= FREQ_MIN and (
-        not REQUIRES_DEFINITION or bool(word_freq[w]["definition"]))}
+    filtered_word_freq = {w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] >= freq_min and (
+        not requires_definition or bool(word_freq[w]["definition"]))}
     sorted_word_freq = dict(
         sorted(filtered_word_freq.items(), key=lambda item: item[1]["frequency"], reverse=True))
     return sorted_word_freq
