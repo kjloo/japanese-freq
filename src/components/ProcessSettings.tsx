@@ -38,6 +38,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
 
     const handleSubmit = async () => {
         try {
+            onSubmit();
             const response = await axios.post('/api/frequency/process', { inputs: selectedInputs, freq_min: freqMin, requires_definition: requiresDefinition, min_word_length: minWordLength });
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
@@ -45,7 +46,6 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
         } catch (error) {
             console.error('Error starting process:', error);
         }
-        onSubmit();
     };
 
     return (

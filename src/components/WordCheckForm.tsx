@@ -23,7 +23,6 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
 
     useEffect(() => {
         socket.on('word_check', (data: WordData) => {
-            console.log("HERE")
             setWordData(data);
         });
         return () => {
