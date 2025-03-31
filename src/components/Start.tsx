@@ -26,19 +26,22 @@ const Start: FunctionComponent<StartProps> = () => {
             setProgress(data.progress);
             if (data.progress >= 100) {
                 setIsLoading(false);
-                setViewState(ViewState.WordCheckForm); // Transition to WordCheckForm when progress is complete
             }
+        });
+
+        socket.on('word_check_complete', () => {
+            setViewState(ViewState.Welcome)
         });
 
         return () => {
             socket.off('progress');
+            socket.off('work_check_complete');
         };
     }, []);
 
     const startProcess = async (selectedInputs: string[]) => {
         setIsLoading(true);
         setProgress(0);
-        setViewState(ViewState.Welcome); // Reset to Welcome while processing
 
         try {
             const response = await axios.post('/api/frequency/process', { inputs: selectedInputs });

@@ -25,7 +25,7 @@ def ask_user(content: dict) -> dict:
         Callback to handle user response from the client.
         """
         word = response.get('word')
-        answer = response.get('answer')  # True or False
+        answer = response.get('answer')
 
         if answer:  # If the user knows the word (True)
             # Remove the word from the data dictionary
@@ -45,14 +45,12 @@ def ask_user(content: dict) -> dict:
     for word in list(content.keys()):
         socketio.emit('word_check', {
             'word': word,
+            'frequency': content[word]["frequency"],
             'definition': content[word]["definition"]
         })
-        print("Asking user about word: %s" % word)
         response_event.clear()  # Reset the event
         response_event.wait()  # Wait for the user to respond
-        print("Received response for word: %s" % word)
 
     # Unregister the event listener after processing
-    socketio.off_event('word_response', handle_response)
     socketio.emit('word_check_complete', {})
     return content
