@@ -37,7 +37,7 @@ const Start: FunctionComponent<StartProps> = () => {
         setShowWordCheckForm(true);
 
         try {
-            const response = await axios.post('/api/process', {});
+            const response = await axios.post('/api/frequency/process', {});
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
             }
