@@ -1,19 +1,27 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
-import WordCheckForm from './WordCheckForm'; // Import the WordCheckForm component
+import WordCheckForm from './WordCheckForm';
+import WelcomeCard from './WelcomeCard';
+import InputSelector from './InputSelector'; // Import the InputSelector component
 
 const socket = io('http://localhost:5000');
+
+// Define an enum to manage the component's state
+enum ViewState {
+    Welcome,
+    InputSelector,
+    WordCheckForm,
+}
 
 interface StartProps { }
 
 const Start: FunctionComponent<StartProps> = () => {
+    const [viewState, setViewState] = useState<ViewState>(ViewState.Welcome); // Single state variable to manage views
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [showWordCheckForm, setShowWordCheckForm] = useState(false);
 
     useEffect(() => {
-        // Listen for progress updates from the server
         socket.on('progress', (data) => {
             setProgress(data.progress);
             if (data.progress >= 100) {
@@ -22,22 +30,21 @@ const Start: FunctionComponent<StartProps> = () => {
         });
 
         socket.on('word_check_complete', () => {
-            setShowWordCheckForm(false);
+            setViewState(ViewState.Welcome)
         });
 
         return () => {
             socket.off('progress');
-            socket.off('word_check_complete');
+            socket.off('work_check_complete');
         };
     }, []);
 
-    const startProcess = async () => {
+    const startProcess = async (selectedInputs: string[]) => {
         setIsLoading(true);
         setProgress(0);
-        setShowWordCheckForm(true);
 
         try {
-            const response = await axios.post('/api/process', {});
+            const response = await axios.post('/api/frequency/process', { inputs: selectedInputs });
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
             }
@@ -47,30 +54,34 @@ const Start: FunctionComponent<StartProps> = () => {
         }
     };
 
+    const handleStartClick = () => {
+        setViewState(ViewState.InputSelector); // Show the InputSelector when the Start button is clicked
+    };
+
+    const handleInputSelectorSubmit = (selectedInputs: string[]) => {
+        setViewState(ViewState.WordCheckForm); // Reset to Welcome while processing
+        startProcess(selectedInputs); // Start the process with the selected inputs
+    };
+
+    const handleInputSelectorCancel = () => {
+        setViewState(ViewState.Welcome); // Reset to Welcome if canceled
+    };
+
     return (
         <div className="container">
-            {showWordCheckForm ? (
-                // Show WordCheckForm when it's active
+            {viewState === ViewState.InputSelector ? (
+                <InputSelector
+                    onSubmit={handleInputSelectorSubmit}
+                    onCancel={handleInputSelectorCancel}
+                />
+            ) : viewState === ViewState.WordCheckForm ? (
                 <WordCheckForm />
             ) : (
-                // Show the main card with progress or start button
-                <div className="card">
-                    <h1 className="title">Welcome</h1>
-                    <p className="text">Get started by clicking the button below</p>
-                    <button className="start-button" onClick={startProcess} disabled={isLoading}>
-                        {isLoading ? 'Processing...' : 'Start'}
-                    </button>
-
-                    {isLoading && (
-                        <div className="progress-bar">
-                            <div
-                                className="progress-bar-fill"
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                    )}
-                    {progress === 100 && <p>Process complete!</p>}
-                </div>
+                <WelcomeCard
+                    isLoading={isLoading}
+                    progress={progress}
+                    onStart={handleStartClick}
+                />
             )}
         </div>
     );

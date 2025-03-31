@@ -12,7 +12,8 @@ interface WordDefinition {
 
 interface WordData {
     word: string;
-    definition: WordDefinition; // Updated to use the WordDefinition structure
+    frequency: number;
+    definition: WordDefinition;
 }
 
 interface WordCheckFormProps { }
@@ -26,12 +27,28 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
             setWordData(data);
         });
 
-        return () => {
-            socket.off('word_check');
+        // Add key press listeners
+        const handleKeyPress = (event: KeyboardEvent) => {
+            console.log('Key pressed:', event.key);
+            if (event.key === 'y') {
+                handleResponse(true);
+            } else if (event.key === 'n') {
+                handleResponse(false);
+            }
         };
-    }, []);
+
+        window.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            // Cleanup listeners
+            socket.off('word_check');
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [wordData]);
 
     const handleResponse = (answer: boolean) => {
+        console.log('Submitting response: ', answer);
+        console.log('Current word data: ', wordData?.word);
         if (wordData) {
             // Emit the response back to the server
             socket.emit('word_response', { word: wordData.word, answer });
@@ -45,6 +62,7 @@ const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
             {wordData ? (
                 <div className='card'>
                     <h2 className="title">Word Check</h2>
+                    <p><strong>Frequency:</strong> {wordData.frequency}</p>
                     <p><strong>Word:</strong> {wordData.word}</p>
                     <p><strong>Definition:</strong> {wordData.definition.definition}</p>
                     <p><strong>Kanji:</strong> {wordData.definition.kanji}</p>

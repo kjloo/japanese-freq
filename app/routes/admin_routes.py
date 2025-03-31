@@ -1,21 +1,11 @@
 from flask import Blueprint, render_template, jsonify
 import threading
 
-from module.app_module import app
-from service import japanese_freq_service
-
 # Blueprint for routes
-app_routes = Blueprint('routes', __name__)
+admin_routes = Blueprint('admin_routes', __name__)
 
 
-@app_routes.route("/api/process", methods=["POST"])
-def start_process():
-    thread = threading.Thread(target=japanese_freq_service.process_inputs)
-    thread.start()
-    return jsonify({"status": "started"}), 200
-
-
-@app_routes.route("/health", methods=["GET"])
+@admin_routes.route("/health", methods=["GET"])
 def health_check():
     """
     Health check endpoint to verify if the server is running.
@@ -28,7 +18,7 @@ def health_check():
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
 
 
-@app_routes.route("/")
+@admin_routes.route("/")
 # Main route to serve the app
 def home():
     return render_template("index.html")
