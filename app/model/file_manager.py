@@ -8,6 +8,7 @@ from model.content.source_content import SourceContent
 
 class FileType(str, Enum):
     SRT = '.srt'
+    VTT = '.vtt'
     MP4 = '.mp4'
     MKV = '.mkv'
     MP3 = '.mp3'
@@ -30,7 +31,7 @@ class FileManager:
             offset = None
             text = None
             for name in os.listdir(full_path):
-                if name.lower().endswith(FileType.SRT):
+                if name.lower().endswith(FileType.SRT) or name.lower().endswith(FileType.VTT):
                     sub = name
                 elif name.lower().endswith(FileType.MP4) or name.lower().endswith(FileType.MKV) or name.lower().endswith(FileType.MP3):
                     video = name
