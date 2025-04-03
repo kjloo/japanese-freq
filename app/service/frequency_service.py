@@ -18,9 +18,9 @@ dictionary = Dictionary('dictionaries/jmdict_english.zip')
 IGNORE_POS = ["助動詞", "補助記号", "助詞"]
 
 
-def process_inputs(inputs: list[str], freq_min: int, requires_definition: bool, min_word_length: int):
+def process_inputs(inputs: list[str], word_check: bool, freq_min: int, requires_definition: bool, min_word_length: int):
     logger.debug(
-        f"Processing inputs: {inputs}, freq_min: {freq_min}, requires_definition: {requires_definition}, min_word_length: {min_word_length}")
+        f"Processing inputs: {inputs}, word_check: {word_check}, freq_min: {freq_min}, requires_definition: {requires_definition}, min_word_length: {min_word_length}")
     ignore_list = word_service.get_ignore_list()
     progress: Progress = Progress()
 
@@ -35,7 +35,9 @@ def process_inputs(inputs: list[str], freq_min: int, requires_definition: bool, 
         content = sc.parse_file()
         content_dict = _analyze_content(
             content, ignore_list, freq_min, requires_definition, min_word_length)
-        short_dict = word_service.ask_user(content_dict)
+        short_dict = word_service.ask_user(
+            content_dict) if word_check else content_dict
+        socketio.emit('word_check_complete', {})
         data = sc.download_media(short_dict)
         io_service.write_to_json(data, sc.get_output_file())
         processed += 1
