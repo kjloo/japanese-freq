@@ -24,9 +24,8 @@ class VideoContent(SourceContent):
         with open(input_file) as f:
             data = f.readlines()
 
-        start_pattern = re.compile(r'^\d+$')
         time_pattern = re.compile(
-            r'(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})')
+            r'(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3})')
 
         build_sentence: list[str] | None = None
         timestamp: Timestamp = None
@@ -34,7 +33,7 @@ class VideoContent(SourceContent):
         content: list[JapaneseContent] = []
         for line in data:
             # Look for sections
-            if build_sentence is None and start_pattern.match(line):
+            if build_sentence is None and time_pattern.match(line):
                 # Section start
                 build_sentence = []
             elif not build_sentence is None and not line.strip():

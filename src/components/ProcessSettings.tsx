@@ -9,6 +9,7 @@ interface ProcessSettingsProps {
 const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, onCancel }) => {
     const [inputs, setInputs] = useState<string[]>([]);
     const [selectedInputs, setSelectedInputs] = useState<string[]>([]);
+    const [wordCheck, setWordCheck] = useState<boolean>(true);
     const [freqMin, setFreqMin] = useState<number>(2);
     const [requiresDefinition, setRequiresDefinition] = useState<boolean>(true);
     const [minWordLength, setMinWordLength] = useState<number>(1);
@@ -39,7 +40,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
     const handleSubmit = async () => {
         try {
             onSubmit();
-            const response = await axios.post('/api/frequency/process', { inputs: selectedInputs, freq_min: freqMin, requires_definition: requiresDefinition, min_word_length: minWordLength });
+            const response = await axios.post('/api/frequency/process', { inputs: selectedInputs, word_check: wordCheck, freq_min: freqMin, requires_definition: requiresDefinition, min_word_length: minWordLength });
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
             }
@@ -52,6 +53,16 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
         <div className="card">
             <h2 className="title">Process Settings</h2>
             <div className="settings">
+                <div>
+                    <label>
+                        Word Check:
+                        <input
+                            type="checkbox"
+                            checked={wordCheck}
+                            onChange={(e) => setWordCheck(e.target.checked)}
+                        />
+                    </label>
+                </div>
                 <div>
                     <label>
                         Frequency Minimum:

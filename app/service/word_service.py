@@ -53,6 +53,4 @@ def ask_user(content: dict) -> dict:
         response_event.clear()  # Reset the event
         response_event.wait()  # Wait for the user to respond
 
-    # Unregister the event listener after processing
-    socketio.emit('word_check_complete', {})
     return content
