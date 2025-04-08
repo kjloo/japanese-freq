@@ -2,7 +2,8 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { io } from 'socket.io-client';
 import WordCheckForm from './WordCheckForm';
 import WelcomeCard from './WelcomeCard';
-import ProcessSettings from './ProcessSettings'; // Import the InputSelector component
+import ProcessSettings from './ProcessSettings';
+import VideoPlayer from './VideoPlayer';
 
 const socket = io('http://localhost:5000');
 
@@ -11,6 +12,7 @@ enum ViewState {
     Welcome,
     ProcessSettings,
     WordCheckForm,
+    VideoPlayer // Add VideoPlayer state
 }
 
 interface StartProps { }
@@ -29,12 +31,12 @@ const Start: FunctionComponent<StartProps> = () => {
         });
 
         socket.on('word_check_complete', () => {
-            setViewState(ViewState.Welcome)
+            setViewState(ViewState.Welcome);
         });
 
         return () => {
             socket.off('progress');
-            socket.off('work_check_complete');
+            socket.off('word_check_complete');
         };
     }, []);
 
@@ -56,15 +58,22 @@ const Start: FunctionComponent<StartProps> = () => {
         setViewState(ViewState.Welcome); // Reset to Welcome if canceled
     };
 
+    const handleVideoPlayerClick = () => {
+        setViewState(ViewState.VideoPlayer); // Switch to VideoPlayer view
+    };
+
     return (
         <div className="container">
             {viewState === ViewState.ProcessSettings ? (
                 <ProcessSettings
-                    onSubmit={handleInputSelectorSubmit}
+                    onVideo={handleVideoPlayerClick}
+                    onProcess={handleInputSelectorSubmit}
                     onCancel={handleInputSelectorCancel}
                 />
             ) : viewState === ViewState.WordCheckForm ? (
                 <WordCheckForm />
+            ) : viewState === ViewState.VideoPlayer ? (
+                <VideoPlayer src="https://www.w3schools.com/html/mov_bbb.mp4" />
             ) : (
                 <WelcomeCard
                     isLoading={isLoading}

@@ -2,11 +2,12 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
 interface ProcessSettingsProps {
-    onSubmit: () => void;
+    onVideo: () => void;
+    onProcess: () => void;
     onCancel: () => void;
 }
 
-const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, onCancel }) => {
+const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onProcess, onCancel }) => {
     const [inputs, setInputs] = useState<string[]>([]);
     const [selectedInputs, setSelectedInputs] = useState<string[]>([]);
     const [wordCheck, setWordCheck] = useState<boolean>(true);
@@ -36,10 +37,22 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
         );
     };
 
-
-    const handleSubmit = async () => {
+    const handleVideoPlayerClick = async () => {
         try {
-            onSubmit();
+            onVideo();
+            // const response = await axios.post('/api/frequency/video', { inputs: selectedInputs });
+            // if (response.status !== 200) {
+            //     throw new Error('Failed to start video');
+            // }
+        } catch (error) {
+            console.error('Error starting video:', error);
+        }
+    };
+
+
+    const handleProcess = async () => {
+        try {
+            onProcess();
             const response = await axios.post('/api/frequency/process', { inputs: selectedInputs, word_check: wordCheck, freq_min: freqMin, requires_definition: requiresDefinition, min_word_length: minWordLength });
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
@@ -111,7 +124,8 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onSubmit, on
                         </li>
                     ))}
                 </ul>
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleVideoPlayerClick}>Video</button>
+                <button onClick={handleProcess}>Process</button>
                 <button onClick={onCancel}>Cancel</button>
             </div>
         </div>
