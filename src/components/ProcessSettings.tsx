@@ -2,7 +2,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
 interface ProcessSettingsProps {
-    onVideo: () => void;
+    onVideo: (video: string) => void;
     onProcess: () => void;
     onCancel: () => void;
 }
@@ -37,23 +37,25 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
         );
     };
 
-    const handleVideoPlayerClick = async () => {
-        try {
-            onVideo();
-            // const response = await axios.post('/api/frequency/video', { inputs: selectedInputs });
-            // if (response.status !== 200) {
-            //     throw new Error('Failed to start video');
-            // }
-        } catch (error) {
-            console.error('Error starting video:', error);
+    const handlePlayVideo = () => {
+        if (selectedInputs.length > 0) {
+            const video = selectedInputs[0]; // Use the first element in selectedInputs
+            onVideo(video); // Pass the selected video to the parent
+        } else {
+            console.error('No video selected. Please select an input.');
         }
     };
-
 
     const handleProcess = async () => {
         try {
             onProcess();
-            const response = await axios.post('/api/frequency/process', { inputs: selectedInputs, word_check: wordCheck, freq_min: freqMin, requires_definition: requiresDefinition, min_word_length: minWordLength });
+            const response = await axios.post('/api/frequency/process', {
+                inputs: selectedInputs,
+                word_check: wordCheck,
+                freq_min: freqMin,
+                requires_definition: requiresDefinition,
+                min_word_length: minWordLength,
+            });
             if (response.status !== 200) {
                 throw new Error('Failed to start process');
             }
@@ -124,7 +126,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         </li>
                     ))}
                 </ul>
-                <button onClick={handleVideoPlayerClick}>Video</button>
+                <button onClick={handlePlayVideo}>Play Video</button>
                 <button onClick={handleProcess}>Process</button>
                 <button onClick={onCancel}>Cancel</button>
             </div>
