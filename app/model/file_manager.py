@@ -46,3 +46,9 @@ class FileManager:
                 self.source_content.append(
                     VideoContent(full_path, os.path.join(
                         output_dir, f), sub, video, offset))
+
+    def get_video_by_name(self, name: str) -> VideoContent:
+        try:
+            return next(sc for sc in self.source_content if sc.get_name() == name)
+        except StopIteration:
+            raise ValueError(f"Video with name '{name}' not found.")

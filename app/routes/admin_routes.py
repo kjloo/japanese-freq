@@ -26,7 +26,7 @@ def serve_video(source):
         with open(f'videos/{source}', 'rb') as f:
             while chunk := f.read(1024 * 1024):  # Read in 1MB chunks
                 yield chunk
-    return Response(generate(), content_type='video/mp4')
+    return Response(video_service, content_type='video/mp4')
 
 
 @admin_routes.route("/")

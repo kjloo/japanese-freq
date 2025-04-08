@@ -16,7 +16,7 @@ class VideoContent(SourceContent):
         super().__init__(input_dir, output_dir)
         self.video_data = VideoData(subtitles, video, offset)
         self.video_downloader = VideoDownloader(
-            self._get_video(), self._get_offset())
+            self.get_video(), self._get_offset())
 
     def parse_file(self) -> list[JapaneseContent]:
         input_file = self._get_subtitles()
@@ -81,7 +81,7 @@ class VideoContent(SourceContent):
     def _get_subtitles(self) -> str:
         return os.path.join(self.input_dir, self.video_data.subtitles)
 
-    def _get_video(self) -> str:
+    def get_video(self) -> str:
         return os.path.join(self.input_dir, self.video_data.video)
 
     def _get_offset(self) -> str:
