@@ -1,19 +1,8 @@
 import os
-from enum import Enum
-from collections import namedtuple
 from model.content.video_content import VideoContent
 from model.content.text_content import TextContent
 from model.content.source_content import SourceContent
-
-
-class FileType(str, Enum):
-    SRT = '.srt'
-    VTT = '.vtt'
-    MP4 = '.mp4'
-    MKV = '.mkv'
-    MP3 = '.mp3'
-    TXT = '.txt'
-    OFFSET = 'offset'
+from model.freq_enum import FileType
 
 
 class FileManager:
@@ -31,7 +20,9 @@ class FileManager:
             offset = None
             text = None
             for name in os.listdir(full_path):
-                if name.lower().endswith(FileType.SRT) or name.lower().endswith(FileType.VTT):
+                if sub is None and name.lower().endswith(FileType.SRT):
+                    sub = name
+                elif name.lower().endswith(FileType.VTT):
                     sub = name
                 elif name.lower().endswith(FileType.MP4) or name.lower().endswith(FileType.MKV) or name.lower().endswith(FileType.MP3):
                     video = name
