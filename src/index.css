@@ -133,6 +133,8 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   border-radius: 0.5em;
+  width: 65em;
+  height: auto;
   overflow: hidden;
 }
 
@@ -142,7 +144,6 @@ input[type="number"] {
   height: auto;
   border-radius: 0.5em;
   margin-bottom: 0.625em;
-  /* 10px -> 0.625em */
 }
 
 /* Video Controls */
@@ -150,20 +151,17 @@ input[type="number"] {
   display: flex;
   align-items: center;
   gap: 0.625em;
-  /* 10px -> 0.625em */
 }
 
 /* Play/Pause Button */
 .play-pause-button {
   padding: 0.625em 1.25em;
-  /* 10px 20px -> 0.625em 1.25em */
   font-size: 1em;
   cursor: pointer;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 0.3125em;
-  /* 5px -> 0.3125em */
   transition: background-color 0.3s ease;
 }
 
@@ -174,7 +172,6 @@ input[type="number"] {
 /* Progress Bar */
 .progress-bar {
   width: 18.75em;
-  /* 300px -> 18.75em */
   cursor: pointer;
 }
 

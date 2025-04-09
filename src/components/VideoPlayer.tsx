@@ -1,12 +1,10 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 
 interface VideoPlayerProps {
-    source: string; // The source filename of the video (e.g., "example.mp4")
-    width?: string; // Optional width for the video player
-    height?: string; // Optional height for the video player
+    source: string;
 }
 
-const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, width = "640px", height = "360px" }) => {
+const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
     const [progress, setProgress] = useState(0); // State to track video progress
     const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
@@ -46,7 +44,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, width = "640
     };
 
     return (
-        <div className="video-player" style={{ width, height }}>
+        <div className="video-player">
             {videoUrl ? (
                 <video
                     ref={videoRef}
