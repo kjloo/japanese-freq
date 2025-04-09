@@ -2,10 +2,12 @@ import ffmpeg
 import re
 import os
 from model.content.source_content import SourceContent
+from model.freq_enum import FileType
 from collections import namedtuple
 from model.japanese_content import JapaneseContent, Timestamp
 from collections import defaultdict
 from util.envlookup import DOWNLOAD_MEDIA
+from module.logging import logger
 
 
 VideoData = namedtuple('VideoData', ['subtitles', 'video', 'offset'])
@@ -14,6 +16,7 @@ VideoData = namedtuple('VideoData', ['subtitles', 'video', 'offset'])
 class VideoContent(SourceContent):
     def __init__(self, input_dir: str, output_dir: str, subtitles: str, video: str, offset: str):
         super().__init__(input_dir, output_dir)
+        subtitles = self._convert_subtitles_to_vtt(subtitles)
         self.video_data = VideoData(subtitles, video, offset)
         self.video_downloader = VideoDownloader(
             self.get_video(), self._get_offset())
@@ -104,6 +107,39 @@ class VideoContent(SourceContent):
 
     def _extract(self, start_time: str, end_time: str, audio: str):
         self.video_downloader.extract(start_time, end_time, audio)
+
+    def _convert_subtitles_to_vtt(self, subtitles: str):
+        """
+        Convert the subtitles file from .srt to .vtt using ffmpeg.
+        If the subtitles file is already .vtt, no conversion is performed.
+        """
+        subtitles_path = os.path.join(self.input_dir, subtitles)
+        # Check if the file is already a .vtt file
+        if subtitles_path.endswith(FileType.VTT):
+            logger.debug(
+                f"Subtitles are already in .vtt format: {subtitles_path}")
+            return subtitles
+
+        # Ensure the file is an .srt file
+        if not subtitles_path.endswith(FileType.SRT):
+            raise ValueError(f"Unsupported subtitle format: {subtitles_path}")
+
+        # Define the output .vtt file path
+        vtt_path = subtitles_path.replace(FileType.SRT, FileType.VTT)
+
+        # Use ffmpeg to convert .srt to .vtt
+        try:
+            logger.debug(f"Converting {subtitles_path} to {vtt_path}...")
+            ffmpeg.input(subtitles_path).output(
+                vtt_path, format="webvtt").run(overwrite_output=True)
+            logger.debug(f"Conversion successful: {vtt_path}")
+            os.remove(subtitles_path)
+            # Update the subtitles attribute to point to the new .vtt file
+            return os.path.basename(vtt_path)
+        except ffmpeg.Error as e:
+            logger.debug(
+                f"Error occurred during subtitle conversion: {e.stderr}")
+            raise RuntimeError(f"Failed to convert {subtitles_path} to .vtt")
 
 
 class VideoDownloader:
