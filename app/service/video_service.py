@@ -1,0 +1,20 @@
+import os
+
+from model.file_manager import FileManager
+from model.content.video_content import VideoContent
+from service import io_service
+
+
+def generate(source: str):
+    """
+    Generate video file chunks for streaming.
+    """
+    file_manager: FileManager = io_service.get_file_manager()
+    video_content: VideoContent = file_manager.get_video_by_name(source)
+    video_path = video_content.get_video()
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(f"Video file {source} not found")
+
+    with open(video_path, 'rb') as f:
+        while chunk := f.read(1024 * 1024):  # Read in 1MB chunks
+            yield chunk

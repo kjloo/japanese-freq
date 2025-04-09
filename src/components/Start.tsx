@@ -2,7 +2,8 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { io } from 'socket.io-client';
 import WordCheckForm from './WordCheckForm';
 import WelcomeCard from './WelcomeCard';
-import ProcessSettings from './ProcessSettings'; // Import the InputSelector component
+import ProcessSettings from './ProcessSettings';
+import VideoPlayer from './VideoPlayer';
 
 const socket = io('http://localhost:5000');
 
@@ -11,6 +12,7 @@ enum ViewState {
     Welcome,
     ProcessSettings,
     WordCheckForm,
+    VideoPlayer
 }
 
 interface StartProps { }
@@ -19,6 +21,7 @@ const Start: FunctionComponent<StartProps> = () => {
     const [viewState, setViewState] = useState<ViewState>(ViewState.Welcome); // Single state variable to manage views
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [videoSource, setVideoSource] = useState<string | null>(null); // State to store the selected video source
 
     useEffect(() => {
         socket.on('progress', (data) => {
@@ -29,12 +32,12 @@ const Start: FunctionComponent<StartProps> = () => {
         });
 
         socket.on('word_check_complete', () => {
-            setViewState(ViewState.Welcome)
+            setViewState(ViewState.Welcome);
         });
 
         return () => {
             socket.off('progress');
-            socket.off('work_check_complete');
+            socket.off('word_check_complete');
         };
     }, []);
 
@@ -56,15 +59,23 @@ const Start: FunctionComponent<StartProps> = () => {
         setViewState(ViewState.Welcome); // Reset to Welcome if canceled
     };
 
+    const handleVideoPlayerClick = (source: string) => {
+        setViewState(ViewState.VideoPlayer);
+        setVideoSource(source);
+    };
+
     return (
         <div className="container">
             {viewState === ViewState.ProcessSettings ? (
                 <ProcessSettings
-                    onSubmit={handleInputSelectorSubmit}
+                    onVideo={handleVideoPlayerClick} // Pass the handler to ProcessSettings
+                    onProcess={handleInputSelectorSubmit}
                     onCancel={handleInputSelectorCancel}
                 />
             ) : viewState === ViewState.WordCheckForm ? (
                 <WordCheckForm />
+            ) : viewState === ViewState.VideoPlayer && videoSource ? (
+                <VideoPlayer source={videoSource} /> // Pass the selected video source to VideoPlayer
             ) : (
                 <WelcomeCard
                     isLoading={isLoading}

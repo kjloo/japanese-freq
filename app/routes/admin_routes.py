@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, jsonify
-import threading
+from flask import Blueprint, render_template, jsonify, Response
 
 # Blueprint for routes
 admin_routes = Blueprint('admin_routes', __name__)
@@ -16,6 +15,18 @@ def health_check():
         return jsonify({"status": "healthy"}), 200
     except Exception as e:
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
+
+@admin_routes.route("/video/stream/<source>", methods=["GET"])
+def serve_video(source):
+    """
+    Serve a video file from the static directory.
+    """
+    def generate():
+        with open(f'videos/{source}', 'rb') as f:
+            while chunk := f.read(1024 * 1024):  # Read in 1MB chunks
+                yield chunk
+    return Response(video_service, content_type='video/mp4')
 
 
 @admin_routes.route("/")
