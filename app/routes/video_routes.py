@@ -16,3 +16,11 @@ def serve_video(source):
     except FileNotFoundError:
         # Handle the case where the video file does not exist
         abort(404, description="Video file not found")
+
+
+@video_routes.route("/api/video/subtitles/<source>", methods=["GET"])
+def get_subtitles(source):
+    """
+    Serve subtitles for a video file using the generate method from video_service.
+    """
+    return Response(video_service.generate_subtitles(source), content_type='text/vtt')

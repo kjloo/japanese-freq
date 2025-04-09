@@ -78,7 +78,7 @@ class VideoContent(SourceContent):
 
         return rc
 
-    def _get_subtitles(self) -> str:
+    def get_subtitles(self) -> str:
         return os.path.join(self.input_dir, self.video_data.subtitles)
 
     def get_video(self) -> str:

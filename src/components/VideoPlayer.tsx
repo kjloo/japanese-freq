@@ -9,11 +9,15 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     const [progress, setProgress] = useState(0); // State to track video progress
     const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
     const [videoUrl, setVideoUrl] = useState<string | null>(null); // State to store the video URL
+    const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
         const apiUrl = `http://localhost:5000/api/video/stream/${source}`;
         setVideoUrl(apiUrl);
+
+        const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
+        setSubtitleUrl(subtitleApiUrl);
     }, [source]);
 
     const handlePlayPause = () => {
@@ -52,7 +56,17 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
                     className="video-element"
                     onTimeUpdate={handleProgress}
                     controls
-                />
+                >
+                    {subtitleUrl && (
+                        <track
+                            src={subtitleUrl}
+                            kind="subtitles"
+                            srcLang="ja"
+                            label="Japanese"
+                            default
+                        />
+                    )}
+                </video>
             ) : (
                 <p>Loading video...</p>
             )}
