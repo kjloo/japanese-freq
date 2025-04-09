@@ -22,7 +22,7 @@ class VideoContent(SourceContent):
             self.get_video(), self._get_offset())
 
     def parse_file(self) -> list[JapaneseContent]:
-        input_file = self._get_subtitles()
+        input_file = self.get_subtitles()
         data = []
         with open(input_file) as f:
             data = f.readlines()

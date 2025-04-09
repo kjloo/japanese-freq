@@ -5,10 +5,10 @@ from service import io_service
 from service import word_service
 from model.content.source_content import SourceContent
 from model.japanese_content import JapaneseContent
-from model.file_manager import FileManager
 from model.dictionary import Dictionary
 from model.progress import Progress
 from module.socket_module import socketio
+from module.file_module import file_manager
 from module.logging import logger
 
 # wakati = fugashi.Tagger("-Owakati")
@@ -25,7 +25,6 @@ def process_inputs(inputs: list[str], word_check: bool, freq_min: int, requires_
     ignore_list = word_service.get_ignore_list()
     progress: Progress = Progress()
 
-    file_manager: FileManager = io_service.get_file_manager()
     processed: int = 0
 
     pending_process: list[SourceContent] = [
