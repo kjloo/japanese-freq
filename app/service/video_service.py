@@ -1,9 +1,8 @@
 from flask import Response
 import os
 
-from model.file_manager import FileManager
+from module.file_module import file_manager
 from model.content.video_content import VideoContent
-from service import io_service
 
 # Map of file extensions to Content-Type
 CONTENT_TYPE_MAP = {
@@ -16,7 +15,6 @@ def generate(source: str) -> Response:
     """
     Generate video file chunks for streaming.
     """
-    file_manager: FileManager = io_service.get_file_manager()
     video_content: VideoContent = file_manager.get_video_by_name(source)
     video_path = video_content.get_video()
     if not os.path.exists(video_path):
@@ -40,7 +38,6 @@ def generate_subtitles(source: str) -> Response:
     """
     Serve subtitles for a video file.
     """
-    file_manager: FileManager = io_service.get_file_manager()
     video_content: VideoContent = file_manager.get_video_by_name(source)
     subtitles_path = video_content.get_subtitles()
 

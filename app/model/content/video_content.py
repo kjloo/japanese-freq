@@ -22,14 +22,14 @@ class VideoContent(SourceContent):
             self.get_video(), self._get_offset())
 
     def parse_file(self) -> list[JapaneseContent]:
-        input_file = self._get_subtitles()
+        input_file = self.get_subtitles()
         data = []
         with open(input_file) as f:
             data = f.readlines()
 
         time_pattern = re.compile(
-            r'(\d{2}:\d{2}:\d{2}[,.]\d{3}) --> (\d{2}:\d{2}:\d{2}[,.]\d{3})')
-
+            r'((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})'
+        )
         build_sentence: list[str] | None = None
         timestamp: Timestamp = None
         counter = 0
@@ -52,7 +52,7 @@ class VideoContent(SourceContent):
 
             ts = time_pattern.match(line)
             if ts:
-                timestamp = Timestamp(ts.group(1), ts.group(2))
+                timestamp = Timestamp(ts.group(1), ts.group(3))
                 continue
             if not line.strip() or line[0].isdigit():
                 continue
@@ -133,7 +133,7 @@ class VideoContent(SourceContent):
             ffmpeg.input(subtitles_path).output(
                 vtt_path, format="webvtt").run(overwrite_output=True)
             logger.debug(f"Conversion successful: {vtt_path}")
-            os.remove(subtitles_path)
+            # os.remove(subtitles_path)
             # Update the subtitles attribute to point to the new .vtt file
             return os.path.basename(vtt_path)
         except ffmpeg.Error as e:
