@@ -4,12 +4,20 @@ interface VideoPlayerProps {
     source: string;
 }
 
+interface Subtitle {
+    start: number;
+    end: number;
+    text: string;
+}
+
 const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
     const [progress, setProgress] = useState(0); // State to track video progress
     const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
     const [videoUrl, setVideoUrl] = useState<string | null>(null); // State to store the video URL
     const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
+    const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
+    const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
@@ -19,6 +27,63 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
         const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
         setSubtitleUrl(subtitleApiUrl);
     }, [source]);
+
+    useEffect(() => {
+        // Fetch and parse subtitles
+        if (subtitleUrl) {
+            fetch(subtitleUrl)
+                .then((response) => response.text())
+                .then((data) => {
+                    const parsedSubtitles = parseVTT(data);
+                    setSubtitles(parsedSubtitles);
+                });
+        }
+    }, [subtitleUrl]);
+
+    const parseVTT = (data: string): Subtitle[] => {
+        const lines = data.split("\n");
+        const subtitles: Subtitle[] = [];
+        let start = 0;
+        let end = 0;
+        let text = "";
+
+        lines.forEach((line, index) => {
+            const timeMatch = line.match(
+                /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/
+            );
+            if (timeMatch) {
+                start = parseTime(timeMatch[1]); // Start timestamp
+                end = parseTime(timeMatch[3]); // End timestamp
+                text = lines[index + 1]; // Subtitle text is usually on the next line
+                subtitles.push({ start, end, text });
+            }
+        });
+
+        return subtitles;
+    };
+
+    const parseTime = (time: string): number => {
+        const parts = time.split(":");
+        let hours = "0";
+        let minutes = "0";
+        let seconds = "0.0";
+
+        if (parts.length === 3) {
+            // Format: HH:MM:SS.mmm
+            [hours, minutes, seconds] = parts;
+        } else if (parts.length === 2) {
+            // Format: MM:SS.mmm (no hours)
+            [minutes, seconds] = parts;
+        }
+
+        const [secs, millis] = seconds.split(".");
+        return (
+            parseInt(hours) * 3600 +
+            parseInt(minutes) * 60 +
+            parseInt(secs) +
+            parseFloat(`0.${millis}`)
+        );
+    };
 
     const handlePlayPause = () => {
         if (videoRef.current) {
@@ -36,6 +101,13 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
             const currentTime = videoRef.current.currentTime;
             const duration = videoRef.current.duration;
             setProgress((currentTime / duration) * 100);
+
+            // Update the current subtitle
+            const current = subtitles.find(
+                (subtitle) =>
+                    currentTime >= subtitle.start && currentTime <= subtitle.end
+            );
+            setCurrentSubtitle(current ? current.text : "");
         }
     };
 
@@ -49,27 +121,20 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
 
     return (
         <div className="video-player">
-            {videoUrl ? (
-                <video
-                    ref={videoRef}
-                    src={videoUrl}
-                    className="video-element"
-                    onTimeUpdate={handleProgress}
-                    controls
-                >
-                    {subtitleUrl && (
-                        <track
-                            src={subtitleUrl}
-                            kind="subtitles"
-                            srcLang="ja"
-                            label="Japanese"
-                            default
-                        />
-                    )}
-                </video>
-            ) : (
-                <p>Loading video...</p>
-            )}
+            <div className="video-container">
+                {videoUrl ? (
+                    <video
+                        ref={videoRef}
+                        src={videoUrl}
+                        className="video-element"
+                        onTimeUpdate={handleProgress}
+                        controls
+                    />
+                ) : (
+                    <p>Loading video...</p>
+                )}
+                <div className="subtitle-container">{currentSubtitle}</div>
+            </div>
             <div className="video-controls">
                 <button onClick={handlePlayPause} className="play-pause-button">
                     {isPlaying ? "Pause" : "Play"}

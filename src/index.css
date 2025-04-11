@@ -126,6 +126,16 @@ input[type="number"] {
   margin-bottom: 1em;
 }
 
+.subtitle-container {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5em;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
 /* Video Player Container */
 .video-player {
   display: flex;
@@ -179,4 +189,11 @@ input[type="number"] {
 .progress-text {
   font-size: 1em;
   color: #333;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 50em;
+  margin: 0 auto; /* Center the video container */
 }
