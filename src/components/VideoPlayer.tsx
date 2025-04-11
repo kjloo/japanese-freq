@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
+import axios from "axios";
 
 interface VideoPlayerProps {
     source: string;
@@ -31,11 +32,14 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     useEffect(() => {
         // Fetch and parse subtitles
         if (subtitleUrl) {
-            fetch(subtitleUrl)
-                .then((response) => response.text())
-                .then((data) => {
-                    const parsedSubtitles = parseVTT(data);
+            axios
+                .get(subtitleUrl, { responseType: "text" }) // Specify response type as text
+                .then((response) => {
+                    const parsedSubtitles = parseVTT(response.data);
                     setSubtitles(parsedSubtitles);
+                })
+                .catch((error) => {
+                    console.error("Error fetching subtitles:", error);
                 });
         }
     }, [subtitleUrl]);
@@ -119,6 +123,31 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
         }
     };
 
+    const styleSubtitle = (subtitle: string): JSX.Element => {
+        const knownWords = ["example", "highlight", "video"]; // Replace with your known words
+        const words = subtitle.split(" ");
+
+        return (
+            <>
+                {words.map((word, index) => {
+                    const isKnown = knownWords.includes(word.toLowerCase());
+                    return (
+                        <span
+                            key={index}
+                            style={{
+                                color: isKnown ? "#0b6fb3" : "inherit", // Highlight known words in red
+                                fontWeight: isKnown ? "bold" : "normal", // Make known words bold
+                            }}
+                        >
+                            {word}
+                            {index < words.length - 1 && " "} {/* Add space between words */}
+                        </span>
+                    );
+                })}
+            </>
+        );
+    };
+
     return (
         <div className="video-player">
             <div className="video-container">
@@ -133,7 +162,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
                 ) : (
                     <p>Loading video...</p>
                 )}
-                <div className="subtitle-container">{currentSubtitle}</div>
+                <div className="subtitle-container">{styleSubtitle(currentSubtitle)}</div>
             </div>
             <div className="video-controls">
                 <button onClick={handlePlayPause} className="play-pause-button">
