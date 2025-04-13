@@ -23,11 +23,15 @@ stop:
 
 .PHONY: server-run
 server-run:
-	cp -r input app/input
-	cp -r output app/output
-	cp -r dictionaries app/dictionaries
-	cp .ignorelist.json app/.ignorelist.json
-	cd app; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 main:app
+	cp -r input server/input
+	cp -r output server/output
+	cp -r dictionaries server/dictionaries
+	cp .ignorelist.json server/.ignorelist.json
+	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
+
+.PHONY: server-test
+server-test:
+	PYTHONPATH=. pytest
 
 .PHONY: client-run
 client-run:

@@ -9,3 +9,4 @@ flask-socketio==5.5.1
 eventlet==0.39.1
 pylint==3.3.6
 mecab-python3==1.0.10
+pytest==8.3.5
