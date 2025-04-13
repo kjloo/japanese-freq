@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 import threading
 
 from service import frequency_service
-from module.logging import logger
+from module.logging_module import logger
 from model.process_settings import ProcessSettings
 
 # Blueprint for routes

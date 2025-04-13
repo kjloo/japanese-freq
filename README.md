@@ -8,36 +8,11 @@ Be sure to have MeCab installed on the machine where the code will be running.
 
 ### Mac
 
+1. Install MeCab
+
 ```shell
 brew install mecab
-```
-
-## Run Locally
-
-1. Install python 3.12
-
-```shell
-brew install python@3.12
-```
-
-2. Install pipenv
-
-```shell
-pip install pipenv
-```
-
-3. Install dependencies
-
-```shell
-sudo apt-get install mecab libmecab-dev mecab-ipadic-utf8
-pipenv install
-npm install
-```
-
-4. Run program
-
-```shell
-pipenv run main -s res/example_sub.srt
+brew install mecab-ipadic
 ```
 
 ## Setup Inputs and Ignorelist
@@ -64,6 +39,48 @@ cat .ignorelist.example > .ignorelist.json
 
 ```shell
 cp .env.example .env
+```
+
+## Run Server Locally
+
+1. Install python 3.12
+
+```shell
+brew install python@3.12
+```
+
+2. Setup virtual python env
+
+```shell
+python3.12 -m venv .venv
+source ./.venv/bin/activate
+```
+
+3. Install dependencies
+
+```shell
+pip install -r requirements.txt
+python -m unidic download
+```
+
+4. Run program
+
+```shell
+make server-run
+```
+
+## Run Client Locally
+
+1. Install dependencies
+
+```shell
+npm install
+```
+
+2. Run client
+
+```shell
+make client-run
 ```
 
 ## Run with Docker

@@ -1,1 +1,5 @@
 __pycache__
+app/input
+app/output
+app/dictionaries
+app/.ignorelist.json
