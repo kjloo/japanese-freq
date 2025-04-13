@@ -1,23 +1,15 @@
 from collections import defaultdict
-import fugashi
 
 from service import io_service
 from service import word_service
 from model.process_settings import ProcessSettings
 from model.content.source_content import SourceContent
 from model.japanese_content import JapaneseContent
-from model.dictionary import Dictionary
 from model.progress import Progress
 from module.socket_module import socketio
 from module.file_module import file_manager
 from module.logging_module import logger
-
-# wakati = fugashi.Tagger("-Owakati")
-wakati = fugashi.Tagger()
-dictionary = Dictionary('dictionaries/jmdict_english.zip')
-
-# Ignore these parts of speech [Auxillary Verbs, Punctuation, Particle]
-IGNORE_POS = ["助動詞", "補助記号", "助詞"]
+from module.dictionary_module import dictionary, wakati, IGNORE_POS
 
 
 def process_words(process_settings: ProcessSettings):
@@ -95,15 +87,3 @@ def _analyze_content(
     sorted_word_freq = dict(
         sorted(filtered_word_freq.items(), key=lambda item: item[1]["frequency"], reverse=True))
     return sorted_word_freq
-
-
-def _debug():
-    text = "お腹空いたらたくさん食べられる。"
-    print(wakati(text))
-    for word in wakati(text):
-        print("################# %s #####################" % word)
-        l = []
-        for attr in dir(word.feature):
-            if not callable(getattr(word.feature, attr)) and not attr.startswith("_"):
-                l.append(f"{attr}: {getattr(word.feature, attr)}")
-        print(','.join(l))
