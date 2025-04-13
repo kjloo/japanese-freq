@@ -3,6 +3,7 @@ import axios from "axios";
 
 interface VideoPlayerProps {
     source: string;
+    settings: Record<string, any>;
 }
 
 interface Subtitle {
@@ -11,7 +12,7 @@ interface Subtitle {
     text: string;
 }
 
-const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
+const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) => {
     const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
     const [progress, setProgress] = useState(0); // State to track video progress
     const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
@@ -34,9 +35,9 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
         // Fetch and parse subtitles along with ignored words
         if (subtitleUrl) {
             axios
-                .get(subtitleUrl)
+                .post(subtitleUrl, settings)
                 .then((response) => {
-                    const { subtitles: subtitleContent, ignored_words: ignoredWordsArray } = response.data;
+                    const { content: contentDict, subtitles: subtitleContent, ignored_words: ignoredWordsArray } = response.data;
 
                     // Parse the subtitle content
                     const parsedSubtitles = parseVTT(subtitleContent);
