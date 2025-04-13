@@ -2,7 +2,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
 interface ProcessSettingsProps {
-    onVideo: (video: string) => void;
+    onVideo: (video: string, settings: Record<string, any>) => void;
     onProcess: () => void;
     onCancel: () => void;
 }
@@ -40,7 +40,13 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
     const handlePlayVideo = () => {
         if (selectedInputs.length > 0) {
             const video = selectedInputs[0]; // Use the first element in selectedInputs
-            onVideo(video); // Pass the selected video to the parent
+            onVideo(video, {
+                inputs: selectedInputs,
+                word_check: wordCheck,
+                freq_min: freqMin,
+                requires_definition: requiresDefinition,
+                min_word_length: minWordLength,
+            }); // Pass the selected video to the parent
         } else {
             console.error('No video selected. Please select an input.');
         }

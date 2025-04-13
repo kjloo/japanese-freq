@@ -22,6 +22,7 @@ const Start: FunctionComponent<StartProps> = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [videoSource, setVideoSource] = useState<string | null>(null); // State to store the selected video source
+    const [settings, setSettings] = useState<Record<string, any>>({});
 
     useEffect(() => {
         socket.on('progress', (data) => {
@@ -32,14 +33,17 @@ const Start: FunctionComponent<StartProps> = () => {
         });
 
         socket.on('word_check_complete', () => {
-            setViewState(ViewState.Welcome);
+            // Hack
+            if (viewState !== ViewState.VideoPlayer) {
+                setViewState(ViewState.Welcome);
+            }
         });
 
         return () => {
             socket.off('progress');
             socket.off('word_check_complete');
         };
-    }, []);
+    }, [viewState]);
 
     const startProcess = () => {
         setIsLoading(true);
@@ -59,8 +63,9 @@ const Start: FunctionComponent<StartProps> = () => {
         setViewState(ViewState.Welcome); // Reset to Welcome if canceled
     };
 
-    const handleVideoPlayerClick = (source: string) => {
+    const handleVideoPlayerClick = (source: string, settings: Record<string, any>) => {
         setViewState(ViewState.VideoPlayer);
+        setSettings(settings);
         setVideoSource(source);
     };
 
@@ -75,7 +80,7 @@ const Start: FunctionComponent<StartProps> = () => {
             ) : viewState === ViewState.WordCheckForm ? (
                 <WordCheckForm />
             ) : viewState === ViewState.VideoPlayer && videoSource ? (
-                <VideoPlayer source={videoSource} /> // Pass the selected video source to VideoPlayer
+                <VideoPlayer source={videoSource} settings={settings} /> // Pass the selected video source to VideoPlayer
             ) : (
                 <WelcomeCard
                     isLoading={isLoading}
