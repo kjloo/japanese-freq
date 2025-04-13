@@ -19,6 +19,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
     const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
+    const [ignoredWords, setIgnoredWords] = useState<Set<string>>(new Set()); // State to store ignored words as a Set
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
@@ -30,13 +31,19 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     }, [source]);
 
     useEffect(() => {
-        // Fetch and parse subtitles
+        // Fetch and parse subtitles along with ignored words
         if (subtitleUrl) {
             axios
-                .get(subtitleUrl, { responseType: "text" }) // Specify response type as text
+                .get(subtitleUrl)
                 .then((response) => {
-                    const parsedSubtitles = parseVTT(response.data);
+                    const { subtitles: subtitleContent, ignored_words: ignoredWordsArray } = response.data;
+
+                    // Parse the subtitle content
+                    const parsedSubtitles = parseVTT(subtitleContent);
                     setSubtitles(parsedSubtitles);
+
+                    // Store ignored words in a Set
+                    setIgnoredWords(new Set(ignoredWordsArray));
                 })
                 .catch((error) => {
                     console.error("Error fetching subtitles:", error);
@@ -44,22 +51,29 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
         }
     }, [subtitleUrl]);
 
-    const parseVTT = (data: string): Subtitle[] => {
-        const lines = data.split("\n");
+    const parseVTT = (data: string[]): Subtitle[] => {
         const subtitles: Subtitle[] = [];
         let start = 0;
         let end = 0;
         let text = "";
 
-        lines.forEach((line, index) => {
+        data.forEach((line, index) => {
+            // Skip empty lines or metadata like "WEBVTT"
+            if (!line.trim() || line.trim() === "WEBVTT") {
+                return;
+            }
+
+            // Match timestamp lines
             const timeMatch = line.match(
                 /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/
             );
             if (timeMatch) {
                 start = parseTime(timeMatch[1]); // Start timestamp
                 end = parseTime(timeMatch[3]); // End timestamp
-                text = lines[index + 1]; // Subtitle text is usually on the next line
-                subtitles.push({ start, end, text });
+                text = data[index + 1]?.trim() || ""; // Subtitle text is usually on the next line
+                if (text) {
+                    subtitles.push({ start, end, text });
+                }
             }
         });
 
@@ -124,19 +138,18 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source }) => {
     };
 
     const styleSubtitle = (subtitle: string): JSX.Element => {
-        const knownWords = ["example", "highlight", "video"]; // Replace with your known words
         const words = subtitle.split(" ");
 
         return (
             <>
                 {words.map((word, index) => {
-                    const isKnown = knownWords.includes(word.toLowerCase());
+                    const isIgnored = ignoredWords.has(word.toLowerCase());
                     return (
                         <span
                             key={index}
                             style={{
-                                color: isKnown ? "#0b6fb3" : "inherit", // Highlight known words in red
-                                fontWeight: isKnown ? "bold" : "normal", // Make known words bold
+                                color: isIgnored ? "#0b6fb3" : "inherit", // Highlight ignored words
+                                fontWeight: isIgnored ? "bold" : "normal", // Make ignored words bold
                             }}
                         >
                             {word}

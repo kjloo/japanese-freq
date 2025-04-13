@@ -1,9 +1,12 @@
-from flask import Response, request
+from flask import Response, request, jsonify
 import os
 import re
 
 from module.file_module import file_manager
 from model.content.video_content import VideoContent
+from model.process_settings import ProcessSettings
+from service import word_service
+from service import frequency_service
 
 # Map of file extensions to Content-Type
 CONTENT_TYPE_MAP = {
@@ -67,19 +70,31 @@ def generate(source: str) -> Response:
     return response
 
 
-def generate_subtitles(source: str) -> Response:
+def generate_subtitles(source: str, process_settings: ProcessSettings) -> Response:
     """
-    Serve subtitles for a video file.
+    Serve subtitles for a video file along with the list of ignored words.
     """
     video_content: VideoContent = file_manager.get_video_by_name(source)
     subtitles_path = video_content.get_subtitles()
+    ignore_list: set[str] = word_service.get_ignore_list()
 
     if not os.path.exists(subtitles_path):
         raise FileNotFoundError(f"Subtitles file {source} not found")
 
+    # Read the subtitle file content
     def read_subtitle_file(subtitles_path):
         with open(subtitles_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                yield line
+            return f.readlines()
 
-    return Response(read_subtitle_file(subtitles_path), content_type="text/vtt")
+    subtitle_content: list[str] = read_subtitle_file(subtitles_path)
+
+    content_dict = frequency_service.process_video(process_settings)
+
+    # Construct the JSON response
+    response_payload = {
+        "content": content_dict,
+        "subtitles": subtitle_content,
+        "ignored_words": list(ignore_list)
+    }
+
+    return jsonify(response_payload)
