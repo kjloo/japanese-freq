@@ -82,8 +82,7 @@ def _analyze_content(content: list[JapaneseContent], ignore_list: set[str], freq
                     sd = dictionary.short_lookup(word)
                     word_freq[word]["definition"] = sd.to_dict(
                     ) if sd else False
-
-                word_freq[word]["content"].append(c)
+                word_freq[word]["content"].append(c.to_dict())
 
     filtered_word_freq = {w: word_freq[w] for w in word_freq if word_freq[w]["frequency"] >= freq_min and (
         not requires_definition or bool(word_freq[w]["definition"]))}
