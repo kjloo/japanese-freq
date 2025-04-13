@@ -20,3 +20,15 @@ run:
 .PHONY: stop
 stop:
 	docker compose down
+
+.PHONY: server-run
+server-run:
+	cp -r input app/input
+	cp -r output app/output
+	cp -r dictionaries app/dictionaries
+	cp .ignorelist.json app/.ignorelist.json
+	cd app; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 main:app
+
+.PHONY: client-run
+client-run:
+	npm run dev

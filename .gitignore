@@ -1,5 +1,9 @@
 .DS_Store
 
+# Python Cache
+__pycache__/
+*.py[cod]
+
 # Logs
 logs
 *.log
@@ -141,3 +145,9 @@ data/
 input/
 output/
 .ignorelist.json
+
+# Staging
+app/input
+app/output
+app/.ignorelist.json
+app/directories

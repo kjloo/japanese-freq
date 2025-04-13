@@ -2,7 +2,7 @@ import ffmpeg
 import re
 import os
 from model.content.source_content import SourceContent
-from model.freq_enum import FileType
+from model.frequency.freq_enum import FileType
 from collections import namedtuple
 from model.japanese_content import JapaneseContent, Timestamp
 from collections import defaultdict
@@ -72,7 +72,7 @@ class VideoContent(SourceContent):
             for jc in content_dict[word]["content"]:
                 if DOWNLOAD_MEDIA:
                     self._extract(
-                        jc["start_time"], jc["end_time"], jc["audio"])
+                        jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
 
             rc[word]["frequency"] = content_dict[word]["frequency"]
             rc[word]["definition"] = content_dict[word]["definition"]

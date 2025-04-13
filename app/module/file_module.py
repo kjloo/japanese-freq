@@ -1,3 +1,5 @@
+import os
+
 from model.file_manager import FileManager
 
 input_dir: str = 'input'

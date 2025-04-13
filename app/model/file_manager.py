@@ -2,7 +2,7 @@ import os
 from model.content.video_content import VideoContent
 from model.content.text_content import TextContent
 from model.content.source_content import SourceContent
-from model.freq_enum import FileType
+from model.frequency.freq_enum import FileType
 
 
 class FileManager:
