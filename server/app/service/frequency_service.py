@@ -9,7 +9,8 @@ from app.model.progress import Progress
 from app.module.socket_module import socketio
 from app.module.file_module import file_manager
 from app.module.logging_module import logger
-from app.module.dictionary_module import dictionary, wakati, IGNORE_POS
+from app.module.dictionary_module import dictionary
+from app.service import subtitle_service
 
 
 def process_words(process_settings: ProcessSettings):
@@ -68,10 +69,7 @@ def _analyze_content(
     word_freq = defaultdict(
         lambda: {"frequency": 0, "definition": None, "content": []})
     for c in content:
-        for word_content in wakati(c.sentence):
-            if word_content.feature.pos1 in IGNORE_POS:
-                continue
-            word = word_content.feature.orthBase
+        for word in subtitle_service.get_base_words(c.content):
             if word is None:
                 continue
             if len(word) >= min_word_length and word not in ignore_list:
