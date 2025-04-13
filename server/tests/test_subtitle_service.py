@@ -1,64 +1,35 @@
+from unittest import mock
 import pytest
-from unittest.mock import patch, MagicMock
-# from fugashi import TaggedToken
 
-from app.service.subtitle_service import style_subtitles, get_subtitle_words, get_base_words
+from app.service.subtitle_service import style_subtitles, get_base_words
 
 
-@pytest.fixture
-def mock_ignore_list():
-    return {"ignored_word"}
-
-
-@pytest.fixture
-def mock_ignore_pos():
-    return {"助詞"}
-
-
-@patch("app.service.subtitle_service.word_service.get_ignore_list")
-@patch("app.service.subservice.IGNORE_POS", {"助詞"})
-@patch("app.service.subtitle_service.wakati")
-def test_style_subtitles(mock_wakati, mock_get_ignore_list, mock_ignore_list):
-    mock_get_ignore_list.return_value = mock_ignore_list
-    mock_wakati.return_value = [
-        MagicMock(content="new_word", feature=MagicMock(
-            orthBase="new_word", pos1="名詞")),
-        MagicMock(content="ignored_word", feature=MagicMock(
-            orthBase="ignored_word", pos1="名詞")),
-        MagicMock(content="は", feature=MagicMock(orthBase="は", pos1="助詞")),
-    ]
-
-    line = "new_word ignored_word は"
+@pytest.mark.parametrize(
+    "line, ignore_list, expected",
+    [
+        ("赤いリンゴが好きです。", {"好き", "飲む", "りんご"},
+         "<span class='new-word'>赤い</span><span class='new-word'>リンゴ</span>が好きです。"),
+        ("青い空が綺麗です。", {
+         "綺麗"}, "<span class='new-word'>青い</span><span class='new-word'>空</span>が綺麗です。"),
+        ("美味しいりんごを食べている。", {
+         "食べる", "いる"}, "<span class='new-word'>美味しい</span><span class='new-word'>りんご</span>を食べている。"),
+    ],
+)
+@mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
+def test_style_subtitles(mock_ignore_list, line, ignore_list, expected):
+    mock_ignore_list.return_value = ignore_list
     styled_line = style_subtitles(line)
-
-    assert styled_line == "<span class='new-word'>new_word</span> ignored_word は"
-
-
-@patch("app.service.subtitle_service.wakati")
-def test_get_subtitle_words(mock_wakati):
-    mock_wakati.return_value = [
-        MagicMock(content="word1"),
-        MagicMock(content="word2"),
-    ]
-
-    sentence = "word1 word2"
-    words = list(get_subtitle_words(sentence))
-
-    assert len(words) == 2
-    assert words[0].content == "word1"
-    assert words[1].content == "word2"
+    assert styled_line == expected
 
 
-@patch("app.service.subtitle_service.wakati")
-@patch("app.service.subservice.IGNORE_POS", {"助詞"})
-def test_get_base_words(mock_wakati):
-    mock_wakati.return_value = [
-        MagicMock(feature=MagicMock(orthBase="base_word1", pos1="名詞")),
-        MagicMock(feature=MagicMock(orthBase="base_word2", pos1="助詞")),
-    ]
-
-    sentence = "word1 word2"
+@mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
+def test_get_base_words(mock_ignore_list):
+    mock_ignore_list.return_value = set(["物", "会う"])
+    sentence = "彼が「明日、公園で会いましょう！」と言った。"
     base_words = list(get_base_words(sentence))
 
-    assert len(base_words) == 1
-    assert base_words[0] == "base_word1"
+    assert len(base_words) == 4
+    assert base_words[0] == "彼"
+    assert base_words[1] == "明日"
+    assert base_words[2] == "公園"
+    assert base_words[3] == "言う"
