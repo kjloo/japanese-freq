@@ -72,12 +72,11 @@ class VideoContent(SourceContent):
             for jc in content_dict[word]["content"]:
                 if DOWNLOAD_MEDIA:
                     self._extract(
-                        jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
+                        jc["start_time"], jc["end_time"], jc["audio"])
 
             rc[word]["frequency"] = content_dict[word]["frequency"]
             rc[word]["definition"] = content_dict[word]["definition"]
-            rc[word]["sentences"] = [jc.to_dict()
-                                     for jc in content_dict[word]["content"]]
+            rc[word]["sentences"] = [jc for jc in content_dict[word]["content"]]
 
         return rc
 

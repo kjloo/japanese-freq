@@ -20,6 +20,10 @@ class ProcessSettings:
         self.requires_definition = json_data.get("requires_definition", False)
         self.min_word_length = json_data.get("min_word_length", 1)
 
+    def with_word_check(self, word_check: bool):
+        self.word_check = word_check
+        return self
+
     def __repr__(self):
         return (f"ProcessSettings(inputs={self.inputs}, "
                 f"word_check={self.word_check}, "

@@ -33,14 +33,17 @@ const Start: FunctionComponent<StartProps> = () => {
         });
 
         socket.on('word_check_complete', () => {
-            setViewState(ViewState.Welcome);
+            // Hack
+            if (viewState !== ViewState.VideoPlayer) {
+                setViewState(ViewState.Welcome);
+            }
         });
 
         return () => {
             socket.off('progress');
             socket.off('word_check_complete');
         };
-    }, []);
+    }, [viewState]);
 
     const startProcess = () => {
         setIsLoading(true);

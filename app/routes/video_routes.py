@@ -26,6 +26,6 @@ def get_subtitles(source) -> Response:
     """
     # Extract the list of inputs from the request body
     data = request.get_json()
-    payload = ProcessSettings(data)
+    payload = ProcessSettings(data).with_word_check(False)
 
     return video_service.generate_subtitles(source, payload)

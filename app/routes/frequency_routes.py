@@ -19,7 +19,7 @@ def start_process():
 
     # Start the processing in a separate thread
     thread = threading.Thread(
-        target=frequency_service.process_inputs, args=(payload))
+        target=frequency_service.process_words, args=(payload,))
     thread.start()
 
     return jsonify({"status": "started"}), 200
