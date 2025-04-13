@@ -7,7 +7,7 @@ from collections import namedtuple
 from model.japanese_content import JapaneseContent, Timestamp
 from collections import defaultdict
 from util.envlookup import DOWNLOAD_MEDIA
-from module.logging import logger
+from module.logging_module import logger
 
 
 VideoData = namedtuple('VideoData', ['subtitles', 'video', 'offset'])

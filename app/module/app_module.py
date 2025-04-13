@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, json
 from serde.encoder import CustomJSONProvider
 from module.socket_module import socketio
-from module.logging import logger
 
 
 # Initialize Flask app

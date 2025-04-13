@@ -1,5 +1,5 @@
 import json
-from module.logging import logger
+from module.logging_module import logger
 from flask.json.provider import DefaultJSONProvider
 
 

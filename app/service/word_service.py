@@ -3,7 +3,7 @@ import json
 import os
 
 from module.socket_module import socketio
-from module.logging import logger
+from module.logging_module import logger
 
 ignore_list_file: str = '.ignorelist'
 ignore_list: set[str] = []

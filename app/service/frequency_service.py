@@ -10,7 +10,7 @@ from model.dictionary import Dictionary
 from model.progress import Progress
 from module.socket_module import socketio
 from module.file_module import file_manager
-from module.logging import logger
+from module.logging_module import logger
 
 # wakati = fugashi.Tagger("-Owakati")
 wakati = fugashi.Tagger()

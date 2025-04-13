@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, jsonify
-from module.logging import logger
+from module.logging_module import logger
 
 # Blueprint for routes
 debug_routes = Blueprint('debug_routes', __name__)
@@ -12,7 +12,7 @@ class Foo:
         self.c: dict[int, str] = {1: "one", 2: "two"}
 
     def to_dict(self):
-        logger.info("Converting Foo to JSON")
+        logger.debug("Converting Foo to JSON")
         return {
             "a": self.a,
             "b": self.b,
@@ -22,6 +22,6 @@ class Foo:
 
 @debug_routes.route("/api/debug/serde", methods=["GET"])
 def get_inputs() -> Response:
-    logger.info("Received request for /api/debug/serde")
+    logger.debug("Received request for /api/debug/serde")
     foo = Foo()
     return jsonify(foo)
