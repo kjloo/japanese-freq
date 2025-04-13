@@ -150,4 +150,4 @@ output/
 app/input
 app/output
 app/.ignorelist.json
-app/directories
+app/dictionaries
