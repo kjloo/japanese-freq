@@ -31,7 +31,7 @@ server-run:
 
 .PHONY: server-test
 server-test:
-	PYTHONPATH=. pytest
+	cd server; pytest
 
 .PHONY: client-run
 client-run:
