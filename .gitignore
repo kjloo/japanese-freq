@@ -148,7 +148,7 @@ output/
 .ignorelist.json
 
 # Staging
-app/input
-app/output
-app/.ignorelist.json
-app/dictionaries
+server/input
+server/output
+server/.ignorelist.json
+server/dictionaries
