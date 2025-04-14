@@ -5,7 +5,19 @@ from app.module.dictionary_module import wakati, IGNORE_POS
 from app.service import word_service
 
 
-def style_subtitles(line: str) -> str:
+def style_subtitles(subtitles: list[str]) -> list[str]:
+    styled_subtitles = []
+    for line in subtitles:
+        # Ignore empty lines, title lines, and timestamp lines
+        if not line.strip() or line.startswith("WEBVTT") or line.startswith("Kind:") or line.startswith("Language:") or "-->" in line:
+            styled_subtitles.append(line)
+            continue
+        styled_line = _style_subtitle(line)
+        styled_subtitles.append(styled_line)
+    return styled_subtitles
+
+
+def _style_subtitle(line: str) -> str:
     for word_content in _get_subtitle_words(line):
         if _filter_word(word_content):
             continue

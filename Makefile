@@ -34,7 +34,7 @@ server-run: server-setup
 
 .PHONY: server-test
 server-test: server-setup
-	cd server; pytest
+	cd server; pytest -vv
 
 .PHONY: client-run
 client-run:
