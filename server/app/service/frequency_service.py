@@ -69,7 +69,7 @@ def _analyze_content(
     word_freq = defaultdict(
         lambda: {"frequency": 0, "definition": None, "content": []})
     for c in content:
-        for word in subtitle_service.get_base_words(c.content):
+        for word in subtitle_service.get_base_words(c.sentence):
             if word is None:
                 continue
             if len(word) >= min_word_length and word not in ignore_list:

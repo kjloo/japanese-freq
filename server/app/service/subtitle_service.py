@@ -3,6 +3,7 @@ from fugashi.fugashi import UnidicNode
 
 from app.module.dictionary_module import wakati, IGNORE_POS
 from app.service import word_service
+from app.module.logging_module import logger
 
 
 def style_subtitles(subtitles: list[str]) -> list[str]:
@@ -19,7 +20,10 @@ def style_subtitles(subtitles: list[str]) -> list[str]:
 
 def _style_subtitle(line: str) -> str:
     for word_content in _get_subtitle_words(line):
-        if _filter_word(word_content):
+        if _filter_word(word_content) or word_content is None:
+            continue
+        if word_content.feature.orth is None:
+            logger.warning(f"Word content has no orth: {word_content}")
             continue
         line = line.replace(
             word_content.feature.orth, f"<span class='new-word'>{word_content.feature.orth}</span>")
