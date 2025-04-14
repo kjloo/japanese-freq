@@ -1,8 +1,9 @@
+from collections import defaultdict
 import os
 import re
-from model.content.source_content import SourceContent
-from model.japanese_content import JapaneseContent
-from collections import defaultdict
+
+from app.model.content.source_content import SourceContent
+from app.model.japanese_content import JapaneseContent
 
 
 class TextContent(SourceContent):

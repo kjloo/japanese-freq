@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, Response
+from flask import Blueprint, render_template, jsonify
 
 # Blueprint for routes
 admin_routes = Blueprint('admin_routes', __name__)

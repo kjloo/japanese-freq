@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import os
-from model.japanese_content import JapaneseContent
+
+from app.model.japanese_content import JapaneseContent
 
 
 class SourceContent:

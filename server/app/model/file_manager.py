@@ -1,8 +1,9 @@
 import os
-from model.content.video_content import VideoContent
-from model.content.text_content import TextContent
-from model.content.source_content import SourceContent
-from model.frequency.freq_enum import FileType
+
+from app.model.content.video_content import VideoContent
+from app.model.content.text_content import TextContent
+from app.model.content.source_content import SourceContent
+from app.model.frequency.freq_enum import FileType
 
 
 class FileManager:

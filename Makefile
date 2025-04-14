@@ -21,13 +21,20 @@ run:
 stop:
 	docker compose down
 
+.PHONY: server-setup
+server-setup:
+	cp -r input server/input
+	cp -r output server/output
+	cp -r dictionaries server/dictionaries
+	cp .ignorelist.json server/.ignorelist.json
+
 .PHONY: server-run
-server-run:
-	cp -r input app/input
-	cp -r output app/output
-	cp -r dictionaries app/dictionaries
-	cp .ignorelist.json app/.ignorelist.json
-	cd app; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 main:app
+server-run: server-setup
+	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
+
+.PHONY: server-test
+server-test: server-setup
+	cd server; pytest -vv
 
 .PHONY: client-run
 client-run:

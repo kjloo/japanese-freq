@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from service import io_service
+from app.service import io_service
 
 # Blueprint for routes
 io_routes = Blueprint('io_routes', __name__)

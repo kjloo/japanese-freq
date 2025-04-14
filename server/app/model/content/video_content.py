@@ -1,13 +1,13 @@
+from collections import namedtuple, defaultdict
 import ffmpeg
 import re
 import os
-from model.content.source_content import SourceContent
-from model.frequency.freq_enum import FileType
-from collections import namedtuple
-from model.japanese_content import JapaneseContent, Timestamp
-from collections import defaultdict
-from util.envlookup import DOWNLOAD_MEDIA
-from module.logging_module import logger
+
+from app.model.content.source_content import SourceContent
+from app.model.frequency.freq_enum import FileType
+from app.model.japanese_content import JapaneseContent, Timestamp
+from app.util.envlookup import DOWNLOAD_MEDIA
+from app.module.logging_module import logger
 
 
 VideoData = namedtuple('VideoData', ['subtitles', 'video', 'offset'])

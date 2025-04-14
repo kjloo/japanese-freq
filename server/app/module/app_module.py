@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, json
-from serde.encoder import CustomJSONProvider
-from module.socket_module import socketio
+from flask import Flask
+
+from app.serde.encoder import CustomJSONProvider
+from app.module.socket_module import socketio
 
 
 # Initialize Flask app

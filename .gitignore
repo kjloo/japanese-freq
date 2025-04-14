@@ -3,6 +3,7 @@
 # Python Cache
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # Logs
 logs
@@ -147,7 +148,7 @@ output/
 .ignorelist.json
 
 # Staging
-app/input
-app/output
-app/.ignorelist.json
-app/dictionaries
+server/input
+server/output
+server/.ignorelist.json
+server/dictionaries

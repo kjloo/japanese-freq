@@ -6,6 +6,7 @@ FROM node:latest AS client-builder
 WORKDIR /app
 
 # Copy client files
+# TODO: change to client and don't copy what isn't needed
 COPY ./src /app
 COPY . /app
 
@@ -40,10 +41,10 @@ RUN python -m unidic download
 ENV MECABRC=/usr/local/etc/mecabrc
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /server
 
 # Copy scripts
-COPY ./app /app
+COPY ./server/app /server/app
 
 # Copy the built client files from the client stage
 COPY --from=client-builder /app/dist /app/static
@@ -52,4 +53,4 @@ COPY --from=client-builder /app/dist /app/static
 EXPOSE 5000
 
 # Run the app with Gunicorn
-CMD ["gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:5000", "main:app"]
+CMD ["gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:5000", "app.main:app"]

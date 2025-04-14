@@ -1,7 +1,7 @@
 import json
 
-from module.file_module import file_manager
-from serde.encoder import CustomJSONEncoder
+from app.module.file_module import file_manager
+from app.serde.encoder import CustomJSONEncoder
 
 
 def get_inputs() -> list[str]:

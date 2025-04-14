@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 import threading
 
-from service import frequency_service
-from module.logging_module import logger
-from model.process_settings import ProcessSettings
+from app.service import frequency_service
+from app.module.logging_module import logger
+from app.model.process_settings import ProcessSettings
 
 # Blueprint for routes
 frequency_routes = Blueprint('frequency_routes', __name__)

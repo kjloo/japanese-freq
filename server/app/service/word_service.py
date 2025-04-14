@@ -1,16 +1,9 @@
 from threading import Event
 import json
-import os
 
-from module.socket_module import socketio
-from module.logging_module import logger
-
-ignore_list_file: str = '.ignorelist'
-ignore_list: set[str] = []
-
-if os.path.exists(ignore_list_file):
-    with open(ignore_list_file, 'r') as f:
-        ignore_list = set(json.load(f))
+from app.module.socket_module import socketio
+from app.module.logging_module import logger
+from app.module.dictionary_module import ignore_list
 
 
 def get_ignore_list() -> set[str]:

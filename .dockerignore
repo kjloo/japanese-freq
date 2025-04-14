@@ -3,3 +3,5 @@ app/input
 app/output
 app/dictionaries
 app/.ignorelist.json
+.pytest_cache
+server/tests

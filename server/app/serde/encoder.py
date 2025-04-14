@@ -1,6 +1,7 @@
-import json
-from module.logging_module import logger
 from flask.json.provider import DefaultJSONProvider
+import json
+
+from app.module.logging_module import logger
 
 
 def _encode_with_to_dict(obj, parent_default):

@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
+import DOMPurify from "dompurify";
 
 interface VideoPlayerProps {
     source: string;
@@ -20,7 +21,6 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
     const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
     const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
-    const [ignoredWords, setIgnoredWords] = useState<Set<string>>(new Set()); // State to store ignored words as a Set
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
@@ -37,14 +37,11 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
             axios
                 .post(subtitleUrl, settings)
                 .then((response) => {
-                    const { content: contentDict, subtitles: subtitleContent, ignored_words: ignoredWordsArray } = response.data;
+                    const { content: contentDict, subtitles: subtitleContent } = response.data;
 
                     // Parse the subtitle content
                     const parsedSubtitles = parseVTT(subtitleContent);
                     setSubtitles(parsedSubtitles);
-
-                    // Store ignored words in a Set
-                    setIgnoredWords(new Set(ignoredWordsArray));
                 })
                 .catch((error) => {
                     console.error("Error fetching subtitles:", error);
@@ -138,29 +135,9 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         }
     };
 
-    const styleSubtitle = (subtitle: string): JSX.Element => {
-        const words = subtitle.split(" ");
-
-        return (
-            <>
-                {words.map((word, index) => {
-                    const isIgnored = ignoredWords.has(word.toLowerCase());
-                    return (
-                        <span
-                            key={index}
-                            style={{
-                                color: isIgnored ? "#0b6fb3" : "inherit", // Highlight ignored words
-                                fontWeight: isIgnored ? "bold" : "normal", // Make ignored words bold
-                            }}
-                        >
-                            {word}
-                            {index < words.length - 1 && " "} {/* Add space between words */}
-                        </span>
-                    );
-                })}
-            </>
-        );
-    };
+    const sanitizedSubtitle = (subtitle: string) => {
+        return DOMPurify.sanitize(subtitle);
+    }
 
     return (
         <div className="video-player">
@@ -176,7 +153,10 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                 ) : (
                     <p>Loading video...</p>
                 )}
-                <div className="subtitle-container">{styleSubtitle(currentSubtitle)}</div>
+                <div
+                    className="subtitle-container"
+                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle) }}
+                ></div>
             </div>
             <div className="video-controls">
                 <button onClick={handlePlayPause} className="play-pause-button">

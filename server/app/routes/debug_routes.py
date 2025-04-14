@@ -1,5 +1,6 @@
 from flask import Blueprint, Response, jsonify
-from module.logging_module import logger
+
+from app.module.logging_module import logger
 
 # Blueprint for routes
 debug_routes = Blueprint('debug_routes', __name__)
