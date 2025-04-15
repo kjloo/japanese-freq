@@ -89,14 +89,14 @@ class VideoContent(SourceContent):
     def _get_offset(self) -> str:
         return os.path.join(self.input_dir, self.video_data.offset)
 
-    def _remove_parentheses(self, text) -> str:
+    def _remove_parentheses(self, text: str) -> str:
         stack = []
         result = []
 
         for char in text:
             if char == '(' or char == '（':
                 stack.append(len(result))
-            elif char == ')' or char == '）' and stack:
+            elif (char == ')' or char == '）') and stack:
                 start = stack.pop()
                 result = result[:start]
             elif not stack:
