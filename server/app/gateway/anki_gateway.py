@@ -1,6 +1,7 @@
 import requests
 
 from app.module.gateway_module import anki_server_url
+from app.module.logging_module import logger
 
 ANKI_VERSION = 6
 
@@ -13,6 +14,7 @@ def post(action: str, params: dict = None) -> dict:
     :return: The response from the Anki server.
     """
     payload = _anki_payload(action, params)
+    logger.info(f"Sending payload to Anki: {payload}")
     response = requests.post(anki_server_url, json=payload)
     if response.status_code != 200:
         raise Exception(
@@ -32,5 +34,5 @@ def _anki_payload(action: str, params: dict = None) -> dict:
         "version": ANKI_VERSION,
     }
     if params:
-        payload.update(params)
+        payload["params"] = params
     return payload

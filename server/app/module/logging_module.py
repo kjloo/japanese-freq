@@ -1,6 +1,6 @@
 import logging
 
 # Set up Flask logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig()
 logger = logging.getLogger('werkzeug')
 logger.setLevel(logging.INFO)
