@@ -21,3 +21,10 @@ def get_models():
 def get_model_fields(model_id: int):
     resp = anki_service.get_model_fields(model_id)
     return resp
+
+
+@anki_routes.route("/api/anki/decks/<int:deck_id>/cards", methods=["GET"])
+def get_cards_in_deck(deck_id: int):
+    field_name = app.config.get("ANKI_FIELD_NAME", "Kanji")
+    resp = anki_service.get_cards_in_deck(deck_id, field_name)
+    return resp
