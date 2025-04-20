@@ -1,3 +1,3 @@
-from app.util import envlookup
+from flask import current_app
 
-anki_server_url = f"{envlookup.ANKI_SERVER_URL}:{envlookup.ANKI_SERVER_PORT}"
+anki_server_url = current_app.config["ANKI_SERVER_URL"]
