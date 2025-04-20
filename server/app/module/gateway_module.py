@@ -1,3 +1,3 @@
-from app.util import envlookup
+from app.module.app_module import app
 
-anki_server_url = f"{envlookup.ANKI_SERVER_URL}:{envlookup.ANKI_SERVER_PORT}"
+anki_server_url = app.config["ANKI_SERVER_URL"]

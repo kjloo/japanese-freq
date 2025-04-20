@@ -1,17 +1,22 @@
 from http.client import HTTPException
 from flask import Flask, jsonify
+import logging
 
 from app.serde.encoder import CustomJSONProvider
 from app.module.socket_module import socketio
+from app.module.config_module import config
 
 
 # Initialize Flask app
 app: Flask = Flask(__name__, static_folder="/app/static/assets",
                    template_folder="/app/static")
 app.json = CustomJSONProvider(app)
-
+app.config.from_object(config)
+app.logger.setLevel(app.config["LOG_LEVEL"])
 
 # 400 - Bad Request
+
+
 @app.errorhandler(KeyError)
 @app.errorhandler(ValueError)
 @app.errorhandler(TypeError)

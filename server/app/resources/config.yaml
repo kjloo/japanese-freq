@@ -1,0 +1,3 @@
+anki:
+  port: 8765
+  host: http://localhost
