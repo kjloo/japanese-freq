@@ -86,7 +86,7 @@ web_modules/
 .env.production.local
 .env.local
 .venv
-server/app/res/config-local.yaml
+server/app/resources/config-local.yaml
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
