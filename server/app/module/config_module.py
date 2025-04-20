@@ -1,7 +1,8 @@
 import os
-from app.module.config.anki_config import AnkiConfig
 import yaml
 import importlib.resources as pkg_resources
+
+from app.module.config.anki_config import AnkiConfig
 
 
 def _load_yaml_config(env: str) -> dict:
