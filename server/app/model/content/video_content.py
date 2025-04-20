@@ -6,7 +6,6 @@ import os
 from app.model.content.source_content import SourceContent
 from app.model.frequency.freq_enum import FileType
 from app.model.japanese_content import JapaneseContent, Timestamp
-from app.util.envlookup import DOWNLOAD_MEDIA
 from app.module.logging_module import logger
 
 
@@ -70,9 +69,8 @@ class VideoContent(SourceContent):
 
         for word in content_dict:
             for jc in content_dict[word]["content"]:
-                if DOWNLOAD_MEDIA:
-                    self._extract(
-                        jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
+                self._extract(
+                    jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
 
             rc[word]["frequency"] = content_dict[word]["frequency"]
             rc[word]["definition"] = content_dict[word]["definition"]
