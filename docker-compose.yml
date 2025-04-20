@@ -19,21 +19,30 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - internal_net
+      - internal
 
   mongodb:
     image: mongo:8.0.8
     container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tinkerm0nk3y808
+      MONGO_INITDB_ROOT_PASSWORD: tinkerm0nk3y808
+      MONGO_INITDB_DATABASE: language
+    ports:
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
-    ports:
-      - ${MONGO_PORT:-27017}:27017
     networks:
-      - internal_net
+      - internal
+    healthcheck:
+      test: [ "CMD", "mongo", "--quiet", "--eval", "db.runCommand({ ping: 1 })" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   mongo_data:
 
 
 networks:
-  internal_net:
+  internal:

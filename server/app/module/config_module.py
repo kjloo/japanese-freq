@@ -3,6 +3,7 @@ import yaml
 import importlib.resources as pkg_resources
 
 from app.module.config.anki_config import AnkiConfig
+from app.module.config.mongo_config import MongoConfig
 
 
 def _load_yaml_config(env: str) -> dict:
@@ -52,6 +53,7 @@ class BaseConfig(object):
 
     LOG_LEVEL = "INFO"
     ANKI_SERVER_URL = AnkiConfig(config).get_server_url()
+    MONGO_CONFIG = MongoConfig(config)
 
 
 class LocalConfig(BaseConfig):
