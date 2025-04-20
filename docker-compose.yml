@@ -2,6 +2,8 @@ services:
   japanese-freq:
     container_name: japanese_freq
     build: .
+    depends_on:
+      - mongodb
     env_file:
       - .env
     volumes:
@@ -16,3 +18,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - internal_net
+
+  mongodb:
+    image: mongo:8.0.8
+    container_name: mongodb
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - ${MONGO_PORT:-27017}:27017
+    networks:
+      - internal_net
+
+volumes:
+  mongo_data:
+
+
+networks:
+  internal_net:
