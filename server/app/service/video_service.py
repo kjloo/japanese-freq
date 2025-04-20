@@ -5,7 +5,6 @@ import re
 from app.module.file_module import file_manager
 from app.model.content.video_content import VideoContent
 from app.model.process_settings import ProcessSettings
-from app.service import word_service
 from app.service import subtitle_service
 from app.service import frequency_service
 
@@ -71,7 +70,7 @@ def generate(source: str) -> Response:
     return response
 
 
-def generate_subtitles(source: str, process_settings: ProcessSettings) -> Response:
+def generate_subtitles(source: str, process_settings: ProcessSettings) -> dict[str]:
     """
     Serve subtitles for a video file along with the list of ignored words.
     """
@@ -98,4 +97,4 @@ def generate_subtitles(source: str, process_settings: ProcessSettings) -> Respon
         "subtitles": styled_content,
     }
 
-    return jsonify(response_payload)
+    return response_payload

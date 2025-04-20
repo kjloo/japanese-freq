@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, abort, request
+from flask import Blueprint, Response, abort, request, jsonify
 
 from app.service import video_service
 from app.model.process_settings import ProcessSettings
@@ -24,9 +24,15 @@ def serve_video(source) -> Response:
 def get_subtitles(source) -> Response:
     """
     Serve subtitles for a video file using the generate method from video_service.
+    Handle errors gracefully.
     """
     # Extract the list of inputs from the request body
     data = request.get_json()
+    if not data:
+        abort(400, description="Invalid request: JSON body is required")
+
     payload = ProcessSettings(data).with_word_check(False)
 
-    return video_service.generate_subtitles(source, payload)
+    # Generate subtitles using the video_service
+    subtitles = video_service.generate_subtitles(source, payload)
+    return jsonify(subtitles), 200

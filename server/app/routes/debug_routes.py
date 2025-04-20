@@ -26,3 +26,11 @@ def get_inputs() -> Response:
     logger.debug("Received request for /api/debug/serde")
     foo = Foo()
     return jsonify(foo)
+
+
+@debug_routes.route("/api/debug/fail", methods=["GET"])
+def get_foo_by_id() -> Response:
+    foo = Foo()
+    raise ValueError("This is a test error")
+    return jsonify(foo)
+    rc = {}
