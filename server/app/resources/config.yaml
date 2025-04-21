@@ -1,3 +1,9 @@
 anki:
   port: 8765
   host: http://localhost
+mongo:
+  port: 27017
+  host: mongodb
+  db: language
+  user: tinkerm0nk3y808
+  password: tinkerm0nk3y808

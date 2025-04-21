@@ -2,6 +2,9 @@ services:
   japanese-freq:
     container_name: japanese_freq
     build: .
+    depends_on:
+      mongodb:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
@@ -16,3 +19,31 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - internal
+
+  mongodb:
+    image: mongo:8.0.8
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tinkerm0nk3y808
+      MONGO_INITDB_ROOT_PASSWORD: tinkerm0nk3y808
+      MONGO_INITDB_DATABASE: language
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", --eval", "db.adminCommand('ping')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mongo_data:
+
+
+networks:
+  internal:
