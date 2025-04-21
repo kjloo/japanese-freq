@@ -11,5 +11,6 @@ def sync_ignore_list() -> Response:
     data = request.get_json()
     deck_id = data.get("deck_id")
     field_name = data.get("field_name")
-    response = word_service.update_from_anki(deck_id, field_name)
+    word_service.update_from_anki(deck_id, field_name)
+    response = word_service.update_from_file()
     return jsonify({"ignore_list": response}), 200

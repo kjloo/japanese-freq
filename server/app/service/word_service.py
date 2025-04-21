@@ -5,6 +5,7 @@ from app.module.socket_module import socketio
 from app.module.logging_module import logger
 from app.module.dictionary_module import ignore_list, ignore_list_file
 from app.service import anki_service
+from app.repository.word_repository import word_repository
 
 
 def get_ignore_list() -> set[str]:
@@ -23,6 +24,15 @@ def update_from_anki(deck_id: int, field_name: str) -> list[str]:
 
     _update_ignore_list(anki_words)
     return list(ignore_list)
+
+
+def update_from_file() -> list[str]:
+    """
+    Update the ignore list from a file.
+    :return: A list of words from the ignore list file.
+    """
+    word_repository.add_words(list(ignore_list))
+    return word_repository.get_words()
 
 
 def ask_user(content: dict) -> dict:

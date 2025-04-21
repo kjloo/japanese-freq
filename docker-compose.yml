@@ -3,7 +3,8 @@ services:
     container_name: japanese_freq
     build: .
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
@@ -35,7 +36,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: [ "CMD", "mongo", "--quiet", "--eval", "db.runCommand({ ping: 1 })" ]
+      test: [ "CMD", "mongosh", "--quiet", --eval", "db.adminCommand('ping')" ]
       interval: 30s
       timeout: 10s
       retries: 5

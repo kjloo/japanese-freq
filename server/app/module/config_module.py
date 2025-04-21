@@ -4,6 +4,7 @@ import importlib.resources as pkg_resources
 
 from app.module.config.anki_config import AnkiConfig
 from app.module.config.mongo_config import MongoConfig
+from app.module.logging_module import logging
 
 
 def _load_yaml_config(env: str) -> dict:
@@ -95,4 +96,5 @@ config_map = {
     "default": DevelopmentConfig,
 }
 
+logging.info(f"Current environment: {env}")
 config = config_map.get(env, LocalConfig)

@@ -24,7 +24,7 @@ class MongoDBConnector:
             logger.warning("MongoDB connection failed:", e)
 
     def get_collection(self, collection_name: str) -> Collection:
-        if not self.db:
+        if self.db is None:
             raise Exception("Not connected to the database")
         return self.db[collection_name]
 

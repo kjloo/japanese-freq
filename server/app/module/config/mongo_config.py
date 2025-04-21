@@ -1,3 +1,6 @@
+from app.module.logging_module import logging
+
+
 class MongoConfig:
     def __init__(self, config: dict[str]):
         """
@@ -17,4 +20,6 @@ class MongoConfig:
         Get the server URL in the format "host:port".
         :return: The server URL.
         """
-        return f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
+        url = f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}?authSource=admin"
+        logging.info(f"MongoDB server URL: {url}")
+        return url

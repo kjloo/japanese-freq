@@ -30,7 +30,14 @@ server-setup:
 
 .PHONY: server-run
 server-run: server-setup
-	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
+	docker compose up mongodb -d
+	@echo "Waiting for MongoDB to be ready..."
+	@until [ "$$(docker inspect --format='{{.State.Health.Status}}' mongodb)" = "healthy" ]; do \
+		echo "MongoDB not healthy yet..."; \
+		sleep 2; \
+	done
+	@echo "MongoDB is ready. Starting the server..."
+	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5001 app.main:app
 
 .PHONY: server-test
 server-test: server-setup
