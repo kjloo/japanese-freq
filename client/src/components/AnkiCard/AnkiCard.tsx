@@ -2,9 +2,10 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
 interface AnkiCardProps {
+    onCancel: () => void;
 }
 
-const AnkiCard: FunctionComponent<AnkiCardProps> = ({ }) => {
+const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [decks, setDecks] = useState(new Map<string, number>());
 
     useEffect(() => {
@@ -33,6 +34,10 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ }) => {
                     </option>
                 ))}
             </select>
+            <button onClick={() => alert('Deck selected!')}>
+                Select Deck
+            </button>
+            <button onClick={onCancel}>Cancel</button>
         </div>
     );
 };

@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from app.service import io_service
 from app.service import word_service
-from app.model.process_settings import ProcessSettings
+from server.app.form.frequency.process_settings import ProcessSettings
 from app.model.content.source_content import SourceContent
 from app.model.japanese_content import JapaneseContent
 from app.model.progress import Progress
