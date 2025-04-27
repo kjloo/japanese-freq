@@ -37,7 +37,7 @@ server-run: server-setup
 		sleep 2; \
 	done
 	@echo "MongoDB is ready. Starting the server..."
-	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5001 app.main:app
+	cd server; gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
 
 .PHONY: server-test
 server-test: server-setup
