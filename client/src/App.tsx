@@ -1,4 +1,3 @@
-import React from 'react';
 import { lazy, Suspense } from 'react'
 import { Routes } from 'react-router'
 import { BrowserRouter as Router, Route } from 'react-router-dom'

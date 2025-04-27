@@ -45,4 +45,4 @@ server-test: server-setup
 
 .PHONY: client-run
 client-run:
-	npm run dev
+	cd client; npm run dev
