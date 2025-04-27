@@ -26,7 +26,6 @@ server-setup:
 	cp -r input server/input
 	cp -r output server/output
 	cp -r dictionaries server/dictionaries
-	cp .ignorelist.json server/.ignorelist.json
 
 .PHONY: server-run
 server-run: server-setup
