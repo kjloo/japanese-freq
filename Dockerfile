@@ -6,9 +6,7 @@ FROM node:latest AS client-builder
 WORKDIR /app
 
 # Copy client files
-# TODO: don't copy what isn't needed
 COPY ./client /app
-COPY . /app
 
 # Install dependencies and build the client
 RUN npm ci
@@ -16,6 +14,7 @@ RUN npm run build
 
 # === SERVER STAGE ===
 FROM python:3.12-slim
+
 
 # Install necessary system dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,8 +31,12 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install MeCab UniDic
-RUN pip install unidic ffmpeg-python fugashi[unidic] cutlet Flask pymongo pymodm requests gunicorn flask-socketio eventlet
+RUN python -m unidic download
+
+COPY ./requirements.txt .
+
+# Install Python dependencies
+RUN pip install -r requirements.txt
 
 RUN python -m unidic download
 

@@ -1,0 +1,12 @@
+.ankiButton {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  padding: 0.2em;
+  background: none;
+  cursor: pointer;
+}
+
+.ankiButton:hover {
+    color: #388e3c;
+}

@@ -1,7 +1,8 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import { io } from 'socket.io-client';
+import AnkiCard from './AnkiCard/AnkiCard';
 import WordCheckForm from './WordCheckForm';
-import WelcomeCard from './WelcomeCard';
+import WelcomeCard from './WelcomeCard/WelcomeCard';
 import ProcessSettings from './ProcessSettings';
 import VideoPlayer from './VideoPlayer';
 
@@ -9,6 +10,7 @@ const socket = io('http://localhost:5000');
 
 // Define an enum to manage the component's state
 enum ViewState {
+    Anki,
     Welcome,
     ProcessSettings,
     WordCheckForm,
@@ -51,8 +53,12 @@ const Start: FunctionComponent<StartProps> = () => {
     };
 
     const handleStartClick = () => {
-        setViewState(ViewState.ProcessSettings); // Show the InputSelector when the Start button is clicked
+        setViewState(ViewState.ProcessSettings);
     };
+
+    const handleAnkiClick = () => {
+        setViewState(ViewState.Anki);
+    }
 
     const handleInputSelectorSubmit = () => {
         setViewState(ViewState.WordCheckForm); // Reset to Welcome while processing
@@ -71,7 +77,9 @@ const Start: FunctionComponent<StartProps> = () => {
 
     return (
         <div className="container">
-            {viewState === ViewState.ProcessSettings ? (
+            {viewState === ViewState.Anki ? (
+                <AnkiCard />
+            ) : viewState === ViewState.ProcessSettings ? (
                 <ProcessSettings
                     onVideo={handleVideoPlayerClick} // Pass the handler to ProcessSettings
                     onProcess={handleInputSelectorSubmit}
@@ -86,6 +94,7 @@ const Start: FunctionComponent<StartProps> = () => {
                     isLoading={isLoading}
                     progress={progress}
                     onStart={handleStartClick}
+                    onAnki={handleAnkiClick}
                 />
             )}
         </div>
