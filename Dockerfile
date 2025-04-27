@@ -6,8 +6,8 @@ FROM node:latest AS client-builder
 WORKDIR /app
 
 # Copy client files
-# TODO: change to client and don't copy what isn't needed
-COPY ./src /app
+# TODO: don't copy what isn't needed
+COPY ./client /app
 COPY . /app
 
 # Install dependencies and build the client
