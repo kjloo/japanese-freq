@@ -35,6 +35,15 @@ def update_from_file() -> list[str]:
     return word_repository.get_words()
 
 
+def export_to_file() -> list[str]:
+    """
+    Export the ignore list to a file.
+    """
+    _write_to_file(list(ignore_list))
+    logger.debug(f"Ignore list exported to {ignore_list_file}")
+    return list(ignore_list)
+
+
 def ask_user(content: dict) -> dict:
     """
     Asks user if they already know the word and waits for their response.
@@ -78,5 +87,13 @@ def _update_ignore_list(word_list: list[str]) -> None:
     :param word_list: The list of words to be added to the ignore list.
     """
     ignore_list.update(word_list)
+    word_repository.add_words(word_list)
+
+
+def _write_to_file(word_list: list[str]) -> None:
+    """
+    Write the ignore list to a file.
+    :param word_list: The list of words to be added to the ignore list.
+    """
     with open(ignore_list_file, 'w', encoding='utf-8') as f:
-        json.dump(list(ignore_list), f, ensure_ascii=False, indent=4)
+        json.dump(word_list, f, ensure_ascii=False, indent=4)
