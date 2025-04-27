@@ -5,7 +5,7 @@ from app.module.socket_module import socketio
 from app.module.logging_module import logger
 from app.module.dictionary_module import ignore_list, ignore_list_file
 from app.service import anki_service
-from server.app.repository.word.word_repository import word_repository
+from app.repository.word.word_repository import word_repository
 
 
 def get_ignore_list() -> set[str]:

@@ -4,7 +4,7 @@ import re
 
 from app.module.file_module import file_manager
 from app.model.content.video_content import VideoContent
-from server.app.form.frequency.process_settings import ProcessSettings
+from app.form.frequency.process_settings import ProcessSettings
 from app.service import subtitle_service
 from app.service import frequency_service
 

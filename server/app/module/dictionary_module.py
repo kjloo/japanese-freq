@@ -3,7 +3,7 @@ import os
 import json
 
 from app.model.dictionary import Dictionary
-from server.app.repository.word.word_repository import word_repository
+from app.repository.word.word_repository import word_repository
 
 wakati = fugashi.Tagger()
 dictionary = Dictionary('dictionaries/jmdict_english.zip')

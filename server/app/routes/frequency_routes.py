@@ -3,7 +3,7 @@ import threading
 
 from app.service import frequency_service
 from app.module.logging_module import logger
-from server.app.form.frequency.process_settings import ProcessSettings
+from app.form.frequency.process_settings import ProcessSettings
 
 # Blueprint for routes
 frequency_routes = Blueprint('frequency_routes', __name__)

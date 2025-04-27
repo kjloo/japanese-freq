@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, Response, request
 from app.module.app_module import app
 from app.service import anki_service
-from server.app.form.anki.anki_config import AnkiConfig
+from app.form.anki.anki_config import AnkiConfig
 
 anki_routes = Blueprint('anki_routes', __name__)
 

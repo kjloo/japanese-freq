@@ -1,7 +1,7 @@
 from app.module.logging_module import logger
 from app.gateway import anki_gateway
-from server.app.form.anki.anki_config import AnkiConfig
-from server.app.repository.anki.anki_repository import anki_repository
+from app.form.anki.anki_config import AnkiConfig
+from app.repository.anki.anki_repository import anki_repository
 
 
 def get_deck_names() -> dict[str, int]:
