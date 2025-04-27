@@ -74,7 +74,7 @@ make server-run
 1. Install dependencies
 
 ```shell
-npm install
+npm install --prefix client
 ```
 
 2. Run client
