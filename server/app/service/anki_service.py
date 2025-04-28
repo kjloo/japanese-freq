@@ -1,6 +1,6 @@
 from app.module.logging_module import logger
 from app.gateway import anki_gateway
-from app.form.anki.anki_config import AnkiConfig
+from app.model.anki.anki_config import AnkiConfig
 from app.repository.anki.anki_repository import anki_repository
 
 

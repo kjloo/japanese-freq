@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, Response, request
 from app.module.app_module import app
 from app.service import anki_service
-from app.form.anki.anki_config import AnkiConfig
+from app.form.anki.anki_config_form import AnkiConfigForm
 
 anki_routes = Blueprint('anki_routes', __name__)
 
@@ -34,6 +34,6 @@ def get_cards_in_deck(deck_id: int) -> Response:
 @anki_routes.route("/api/anki/config", methods=["POST"])
 def save_anki_config() -> Response:
     data = request.get_json()
-    payload = AnkiConfig(data)
-    anki_service.save_anki_config(payload)
+    payload = AnkiConfigForm(data)
+    anki_service.save_anki_config(payload.to_model())
     return jsonify({"message": "Anki configuration saved successfully."}), 200

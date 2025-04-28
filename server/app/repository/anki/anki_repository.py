@@ -1,5 +1,5 @@
 from app.repository.base_repository import BaseRepository
-from app.form.anki.anki_config import AnkiConfig
+from app.model.anki.anki_config import AnkiConfig
 
 
 class AnkiRepository(BaseRepository):
