@@ -45,29 +45,32 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         <div className="card">
             <h1 className="title">Anki Settings</h1>
             {!modelSelected ? (<>
-                <p className="text">Choose an Anki Deck</p>
-                <select className="deck-select" onChange={handleDeckChange} value={selectedModel}>
-                    {Array.from(models.entries()).map(([model, id], index) => (
-                        <option key={index} value={model}>
-                            {model}
-                        </option>
-                    ))}
-                </select>
+                <div>
+                    <p className="text">Choose an Anki Deck</p>
+                    <select className="deck-select" onChange={handleDeckChange} value={selectedModel}>
+                        {Array.from(models.entries()).map(([model, id], index) => (
+                            <option key={index} value={model}>
+                                {model}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 <button onClick={handleModelSelect}>
                     Select Model
                 </button>
-            </>
-            ) : (
+            </>) : (<>
                 <div>
-                    <h2>Selected Model: {Array.from(models.keys())[selectedModel]}</h2>
-                    <p>Fields:</p>
+                    <p>Field Configuration</p>
                     <ul>
                         {fields.map((field, index) => (
                             <li key={index}>{field}</li>
                         ))}
                     </ul>
                 </div>
-            )}
+                <button onClick={() => setModelSelected(false)}>
+                    Submit
+                </button>
+            </>)}
             <button onClick={onCancel}>Cancel</button>
         </div >
     );
