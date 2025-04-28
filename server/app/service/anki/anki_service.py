@@ -1,8 +1,5 @@
 from app.module.logging_module import logger
 from app.gateway import anki_gateway
-from app.model.anki.anki_config import AnkiConfig
-from app.repository.anki.anki_repository import anki_repository
-from app.form.anki import anki_config_form
 
 
 def get_deck_names() -> dict[str, int]:
@@ -67,24 +64,6 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
                 f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
-
-
-def get_anki_config_fields() -> list[str]:
-    """
-    Get the fields of the Anki configuration.
-    :return: A list of field names for the Anki configuration.
-    """
-    return anki_config_form.anki_config_form_fields()
-
-
-def save_anki_config(data: AnkiConfig) -> AnkiConfig:
-    """
-    Save the Anki configuration.
-    :param data: The Anki configuration data.
-    :return: The saved Anki configuration.
-    """
-    anki_repository.add_config(data)
-    return data
 
 
 def _get_deck_names() -> dict[str, int]:

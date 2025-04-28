@@ -1,10 +1,10 @@
 from typing import override
 
 from app.form.base_form import BaseForm
-from app.model.anki.anki_config import AnkiConfig
+from app.model.anki.anki_settings import AnkiSettings
 
 
-class AnkiConfigForm(BaseForm):
+class AnkiSettingsForm(BaseForm):
 
     deck_id: int = -1
     kanji: str = ""
@@ -16,8 +16,8 @@ class AnkiConfigForm(BaseForm):
         self.definition = json_data.get("definition", "")
         super().__init__()
 
-    def to_model(self) -> AnkiConfig:
-        return AnkiConfig(self.deck_id, self.kanji, self.definition)
+    def to_model(self) -> AnkiSettings:
+        return AnkiSettings(self.deck_id, self.kanji, self.definition)
 
     @override
     def _validate(self):

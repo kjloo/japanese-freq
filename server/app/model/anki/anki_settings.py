@@ -2,7 +2,7 @@ from app.model.base_model import BaseModel
 from typing import override
 
 
-class AnkiConfig(BaseModel):
+class AnkiSettings(BaseModel):
 
     deck_id: int = -1
     kanji: str = ""
