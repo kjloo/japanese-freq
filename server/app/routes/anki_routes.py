@@ -31,6 +31,12 @@ def get_cards_in_deck(deck_id: int) -> Response:
     return jsonify({"cards": cards}), 200
 
 
+@anki_routes.route("/api/anki/config", methods=["GET"])
+def get_anki_config_fields() -> Response:
+    fields = anki_service.get_anki_config_fields()
+    return jsonify({"fields": fields}), 200
+
+
 @anki_routes.route("/api/anki/config", methods=["POST"])
 def save_anki_config() -> Response:
     data = request.get_json()

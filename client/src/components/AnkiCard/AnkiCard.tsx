@@ -9,7 +9,8 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [models, setModels] = useState(new Map<string, number>());
     const [selectedModel, setSelectedModel] = useState<number>(0);
     const [modelSelected, setModelSelected] = useState(false);
-    const [fields, setFields] = useState<string[]>([]);
+    const [modelFields, setModelFields] = useState<string[]>([]);
+    const [settingsFields, setSettingsFields] = useState<string[]>([]);
 
     useEffect(() => {
         // Fetch Anki decks from the API
@@ -25,6 +26,16 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         fetchDecks();
     }, []);
 
+    const modelFieldsDropDown = () => {
+        return <select>
+            {modelFields.map((field, index) => (
+                <option key={index} value={field}>
+                    {field}
+                </option>
+            ))}
+        </select>;
+    }
+
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedDeckName = event.target.value;
         const modelId = models.get(selectedDeckName) || 0;
@@ -34,8 +45,10 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const handleModelSelect = async () => {
         setModelSelected(true);
         try {
-            const response = await axios.get(`/api/anki/models/${selectedModel}/fields`);
-            setFields(response.data.fields);
+            const response1 = await axios.get(`/api/anki/models/${selectedModel}/fields`);
+            setModelFields(response1.data.fields);
+            const response2 = await axios.get(`/api/anki/config`);
+            setSettingsFields(response2.data.fields);
         } catch (error) {
             console.error('Error fetching Anki model fields:', error);
         }
@@ -61,11 +74,14 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             </>) : (<>
                 <div>
                     <p>Field Configuration</p>
-                    <ul>
-                        {fields.map((field, index) => (
-                            <li key={index}>{field}</li>
-                        ))}
-                    </ul>
+                    {settingsFields.map((field, index) => (
+                        <div>
+                            <label>
+                                {field}
+                            </label>
+                            {modelFieldsDropDown()}
+                        </div>
+                    ))}
                 </div>
                 <button onClick={() => setModelSelected(false)}>
                     Submit

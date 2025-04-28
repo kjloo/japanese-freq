@@ -32,3 +32,7 @@ class AnkiConfigForm(BaseForm):
         return (f"AnkiConfig(deck={self.deck_id}, "
                 f"kanji={self.kanji}, "
                 f"definition={self.definition})")
+
+
+def anki_config_form_fields() -> list[str]:
+    return ["deck_id", "kanji", "definition"]
