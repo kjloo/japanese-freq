@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, abort, request, jsonify
 
 from app.service import video_service
-from app.model.process_settings import ProcessSettings
+from app.form.frequency.process_settings import ProcessSettings
 
 # Blueprint for routes
 video_routes = Blueprint('video_routes', __name__)

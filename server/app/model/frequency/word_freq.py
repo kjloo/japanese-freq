@@ -1,5 +1,4 @@
 class WordFreq:
-
     def __init__(self, freq: int = 0, definition: str = "", content: list[str] = []):
         self.freq: int = freq
         self.defition: str = definition

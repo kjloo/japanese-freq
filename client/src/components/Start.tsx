@@ -78,7 +78,7 @@ const Start: FunctionComponent<StartProps> = () => {
     return (
         <div className="container">
             {viewState === ViewState.Anki ? (
-                <AnkiCard />
+                <AnkiCard onCancel={handleInputSelectorCancel} />
             ) : viewState === ViewState.ProcessSettings ? (
                 <ProcessSettings
                     onVideo={handleVideoPlayerClick} // Pass the handler to ProcessSettings
