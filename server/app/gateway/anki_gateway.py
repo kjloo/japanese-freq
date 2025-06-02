@@ -16,10 +16,14 @@ def post(action: str, params: dict = None) -> dict:
     """
     payload = _anki_payload(action, params)
     logger.info(f"Sending payload to Anki {anki_server_url}: {payload}")
-    response = requests.post(anki_server_url, json=payload)
-    if response.status_code != 200:
-        raise Exception(
-            f"Anki server error: {response.status_code} - {response.text}")
+    try:
+        response = requests.post(anki_server_url, json=payload)
+        if response.status_code != 200:
+            raise Exception(
+                f"Anki server error: {response.status_code} - {response.text}")
+    except requests.RequestException as e:
+        logger.error(f"Anki server request failed: {e}")
+        raise
     return response.json().get("result", {})
 
 

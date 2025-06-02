@@ -1,6 +1,6 @@
 anki:
   port: 8765
-  host: http://localhost
+  host: http://host.docker.internal
 mongo:
   port: 27017
   host: mongodb

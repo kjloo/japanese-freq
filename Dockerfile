@@ -31,8 +31,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python -m unidic download
-
 COPY ./requirements.txt .
 
 # Install Python dependencies

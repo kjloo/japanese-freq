@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, Response, request
 from app.module.app_module import app
+from app.module.logging_module import logger
 from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
 
@@ -14,7 +15,9 @@ def get_decks() -> Response:
 
 @anki_routes.route("/api/anki/models", methods=["GET"])
 def get_models() -> Response:
+    logger.debug("Fetching Anki models")
     models = anki_service.get_model_names()
+    logger.debug(f"Retrieved models: {models}")
     return jsonify({"models": models}), 200
 
 

@@ -7,8 +7,7 @@ build:
 	docker compose build
 
 .PHONY: dev
-dev:
-	docker compose build
+dev: build
 	open http://localhost:5000
 	docker compose up
 
