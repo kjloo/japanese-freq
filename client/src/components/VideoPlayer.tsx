@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
 
 interface VideoPlayerProps {
     source: string;
-    settings: Record<string, any>;
+    settings: ProcessVideoSettings;
 }
 
 interface Subtitle {
@@ -37,7 +38,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
             axios
                 .post(subtitleUrl, settings)
                 .then((response) => {
-                    const { content: contentDict, subtitles: subtitleContent } = response.data;
+                    const { subtitles: subtitleContent } = response.data;
 
                     // Parse the subtitle content
                     const parsedSubtitles = parseVTT(subtitleContent);

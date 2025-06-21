@@ -1,0 +1,49 @@
+name: PR Title Lint
+description: "Lint PR title"
+inputs:
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set PR title from branch name
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const branch = context.payload.pull_request.head.ref;
+          // Match edge-123/foo-bar, chore-123/foo-bar, chore/foo-bar, or fix/foo-bar
+          let match = branch.match(/^([a-zA-Z]+)(-\d+)?\/(.+)$/);
+          if (!match) {
+            core.setFailed(`Branch name "${branch}" does not match the required pattern.`);
+            return;
+          }
+          let prefix = match[1].toUpperCase();
+          let number = match[2] ? match[2].toUpperCase() : '';
+          // Special case: fix/ becomes HOTFIX
+          if (prefix === 'FIX' && !number) {
+            prefix = 'HOTFIX';
+          }
+          const ticket = `${prefix}${number}`;
+          // Convert kebab-case or snake_case to Title Case
+          const title = match[3]
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+          const prTitle = `${ticket} | ${title}`;
+          const currentTitle = context.payload.pull_request.title;
+
+          // Regex: PREFIX(-NUMBER)? | Any letters/numbers (any case), spaces, and hyphens
+          const titleRegex = /^[A-Z]+(-\d+)? \| [A-Za-z0-9 \-]+$/;
+          if (titleRegex.test(currentTitle)) {
+            console.log("PR title already matches the required format. No update needed.");
+            return;
+          }
+
+          await github.rest.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+            title: prTitle,
+          });

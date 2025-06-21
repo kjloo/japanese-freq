@@ -1,8 +1,24 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
+export type ProcessVideoSettings = {
+    inputs: string[];
+    word_check: boolean;
+    freq_min: number;
+    requires_definition: boolean;
+    min_word_length: number;
+};
+
+export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
+    inputs: [],
+    word_check: true,
+    freq_min: 1,
+    requires_definition: false,
+    min_word_length: 2,
+});
+
 interface ProcessSettingsProps {
-    onVideo: (video: string, settings: Record<string, any>) => void;
+    onVideo: (video: string, settings: ProcessVideoSettings) => void;
     onProcess: () => void;
     onCancel: () => void;
 }
@@ -46,7 +62,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                 freq_min: freqMin,
                 requires_definition: requiresDefinition,
                 min_word_length: minWordLength,
-            }); // Pass the selected video to the parent
+            });
         } else {
             console.error('No video selected. Please select an input.');
         }

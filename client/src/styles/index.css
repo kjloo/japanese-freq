@@ -27,6 +27,13 @@
   margin-bottom: 0.625em;
 }
 
+/* Subtitle styling */
+.subtitle {
+  font-size: 1.25em;
+  color: #388e3c;
+  margin-bottom: 1em;
+}
+
 /* Text styling */
 .text {
   color: #388e3c;
