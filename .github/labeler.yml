@@ -1,0 +1,8 @@
+documentation:
+  - "**/*.md"
+
+server:
+  - "server/**/*"
+
+client:
+  - "client/**/*"

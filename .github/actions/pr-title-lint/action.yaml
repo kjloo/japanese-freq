@@ -1,0 +1,29 @@
+name: PR Title Lint
+description: "Lint PR title"
+inputs:
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get expected PR title
+      id: lint_title
+      shell: bash
+      run: |
+        EXPECTED_TITLE=$(node $GITHUB_ACTION_PATH "${{ github.head_ref }}" "${{ github.event.pull_request.title }}")
+        echo "expected_title=$EXPECTED_TITLE" >> $GITHUB_OUTPUT
+
+    - name: Update PR title if needed
+      if: steps.lint_title.outputs.expected_title != ''
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          await github.rest.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+            title: "${{ steps.lint_title.outputs.expected_title }}"
+          });

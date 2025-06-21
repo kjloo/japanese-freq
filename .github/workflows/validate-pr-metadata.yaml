@@ -1,0 +1,23 @@
+name: Validate PR Metadata
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, labeled, unlabeled, synchronize]
+
+jobs:
+  validate-pr-metadata:
+    name: Validate PR Metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: PR Title Lint
+        uses: ./.github/actions/pr-title-lint
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: PR Label Lint
+        uses: ./.github/actions/pr-label-lint
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

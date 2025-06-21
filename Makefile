@@ -47,4 +47,4 @@ client-run:
 
 .PHONY: client-lint
 client-lint:
-    cd client && npm run lint
+	cd client; npm run lint

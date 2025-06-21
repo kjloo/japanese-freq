@@ -1,6 +1,6 @@
 # === CLIENT STAGE ===
 # Use Node.js to build the client
-FROM node:latest AS client-builder
+FROM node:24-alpine3.21 AS client-builder
 
 # Set the working directory
 WORKDIR /app

@@ -1,0 +1,37 @@
+name: PR Has Labels
+description: "Fail if a pull request does not have any labels"
+inputs:
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check for labeler config
+      shell: bash
+      run: |
+        if [ ! -f "${{ github.workspace }}/.github/labeler.yml" ]; then
+          echo "Error: No .github/labeler.yml found in the repository root."
+          exit 1
+        fi
+
+    - name: Run Labeler
+      uses: actions/labeler@v4
+      with:
+        repo-token: ${{ inputs.github-token }}
+
+    - name: Check for Labels
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const pr = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+          const labels = pr.data.labels;
+          if (!labels || labels.length === 0) {
+            core.setFailed("Error: PR has no labels");
+          }
