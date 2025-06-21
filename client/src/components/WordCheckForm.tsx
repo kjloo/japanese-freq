@@ -16,9 +16,7 @@ interface WordData {
     definition: WordDefinition;
 }
 
-interface WordCheckFormProps { }
-
-const WordCheckForm: FunctionComponent<WordCheckFormProps> = () => {
+const WordCheckForm: FunctionComponent = () => {
     const [wordData, setWordData] = useState<WordData | null>(null);
 
     useEffect(() => {

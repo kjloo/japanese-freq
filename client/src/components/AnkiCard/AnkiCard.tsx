@@ -83,7 +83,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 <div>
                     <p className="text">Choose an Anki Deck</p>
                     <select className="deck-select" onChange={handleDeckChange} value={selectedModel}>
-                        {Array.from(models.entries()).map(([model, id], index) => (
+                        {Array.from(models.entries()).map(([model], index) => (
                             <option key={index} value={model}>
                                 {model}
                             </option>

@@ -48,3 +48,7 @@ client-run:
 .PHONY: client-lint
 client-lint:
 	cd client; npm run lint
+
+.PHONY: client-format
+client-format:
+	cd client; npm run format

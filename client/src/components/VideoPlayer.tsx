@@ -37,7 +37,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
             axios
                 .post(subtitleUrl, settings)
                 .then((response) => {
-                    const { content: contentDict, subtitles: subtitleContent } = response.data;
+                    const { subtitles: subtitleContent } = response.data;
 
                     // Parse the subtitle content
                     const parsedSubtitles = parseVTT(subtitleContent);

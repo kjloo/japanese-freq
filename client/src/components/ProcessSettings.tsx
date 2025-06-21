@@ -2,7 +2,13 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 
 interface ProcessSettingsProps {
-    onVideo: (video: string, settings: Record<string, any>) => void;
+    onVideo: (video: string, settings: {
+        inputs: string[];
+        word_check: boolean;
+        freq_min: number;
+        requires_definition: boolean;
+        min_word_length: number;
+    }) => void;
     onProcess: () => void;
     onCancel: () => void;
 }

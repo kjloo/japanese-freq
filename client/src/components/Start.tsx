@@ -17,9 +17,7 @@ enum ViewState {
     VideoPlayer
 }
 
-interface StartProps { }
-
-const Start: FunctionComponent<StartProps> = () => {
+const Start: FunctionComponent = () => {
     const [viewState, setViewState] = useState<ViewState>(ViewState.Welcome); // Single state variable to manage views
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
