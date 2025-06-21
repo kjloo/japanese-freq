@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import AnkiCard from './AnkiCard/AnkiCard';
 import WordCheckForm from './WordCheckForm';
 import WelcomeCard from './WelcomeCard/WelcomeCard';
-import ProcessSettings from './ProcessSettings';
+import ProcessSettings, { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
 import VideoPlayer from './VideoPlayer';
 
 const socket = io('http://localhost:5000');
@@ -22,7 +22,7 @@ const Start: FunctionComponent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [videoSource, setVideoSource] = useState<string | null>(null); // State to store the selected video source
-    const [settings, setSettings] = useState<Record<string, any>>({});
+    const [settings, setSettings] = useState<Record<string, ProcessVideoSettings>>({});
 
     useEffect(() => {
         socket.on('progress', (data) => {
@@ -67,7 +67,7 @@ const Start: FunctionComponent = () => {
         setViewState(ViewState.Welcome); // Reset to Welcome if canceled
     };
 
-    const handleVideoPlayerClick = (source: string, settings: Record<string, any>) => {
+    const handleVideoPlayerClick = (source: string, settings: Record<string, ProcessVideoSettings>) => {
         setViewState(ViewState.VideoPlayer);
         setSettings(settings);
         setVideoSource(source);

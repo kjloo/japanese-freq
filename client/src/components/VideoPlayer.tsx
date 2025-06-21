@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
 
 interface VideoPlayerProps {
     source: string;
-    settings: Record<string, any>;
+    settings: Record<string, ProcessVideoSettings>;
 }
 
 interface Subtitle {
