@@ -1,8 +1,9 @@
 name: Validate PR Metadata
-
 on:
   pull_request:
     types: [opened, reopened, edited, labeled, unlabeled, synchronize]
+permissions:
+  pull-requests: write
 
 jobs:
   validate-pr-metadata:

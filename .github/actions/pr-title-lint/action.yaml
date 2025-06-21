@@ -4,8 +4,6 @@ inputs:
   github-token:
     description: "GitHub token for authentication"
     required: true
-permissions:
-  pull-requests: write
 
 runs:
   using: "composite"
