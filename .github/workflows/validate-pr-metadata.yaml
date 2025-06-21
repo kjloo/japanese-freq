@@ -4,6 +4,8 @@ on:
     types: [opened, reopened, edited, labeled, unlabeled, synchronize]
 permissions:
   pull-requests: write
+  contents: read
+  issues: write
 
 jobs:
   validate-pr-metadata:
