@@ -9,15 +9,17 @@ class AnkiSettingsForm(BaseForm):
     deck_id: int = -1
     kanji: str = ""
     definition: str = ""
+    sentence: str = ""
 
     def __init__(self, json_data: dict[str]):
         self.deck_id = json_data.get("deck_id", -1)
         self.kanji = json_data.get("kanji", "")
         self.definition = json_data.get("definition", "")
+        self.sentence = json_data.get("sentence", "")
         super().__init__()
 
     def to_model(self) -> AnkiSettings:
-        return AnkiSettings(self.deck_id, self.kanji, self.definition)
+        return AnkiSettings(self.deck_id, self.kanji, self.definition, self.sentence)
 
     @override
     def _validate(self):
@@ -27,12 +29,15 @@ class AnkiSettingsForm(BaseForm):
             raise ValueError("Kanji field is required.")
         if not self.definition:
             raise ValueError("Definition field is required.")
+        if not self.sentence:
+            raise ValueError("Sentence field is required.")
 
     def __repr__(self):
         return (f"AnkiConfig(deck={self.deck_id}, "
                 f"kanji={self.kanji}, "
-                f"definition={self.definition})")
+                f"definition={self.definition}), "
+                f"sentence={self.sentence})")
 
 
 def anki_config_form_fields() -> list[str]:
-    return ["deck_id", "kanji", "definition"]
+    return ["deck_id", "kanji", "definition", "sentence"]

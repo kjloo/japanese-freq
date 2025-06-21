@@ -9,7 +9,7 @@ build:
 .PHONY: dev
 dev: build
 	open http://localhost:5000
-	docker compose up
+	docker compose up japanese-freq
 
 .PHONY: run
 run:
@@ -44,3 +44,7 @@ server-test: server-setup
 .PHONY: client-run
 client-run:
 	cd client; npm run dev
+
+.PHONY: client-lint
+client-lint:
+    cd client && npm run lint

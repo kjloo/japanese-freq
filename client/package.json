@@ -14,7 +14,8 @@
     "docker:push": "docker tag japanse-freq-server:latest tinkermonkey808/japanse-freq-server:latest && docker push tinkermonkey808/japanse-freq-server:latest",
     "docker:compose": "docker compose up",
     "docker:clean": "docker compose down & docker system prune -f",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -33,7 +34,11 @@
     "@types/node": "^20.3.1",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react": "^7.37.5",
     "express": "^4.18.2",
     "npm-run-all": "^4.1.5",
     "typescript": "^4.9.3",
