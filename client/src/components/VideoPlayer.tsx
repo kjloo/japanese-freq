@@ -5,7 +5,7 @@ import { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
 
 interface VideoPlayerProps {
     source: string;
-    settings: Record<string, ProcessVideoSettings>;
+    settings: ProcessVideoSettings;
 }
 
 interface Subtitle {

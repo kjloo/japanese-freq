@@ -9,8 +9,16 @@ export type ProcessVideoSettings = {
     min_word_length: number;
 };
 
+export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
+    inputs: [],
+    word_check: true,
+    freq_min: 1,
+    requires_definition: false,
+    min_word_length: 2,
+});
+
 interface ProcessSettingsProps {
-    onVideo: (video: string, settings: Record<string, ProcessVideoSettings>) => void;
+    onVideo: (video: string, settings: ProcessVideoSettings) => void;
     onProcess: () => void;
     onCancel: () => void;
 }
@@ -49,14 +57,12 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
         if (selectedInputs.length > 0) {
             const video = selectedInputs[0]; // Use the first element in selectedInputs
             onVideo(video, {
-                [video]: {
-                    inputs: selectedInputs,
-                    word_check: wordCheck,
-                    freq_min: freqMin,
-                    requires_definition: requiresDefinition,
-                    min_word_length: minWordLength,
-                }
-            }); // Pass the selected video and settings to the parent
+                inputs: selectedInputs,
+                word_check: wordCheck,
+                freq_min: freqMin,
+                requires_definition: requiresDefinition,
+                min_word_length: minWordLength,
+            });
         } else {
             console.error('No video selected. Please select an input.');
         }
