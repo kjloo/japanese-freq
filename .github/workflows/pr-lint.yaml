@@ -1,4 +1,4 @@
-name: PR Client Lint
+name: PR Lint
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   client-lint:
+    name: Client Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
