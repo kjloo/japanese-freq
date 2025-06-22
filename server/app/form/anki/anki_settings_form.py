@@ -40,4 +40,4 @@ class AnkiSettingsForm(BaseForm):
 
 
 def anki_config_form_fields() -> list[str]:
-    return ["deck_id", "kanji", "definition", "sentence"]
+    return ["kanji", "definition", "sentence"]

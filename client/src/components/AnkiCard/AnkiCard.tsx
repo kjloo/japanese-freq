@@ -8,11 +8,12 @@ interface AnkiCardProps {
 
 const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [models, setModels] = useState(new Map<string, number>());
-    const [selectedModel, setSelectedModel] = useState<number>(0);
+    const [selectedModel, setSelectedModel] = useState<string>('');
+    const [selectedModelId, setSelectedModelId] = useState<number>(0);
     const [modelSelected, setModelSelected] = useState(false);
     const [modelFields, setModelFields] = useState<string[]>([]);
     const [settingsFields, setSettingsFields] = useState<string[]>([]);
-    const [configFieldsSelected, setConfigFieldsSelected] = useState<{ [key: string]: string }>({});
+    const [configFieldsSelected, setConfigFieldsSelected] = useState<Record<string, string>>({});
 
     useEffect(() => {
         // Fetch Anki decks from the API
@@ -28,8 +29,33 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         fetchDecks();
     }, []);
 
-    const modelFieldsDropDown = () => {
-        return <select className={styles.configSelect} onChange={(e) => handleFieldChange(e.target.name, e.target.value)} name={modelFields[0]}>
+    useEffect(() => {
+        const fetchModelFieldsAndSettings = async () => {
+            if (modelSelected && selectedModelId) {
+                try {
+                    const ankiResp = await axios.get(`/api/anki/models/${selectedModelId}/fields`);
+                    setModelFields(ankiResp.data.fields);
+                    const appSettings = await axios.get(`/api/anki/config`);
+                    setSettingsFields(appSettings.data.fields);
+                } catch (error) {
+                    console.error('Error fetching Anki model fields:', error);
+                }
+            }
+        };
+        fetchModelFieldsAndSettings();
+    }, [modelSelected, selectedModelId]);
+
+    useEffect(() => {
+        setConfigFieldsSelected(
+            settingsFields.reduce((acc: Record<string, string>, field: string) => ({
+                ...acc,
+                [field]: modelFields[0] || ''
+            }), {})
+        );
+    }, [modelFields, settingsFields]);
+
+    const modelFieldsDropDown = (field: string) => {
+        return <select className={styles.configSelect} onChange={(e) => handleFieldChange(field, e.target.value)} name={modelFields[0]}>
             {modelFields.map((field, index) => (
                 <option key={index} value={field}>
                     {field}
@@ -41,19 +67,12 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedDeckName = event.target.value;
         const modelId = models.get(selectedDeckName) || 0;
-        setSelectedModel(modelId);
+        setSelectedModel(selectedDeckName);
+        setSelectedModelId(modelId);
     };
 
     const handleModelSelect = async () => {
         setModelSelected(true);
-        try {
-            const ankiResp = await axios.get(`/api/anki/models/${selectedModel}/fields`);
-            setModelFields(ankiResp.data.fields);
-            const appSettings = await axios.get(`/api/anki/config`);
-            setSettingsFields(appSettings.data.fields);
-        } catch (error) {
-            console.error('Error fetching Anki model fields:', error);
-        }
     }
 
     const handleFieldChange = (field: string, value: string) => {
@@ -65,10 +84,11 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
 
     const handleConfigSubmit = async () => {
         try {
-            await axios.post('/api/anki/config', {
-                modelId: selectedModel,
-                config: configFieldsSelected
-            });
+            const configJson = {
+                deck_id: selectedModelId,
+                ...configFieldsSelected
+            };
+            await axios.post('/api/anki/config', configJson);
             console.log('Configuration saved successfully');
             onCancel();
         } catch (error) {
@@ -82,7 +102,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             {!modelSelected ? (<>
                 <div>
                     <p className="text">Choose an Anki Deck</p>
-                    <select className="deck-select" onChange={handleDeckChange} value={selectedModel}>
+                    <select className={styles.configSelect} onChange={handleDeckChange} value={selectedModel}>
                         {Array.from(models.entries()).map(([model], index) => (
                             <option key={index} value={model}>
                                 {model}
@@ -101,7 +121,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                             <label className={styles.configLabel}>
                                 {field}
                             </label>
-                            {modelFieldsDropDown()}
+                            {modelFieldsDropDown(field)}
                         </div>
                     ))}
                 </div>
