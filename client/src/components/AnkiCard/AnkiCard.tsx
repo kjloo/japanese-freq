@@ -23,9 +23,18 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         const fetchDecks = async () => {
             try {
                 const decksResponse = await axios.get('/api/anki/decks');
-                setDecks(new Map(Object.entries(decksResponse.data.models)));
+                const deckMap: [string, number][] = Object.entries(decksResponse.data.decks);
+                setDecks(new Map(deckMap));
+                const [deckFirstKey, deckFirstValue] = deckMap[0];
+                setSelectedDeck(deckFirstKey);
+                setSelectedDeckId(deckFirstValue);
+
                 const modelsResponse = await axios.get('/api/anki/models');
-                setModels(new Map(Object.entries(modelsResponse.data.models)));
+                const modelMap: [string, number][] = Object.entries(modelsResponse.data.models);
+                setModels(new Map(modelMap));
+                const [modelFirstKey, modelFirstValue] = modelMap[0];
+                setSelectedModel(modelFirstKey);
+                setSelectedModelId(modelFirstValue);
             } catch (error) {
                 console.error('Error fetching Anki models:', error);
             }
@@ -114,22 +123,28 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         <div className="card">
             <h1 className="title">Anki Settings</h1>
             {!modelSelected ? (<>
-                <div>
-                    <p className="text">Choose an Anki Deck</p>
-                    <select className={styles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
-                        {Array.from(decks.entries()).map(([deck], index) => (
-                            <option key={index} value={deck}>
-                                {deck}
-                            </option>
-                        ))}
-                    </select>
-                    <select className={styles.configSelect} onChange={handleModelChange} value={selectedModel}>
-                        {Array.from(models.entries()).map(([model], index) => (
-                            <option key={index} value={model}>
-                                {model}
-                            </option>
-                        ))}
-                    </select>
+                <div className={styles.configContainer}>
+                    <h2 className="subtitle">Choose an Anki Deck</h2>
+                    <div className={styles.configRow}>
+                        <label className={styles.configLabel}>Deck</label>
+                        <select className={styles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
+                            {Array.from(decks.entries()).map(([deck], index) => (
+                                <option key={index} value={deck}>
+                                    {deck}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.configRow}>
+                        <label className={styles.configLabel}>Model</label>
+                        <select className={styles.configSelect} onChange={handleModelChange} value={selectedModel}>
+                            {Array.from(models.entries()).map(([model], index) => (
+                                <option key={index} value={model}>
+                                    {model}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <button onClick={handleModelSelect}>
                     Select Model
