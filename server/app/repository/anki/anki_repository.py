@@ -16,12 +16,7 @@ class AnkiRepository(BaseRepository):
     def get_config(self, deck_id: int) -> AnkiSettings:
         config_data = self.collection.find_one({"_id": deck_id})
         if config_data:
-            return AnkiSettings(
-                deck_id=config_data["_id"],
-                kanji=config_data.get("kanji", ""),
-                definition=config_data.get("definition", ""),
-                sentence=config_data.get("sentence", "")
-            )
+            return AnkiSettings(config_data)
         return None
 
 

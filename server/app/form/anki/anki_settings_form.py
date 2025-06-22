@@ -23,7 +23,8 @@ class AnkiSettingsForm(BaseForm):
         super().__init__()
 
     def to_model(self) -> AnkiSettings:
-        return AnkiSettings(self.deck_id, self.deck_name, self.model_name, self.kanji, self.definition, self.sentence)
+        attrs = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        return AnkiSettings(attrs)
 
     @override
     def _validate(self):

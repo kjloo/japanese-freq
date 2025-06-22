@@ -86,18 +86,17 @@ def _create_card(config: AnkiSettings, card: AnkiCardRequest) -> dict[str, int]:
     :param deck_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     """
-    model_name = config.deck_name
     fields = {
-        "kanji": card.kanji,
-        "definition": card.definition,
-        "sentence": card.sentence
+        config.kanji: card.kanji,
+        config.definition: card.definition,
+        config.sentence: card.sentence
     }
 
     note = {
         "deckName": config.deck_name,
-        "modelName": model_name,
+        "modelName": config.model_name,
         "fields": fields,
-        "tags": "tinkerm0nk3y808"
+        "tags": ["tinkerm0nk3y808"]
     }
 
     response = anki_gateway.post("addNote", {"note": note})

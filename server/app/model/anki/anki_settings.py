@@ -11,14 +11,6 @@ class AnkiSettings(BaseModel):
     definition: str = ""
     sentence: str = ""
 
-    def __init__(self, deck_id: int, deck_name: str, model_name: str, kanji: str, definition: str, sentence: str):
-        self.deck_id = deck_id
-        self.deck_name = deck_name
-        self.model_name = model_name
-        self.kanji = kanji
-        self.definition = definition
-        self.sentence = sentence
-
     @override
     def to_dict(self) -> dict[str]:
         return {
@@ -28,6 +20,15 @@ class AnkiSettings(BaseModel):
             "definition": self.definition,
             "sentence": self.sentence,
         }
+
+    @override
+    def from_dict(self, data: dict[str]):
+        self.deck_id = data.get("deck_id", -1)
+        self.deck_name = data.get("deck_name", "")
+        self.model_name = data.get("model_name", "")
+        self.kanji = data.get("kanji", "")
+        self.definition = data.get("definition", "")
+        self.sentence = data.get("sentence", "")
 
     @override
     def get_key(self) -> dict[str]:
