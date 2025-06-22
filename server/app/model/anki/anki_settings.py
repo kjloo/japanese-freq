@@ -6,13 +6,15 @@ class AnkiSettings(BaseModel):
 
     deck_id: int = -1
     deck_name: str = ""
+    model_name: str = ""
     kanji: str = ""
     definition: str = ""
     sentence: str = ""
 
-    def __init__(self, deck_id: int, deck_name: str, kanji: str, definition: str, sentence: str):
+    def __init__(self, deck_id: int, deck_name: str, model_name: str, kanji: str, definition: str, sentence: str):
         self.deck_id = deck_id
         self.deck_name = deck_name
+        self.model_name = model_name
         self.kanji = kanji
         self.definition = definition
         self.sentence = sentence
@@ -21,6 +23,7 @@ class AnkiSettings(BaseModel):
     def to_dict(self) -> dict[str]:
         return {
             "deck_name": self.deck_name,
+            "model_name": self.model_name,
             "kanji": self.kanji,
             "definition": self.definition,
             "sentence": self.sentence,

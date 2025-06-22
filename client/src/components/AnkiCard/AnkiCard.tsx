@@ -87,6 +87,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             const configJson = {
                 deck_id: selectedModelId,
                 deck_name: selectedModel,
+                model_name: selectedModel,
                 ...configFieldsSelected
             };
             await axios.post('/api/anki/config', configJson);
