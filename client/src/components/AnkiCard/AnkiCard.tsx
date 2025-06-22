@@ -12,7 +12,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [modelSelected, setModelSelected] = useState(false);
     const [modelFields, setModelFields] = useState<string[]>([]);
     const [settingsFields, setSettingsFields] = useState<string[]>([]);
-    const [configFieldsSelected, setConfigFieldsSelected] = useState<{ [key: string]: string }>({});
+    const [configFieldsSelected, setConfigFieldsSelected] = useState<Record<string, string>>({});
 
     useEffect(() => {
         // Fetch Anki decks from the API
@@ -65,10 +65,11 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
 
     const handleConfigSubmit = async () => {
         try {
-            await axios.post('/api/anki/config', {
-                modelId: selectedModel,
-                config: configFieldsSelected
-            });
+            const configJson = {
+                deck_id: selectedModel,
+                ...configFieldsSelected
+            };
+            await axios.post('/api/anki/config', configJson);
             console.log('Configuration saved successfully');
             onCancel();
         } catch (error) {
