@@ -1,7 +1,7 @@
 from app.module.logging_module import logger
-from server.app.gateway.anki import anki_gateway
-from server.app.gateway.anki.anki_card_request import AnkiCardRequest
-from server.app.service.anki import anki_settings_service
+from app.gateway.anki import anki_gateway
+from app.gateway.anki.anki_card_request import AnkiCardRequest
+from app.service.anki import anki_settings_service
 
 
 def create_card_in_deck(deck_id: int, card: AnkiCardRequest) -> None:
