@@ -19,5 +19,11 @@ class AnkiRepository(BaseRepository):
             return AnkiSettings(config_data)
         return None
 
+    def get_all_configs(self) -> list[AnkiSettings]:
+        configs = []
+        for config_data in self.collection.find():
+            configs.append(AnkiSettings(config_data))
+        return configs
+
 
 anki_repository = AnkiRepository()

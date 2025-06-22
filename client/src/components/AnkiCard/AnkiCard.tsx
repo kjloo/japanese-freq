@@ -50,7 +50,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 try {
                     const ankiResp = await axios.get(`/api/anki/models/${selectedModelId}/fields`);
                     setModelFields(ankiResp.data.fields);
-                    const appSettings = await axios.get(`/api/anki/config`);
+                    const appSettings = await axios.get(`/api/anki/configs/fields`);
                     setSettingsFields(appSettings.data.fields);
                 } catch (error) {
                     console.error('Error fetching Anki model fields:', error);
@@ -113,7 +113,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 model_name: selectedModel,
                 ...configFieldsSelected
             };
-            await axios.post('/api/anki/config', configJson);
+            await axios.post('/api/anki/configs', configJson);
             console.log('Configuration saved successfully');
             onCancel();
         } catch (error) {

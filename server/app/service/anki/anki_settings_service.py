@@ -28,3 +28,11 @@ def get_anki_config(deck_id: int) -> AnkiSettings:
     :return: The Anki configuration for the specified deck.
     """
     return anki_repository.get_config(deck_id)
+
+
+def get_anki_configs() -> list[AnkiSettings]:
+    """
+    Get all Anki configurations.
+    :return: A list of all Anki configurations.
+    """
+    return anki_repository.get_all_configs()
