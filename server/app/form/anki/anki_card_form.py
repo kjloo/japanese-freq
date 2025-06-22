@@ -1,7 +1,7 @@
 from typing import override
 
 from app.form.base_form import BaseForm
-from server.app.gateway.anki.anki_card_request import AnkiCardRequest
+from app.gateway.anki.anki_card_request import AnkiCardRequest
 
 
 class AnkiCardForm(BaseForm):
