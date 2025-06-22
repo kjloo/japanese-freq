@@ -19,3 +19,12 @@ def save_anki_config(data: AnkiSettings) -> AnkiSettings:
     """
     anki_repository.add_config(data)
     return data
+
+
+def get_anki_config(deck_id: int) -> AnkiSettings:
+    """
+    Get the Anki configuration for a specific deck.
+    :param deck_id: The ID of the deck.
+    :return: The Anki configuration for the specified deck.
+    """
+    return anki_repository.get_config(deck_id)

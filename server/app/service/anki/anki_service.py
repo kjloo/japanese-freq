@@ -1,5 +1,18 @@
 from app.module.logging_module import logger
-from app.gateway import anki_gateway
+from server.app.gateway.anki import anki_gateway
+from server.app.gateway.anki.anki_card_request import AnkiCardRequest
+from server.app.service.anki import anki_settings_service
+
+
+def create_card_in_deck(deck_id: int, card: AnkiCardRequest) -> None:
+    """
+    Create a card in a specific deck in Anki.
+    :param deck_id: The ID of the deck.
+    :param card: AnkiCardRequest object containing card details.
+    :raises ValueError: If the deck ID is invalid or if the card creation fails.
+    """
+    config = anki_settings_service.get_anki_config(deck_id)
+    return _create_card(deck_id, card)
 
 
 def get_deck_names() -> dict[str, int]:
@@ -64,6 +77,35 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
                 f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
+
+
+def _create_card(deck_id: int, card: AnkiCardRequest) -> None:
+    """
+    Create a card in a specific deck.
+    :param deck_id: The ID of the deck.
+    :param card: AnkiCardRequest object containing card details.
+    """
+    config = anki_settings_service.get_anki_config(deck_id)
+    if not config:
+        raise ValueError(f"No Anki configuration found for deck ID {deck_id}")
+
+    model_name = config.model_name
+    fields = {
+        "kanji": card.kanji,
+        "definition": card.definition,
+        "sentence": card.sentence
+    }
+
+    note = {
+        "deckName": config.deck_name,
+        "modelName": model_name,
+        "fields": fields,
+        "tags": config.tags
+    }
+
+    response = anki_gateway.post("addNote", {"note": note})
+    if not response:
+        raise ValueError("Failed to create card in Anki")
 
 
 def _get_deck_names() -> dict[str, int]:
