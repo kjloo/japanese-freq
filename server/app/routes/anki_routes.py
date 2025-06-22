@@ -3,6 +3,7 @@ from app.module.app_module import app
 from app.module.logging_module import logger
 from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
+from app.form.anki.anki_card_form import AnkiCardForm
 
 anki_routes = Blueprint('anki_routes', __name__)
 
@@ -37,19 +38,9 @@ def get_cards_in_deck(deck_id: int) -> Response:
 @anki_routes.route("/api/anki/decks/<int:deck_id>/cards", methods=["POST"])
 def create_card_in_deck(deck_id: int) -> Response:
     data = request.get_json()
-    if not data or not isinstance(data, dict):
-        return jsonify({"error": "Invalid data format"}), 400
-
-    field_name = app.config.get("ANKI_FIELD_NAME", "Kanji")
-    if field_name not in data:
-        return jsonify({"error": f"Missing required field: {field_name}"}), 400
-
-    try:
-        anki_service.create_card_in_deck(deck_id, data[field_name])
-        return jsonify({"message": "Card created successfully."}), 201
-    except Exception as e:
-        logger.error(f"Error creating card in deck {deck_id}: {e}")
-        return jsonify({"error": str(e)}), 500
+    payload = AnkiCardForm(data)
+    resp = anki_service.create_card_in_deck(deck_id, payload.to_req())
+    return jsonify(resp), 200
 
 
 @anki_routes.route("/api/anki/config", methods=["GET"])
