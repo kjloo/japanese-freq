@@ -8,6 +8,7 @@ interface AnkiCardProps {
 
 const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [decks, setDecks] = useState(new Map<string, number>());
+    const [configName, setConfigName] = useState<string>('');
     const [selectedDeck, setSelectedDeck] = useState<string>('');
     const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
     const [models, setModels] = useState(new Map<string, number>());
@@ -107,6 +108,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         try {
             const configJson = {
                 deck_id: selectedDeckId,
+                config_name: configName,
                 deck_name: selectedDeck,
                 model_name: selectedModel,
                 ...configFieldsSelected
@@ -124,6 +126,16 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             <h1 className="title">Anki Settings</h1>
             {!modelSelected ? (<>
                 <div className={styles.configContainer}>
+                    <div className={styles.configRow}>
+                        <label className={styles.configLabel}>Configuration Name</label>
+                        <input
+                            type="text"
+                            className={styles.configInput}
+                            value={configName}
+                            onChange={(e) => setConfigName(e.target.value)}
+                            placeholder="Enter configuration name"
+                        />
+                    </div>
                     <h2 className="subtitle">Choose an Anki Deck</h2>
                     <div className={styles.configRow}>
                         <label className={styles.configLabel}>Deck</label>

@@ -5,6 +5,7 @@ from typing import override
 class AnkiSettings(BaseModel):
 
     deck_id: int = -1
+    config_name: str = ""
     deck_name: str = ""
     model_name: str = ""
     kanji: str = ""
@@ -14,6 +15,7 @@ class AnkiSettings(BaseModel):
     @override
     def to_dict(self) -> dict[str]:
         return {
+            "config_name": self.config_name,
             "deck_name": self.deck_name,
             "model_name": self.model_name,
             "kanji": self.kanji,
@@ -24,6 +26,7 @@ class AnkiSettings(BaseModel):
     @override
     def from_dict(self, data: dict[str]):
         self.deck_id = data.get("deck_id", -1)
+        self.config_name = data.get("config_name", "")
         self.deck_name = data.get("deck_name", "")
         self.model_name = data.get("model_name", "")
         self.kanji = data.get("kanji", "")

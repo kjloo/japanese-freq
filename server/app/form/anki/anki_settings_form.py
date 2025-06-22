@@ -7,6 +7,7 @@ from app.model.anki.anki_settings import AnkiSettings
 class AnkiSettingsForm(BaseForm):
 
     deck_id: int = -1
+    config_name: str = ""
     deck_name: str = ""
     model_name: str = ""
     kanji: str = ""
@@ -15,6 +16,7 @@ class AnkiSettingsForm(BaseForm):
 
     def __init__(self, json_data: dict[str]):
         self.deck_id = json_data.get("deck_id", -1)
+        self.config_name = json_data.get("config_name", "")
         self.deck_name = json_data.get("deck_name", "")
         self.model_name = json_data.get("model_name", "")
         self.kanji = json_data.get("kanji", "")
@@ -30,6 +32,8 @@ class AnkiSettingsForm(BaseForm):
     def _validate(self):
         if self.deck_id == -1:
             raise ValueError("Deck ID is required.")
+        if not self.config_name:
+            raise ValueError("Configuration name is required.")
         if not self.deck_name:
             raise ValueError("Deck name is required.")
         if not self.model_name:
@@ -43,6 +47,7 @@ class AnkiSettingsForm(BaseForm):
 
     def __repr__(self):
         return (f"AnkiConfig(deck={self.deck_id}, "
+                f"config_name={self.config_name}, "
                 f"deck_name={self.deck_name}, "
                 f"model_name={self.model_name}, "
                 f"kanji={self.kanji}, "
