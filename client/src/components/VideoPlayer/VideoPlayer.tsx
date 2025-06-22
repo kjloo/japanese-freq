@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
 import DOMPurify from "dompurify";
-import { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
+import { ProcessVideoSettings } from '../ProcessSettings/ProcessSettings';
+import styles from './VideoPlayer.module.css';
 
 interface VideoPlayerProps {
     source: string;
@@ -141,13 +142,13 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
     }
 
     return (
-        <div className="video-player">
-            <div className="video-container">
+        <div className={styles.videoPlayer}>
+            <div className={styles.videoContainer}>
                 {videoUrl ? (
                     <video
                         ref={videoRef}
                         src={videoUrl}
-                        className="video-element"
+                        className={styles.videoElement}
                         onTimeUpdate={handleProgress}
                         controls
                     />
@@ -155,12 +156,12 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                     <p>Loading video...</p>
                 )}
                 <div
-                    className="subtitle-container"
+                    className={styles.subtitleContainer}
                     dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle) }}
                 ></div>
             </div>
-            <div className="video-controls">
-                <button onClick={handlePlayPause} className="play-pause-button">
+            <div className={styles.videoControls}>
+                <button onClick={handlePlayPause} className={styles.playPauseButton}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
                 <input
@@ -169,9 +170,9 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                     max="100"
                     value={progress}
                     onChange={handleSeek}
-                    className="progress-bar"
+                    className={styles.progressBar}
                 />
-                <span className="progress-text">{Math.round(progress)}%</span>
+                <span className={styles.progressText}>{Math.round(progress)}%</span>
             </div>
         </div>
     );
