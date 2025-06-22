@@ -3,6 +3,7 @@ from app.module.app_module import app
 from app.module.logging_module import logger
 from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
+from app.form.anki.anki_card_form import AnkiCardForm
 
 anki_routes = Blueprint('anki_routes', __name__)
 
@@ -32,6 +33,14 @@ def get_cards_in_deck(deck_id: int) -> Response:
     field_name = app.config.get("ANKI_FIELD_NAME", "Kanji")
     cards = anki_service.get_cards_in_deck(deck_id, field_name)
     return jsonify({"cards": cards}), 200
+
+
+@anki_routes.route("/api/anki/decks/<int:deck_id>/cards", methods=["POST"])
+def create_card_in_deck(deck_id: int) -> Response:
+    data = request.get_json()
+    payload = AnkiCardForm(data)
+    resp = anki_service.create_card_in_deck(deck_id, payload.to_req())
+    return jsonify({"note": resp}), 200
 
 
 @anki_routes.route("/api/anki/config", methods=["GET"])

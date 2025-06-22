@@ -2,7 +2,6 @@ import requests
 
 from app.module.gateway_module import anki_server_url
 from app.module.logging_module import logger
-from app.module.app_module import app
 
 ANKI_VERSION = 6
 

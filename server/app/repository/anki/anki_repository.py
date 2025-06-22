@@ -13,5 +13,11 @@ class AnkiRepository(BaseRepository):
             upsert=True
         )
 
+    def get_config(self, deck_id: int) -> AnkiSettings:
+        config_data = self.collection.find_one({"_id": deck_id})
+        if config_data:
+            return AnkiSettings(config_data)
+        return None
+
 
 anki_repository = AnkiRepository()
