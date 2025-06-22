@@ -80,7 +80,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
 
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedDeckName = event.target.value;
-        const deckId = models.get(selectedDeckName) || 0;
+        const deckId = decks.get(selectedDeckName) || 0;
         setSelectedDeck(selectedDeckName);
         setSelectedDeckId(deckId);
     };
