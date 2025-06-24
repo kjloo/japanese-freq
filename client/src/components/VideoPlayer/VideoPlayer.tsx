@@ -157,7 +157,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                 )}
                 <div
                     className={styles.subtitleContainer}
-                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle) }}
+                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle).replace(/\n/g, "<br />") }}
                 ></div>
             </div>
             <div className={styles.videoControls}>
