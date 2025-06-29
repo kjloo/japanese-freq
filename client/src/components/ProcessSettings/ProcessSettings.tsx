@@ -11,7 +11,7 @@ export type ProcessVideoSettings = {
 };
 
 type AnkiConfig = {
-    name: string;
+    config_name: string;
 }
 
 export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
@@ -108,57 +108,56 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                 <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Word Check:
-                        <input
-                            type="checkbox"
-                            checked={wordCheck}
-                            onChange={(e) => setWordCheck(e.target.checked)}
-                        />
                     </label>
+                    <input
+                        type="checkbox"
+                        checked={wordCheck}
+                        onChange={(e) => setWordCheck(e.target.checked)}
+                    />
                 </div>
                 <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Frequency Minimum:
-                        <input className={commonStyles.configInput}
-                            type="number"
-                            value={freqMin}
-                            onChange={(e) => setFreqMin(Number(e.target.value))}
-                            min="1"
-                        />
                     </label>
+                    <input className={commonStyles.configInput}
+                        type="number"
+                        value={freqMin}
+                        onChange={(e) => setFreqMin(Number(e.target.value))}
+                        min="1"
+                    />
                 </div>
                 <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Minimum Word Length:
-                        <input className={commonStyles.configInput}
-                            type="number"
-                            value={minWordLength}
-                            onChange={(e) => setMinWordLength(Number(e.target.value))}
-                            min="1"
-                        />
                     </label>
+                    <input className={commonStyles.configInput}
+                        type="number"
+                        value={minWordLength}
+                        onChange={(e) => setMinWordLength(Number(e.target.value))}
+                        min="1"
+                    />
                 </div>
                 <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Requires Definition:
-                        <input
-                            type="checkbox"
-                            checked={requiresDefinition}
-                            onChange={(e) => setRequiresDefinition(e.target.checked)}
-                        />
                     </label>
+                    <input
+                        type="checkbox"
+                        checked={requiresDefinition}
+                        onChange={(e) => setRequiresDefinition(e.target.checked)}
+                    />
                 </div>
                 <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Anki Config:
-                        <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
-                            <option value="">Select Config</option>
-                            {configs.map((config) => (
-                                <option key={config.name} value={config.name}>
-                                    {config.name}
-                                </option>
-                            ))}
-                        </select>
                     </label>
+                    <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
+                        {configs.map((config) => (
+                            <option key={config.config_name} value={config.config_name}>
+                                {config.config_name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <h3 className="title">Select Inputs</h3>
                 <ul className={commonStyles.configInputsList}>
@@ -176,9 +175,11 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         </li>
                     ))}
                 </ul>
-                <button onClick={handlePlayVideo}>Play Video</button>
-                <button onClick={handleProcess}>Process</button>
-                <button onClick={onCancel}>Cancel</button>
+                <div className={commonStyles.configRow}>
+                    <button onClick={handlePlayVideo}>Play Video</button>
+                    <button onClick={handleProcess}>Process</button>
+                    <button onClick={onCancel}>Cancel</button>
+                </div>
             </div>
         </div>
     );

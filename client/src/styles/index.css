@@ -46,6 +46,10 @@
 }
 
 /* Button styling */
+body {
+  margin: 0;
+}
+
 button {
   margin: 0.625em;
   padding: 0.75em 1.5em;
