@@ -22,54 +22,6 @@
   border-bottom: none;
 }
 
-.configLabel {
-  font-size: 1rem;
-  color: #222;
-  font-weight: 500;
-  flex: 1;
-  padding-right: 2rem;
-  text-align: left;
-}
-
-.configInput {
-  flex: 1;
-  min-width: 160px;
-  max-width: 240px;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 1rem;
-  color: #222;
-  transition: border-color 0.2s, background 0.2s;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.configInput:focus {
-  border-color: #6366f1;
-  background: #fff;
-}
-
-.configSelect {
-  flex: 1;
-  min-width: 160px;
-  max-width: 240px;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 1rem;
-  color: #222;
-  transition: border-color 0.2s;
-  outline: none;
-}
-
-.configSelect:focus {
-  border-color: #6366f1;
-  background: #fff;
-}
-
 @media (max-width: 600px) {
   .configTable {
     padding: 1rem;

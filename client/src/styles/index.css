@@ -86,39 +86,6 @@ label {
   cursor: pointer; /* Make the label clickable */
 }
 
-input[type="checkbox"] {
-  margin-right: 0.5em; /* Add spacing between the checkbox and the label */
-  width: 1.25em; /* Set a consistent size for the checkbox */
-  height: 1.25em; /* Set a consistent size for the checkbox */
-  cursor: pointer; /* Change cursor to pointer for better UX */
-  accent-color: #4caf50; /* Use a green accent color for the checkbox */
-}
-
-input[type="checkbox"]:hover {
-  filter: brightness(0.9); /* Slightly darken the checkbox on hover */
-}
-
-input[type="checkbox"]:checked {
-  border-color: #4caf50; /* Add a green border when checked */
-}
-
-input[type="number"] {
-  margin-left: 0.5em;
-  padding: 0.25em;
-  font-size: 1em;
-  width: 2em;
-}
-
-.inputs-list {
-  list-style: none;
-  max-height: 15em;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 0.5em;
-  padding: 0.5em;
-  background-color: #f9f9f9;
-}
-
 .settings div{
   margin-bottom: 1em;
 }

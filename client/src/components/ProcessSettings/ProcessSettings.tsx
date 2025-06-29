@@ -1,5 +1,7 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
+import styles from './ProcessSettings.css';
+import commonStyles from '../CommonConfigs.module.css';
 
 export type ProcessVideoSettings = {
     inputs: string[];
@@ -8,6 +10,10 @@ export type ProcessVideoSettings = {
     requires_definition: boolean;
     min_word_length: number;
 };
+
+type AnkiConfig = {
+    name: string;
+}
 
 export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
     inputs: [],
@@ -26,6 +32,7 @@ interface ProcessSettingsProps {
 const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onProcess, onCancel }) => {
     const [inputs, setInputs] = useState<string[]>([]);
     const [selectedInputs, setSelectedInputs] = useState<string[]>([]);
+    const [configs, setConfigs] = useState<AnkiConfig[]>([]);
     const [wordCheck, setWordCheck] = useState<boolean>(true);
     const [freqMin, setFreqMin] = useState<number>(2);
     const [requiresDefinition, setRequiresDefinition] = useState<boolean>(true);
@@ -41,8 +48,17 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                 console.error('Error fetching inputs:', error);
             }
         };
+        const fetchConfigs = async () => {
+            try {
+                const response = await axios.get('/api/anki/configs');
+                setConfigs(response.data.configs);
+            } catch (error) {
+                console.error('Error fetching configs:', error);
+            }
+        }
 
         fetchInputs();
+        fetchConfigs();
     }, []);
 
     const handleCheckboxChange = (input: string) => {
@@ -91,7 +107,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
             <h2 className="title">Process Settings</h2>
             <div className="settings">
                 <div>
-                    <label>
+                    <label className={commonStyles.configLabel}>
                         Word Check:
                         <input
                             type="checkbox"
@@ -101,9 +117,9 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     </label>
                 </div>
                 <div>
-                    <label>
+                    <label className={commonStyles.configLabel}>
                         Frequency Minimum:
-                        <input
+                        <input className={commonStyles.configInput}
                             type="number"
                             value={freqMin}
                             onChange={(e) => setFreqMin(Number(e.target.value))}
@@ -112,9 +128,9 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     </label>
                 </div>
                 <div>
-                    <label>
+                    <label className={commonStyles.configLabel}>
                         Minimum Word Length:
-                        <input
+                        <input className={commonStyles.configInput}
                             type="number"
                             value={minWordLength}
                             onChange={(e) => setMinWordLength(Number(e.target.value))}
@@ -123,7 +139,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     </label>
                 </div>
                 <div>
-                    <label>
+                    <label className={commonStyles.configLabel}>
                         Requires Definition:
                         <input
                             type="checkbox"
@@ -132,11 +148,24 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         />
                     </label>
                 </div>
+                <div>
+                    <label className={commonStyles.configLabel}>
+                        Anki Config:
+                        <select className={commonStyles.configInputsList} onChange={(e) => setSelectedInputs([e.target.value])}>
+                            <option value="">Select Config</option>
+                            {configs.map((config) => (
+                                <option key={config.name} value={config.name}>
+                                    {config.name}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
                 <h3 className="title">Select Inputs</h3>
-                <ul className="inputs-list">
+                <ul>
                     {inputs.map((input) => (
                         <li key={input}>
-                            <label>
+                            <label className={commonStyles.configLabel}>
                                 <input
                                     type="checkbox"
                                     value={input}

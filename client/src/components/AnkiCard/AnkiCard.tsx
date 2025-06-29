@@ -1,6 +1,7 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import styles from './AnkiCard.module.css';
+import commonStyles from '../CommonConfigs.module.css';
 
 interface AnkiCardProps {
     onCancel: () => void;
@@ -70,7 +71,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     }, [modelFields, settingsFields]);
 
     const modelFieldsDropDown = (field: string) => {
-        return <select className={styles.configSelect} onChange={(e) => handleFieldChange(field, e.target.value)} name={modelFields[0]}>
+        return <select className={commonStyles.configSelect} onChange={(e) => handleFieldChange(field, e.target.value)} name={modelFields[0]}>
             {modelFields.map((field, index) => (
                 <option key={index} value={field}>
                     {field}
@@ -127,10 +128,10 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             {!modelSelected ? (<>
                 <div className={styles.configContainer}>
                     <div className={styles.configRow}>
-                        <label className={styles.configLabel}>Configuration Name</label>
+                        <label className={commonStyles.configLabel}>Configuration Name</label>
                         <input
                             type="text"
-                            className={styles.configInput}
+                            className={commonStyles.configInput}
                             value={configName}
                             onChange={(e) => setConfigName(e.target.value)}
                             placeholder="Enter configuration name"
@@ -138,8 +139,8 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                     </div>
                     <h2 className="subtitle">Choose an Anki Deck</h2>
                     <div className={styles.configRow}>
-                        <label className={styles.configLabel}>Deck</label>
-                        <select className={styles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
+                        <label className={commonStyles.configLabel}>Deck</label>
+                        <select className={commonStyles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
                             {Array.from(decks.entries()).map(([deck], index) => (
                                 <option key={index} value={deck}>
                                     {deck}
@@ -148,8 +149,8 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                         </select>
                     </div>
                     <div className={styles.configRow}>
-                        <label className={styles.configLabel}>Model</label>
-                        <select className={styles.configSelect} onChange={handleModelChange} value={selectedModel}>
+                        <label className={commonStyles.configLabel}>Model</label>
+                        <select className={commonStyles.configSelect} onChange={handleModelChange} value={selectedModel}>
                             {Array.from(models.entries()).map(([model], index) => (
                                 <option key={index} value={model}>
                                     {model}
@@ -166,7 +167,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                     <h2 className='subtitle'>Field Configuration</h2>
                     {settingsFields.map((field, index) => (
                         <div className={styles.configRow} key={index}>
-                            <label className={styles.configLabel}>
+                            <label className={commonStyles.configLabel}>
                                 {field}
                             </label>
                             {modelFieldsDropDown(field)}
