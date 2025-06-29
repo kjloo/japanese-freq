@@ -126,8 +126,8 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         <div className="card">
             <h1 className="title">Anki Settings</h1>
             {!modelSelected ? (<>
-                <div className={styles.configContainer}>
-                    <div className={styles.configRow}>
+                <div className={commonStyles.configContainer}>
+                    <div className={commonStyles.configRow}>
                         <label className={commonStyles.configLabel}>Configuration Name</label>
                         <input
                             type="text"
@@ -138,7 +138,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                         />
                     </div>
                     <h2 className="subtitle">Choose an Anki Deck</h2>
-                    <div className={styles.configRow}>
+                    <div className={commonStyles.configRow}>
                         <label className={commonStyles.configLabel}>Deck</label>
                         <select className={commonStyles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
                             {Array.from(decks.entries()).map(([deck], index) => (
@@ -148,7 +148,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                             ))}
                         </select>
                     </div>
-                    <div className={styles.configRow}>
+                    <div className={commonStyles.configRow}>
                         <label className={commonStyles.configLabel}>Model</label>
                         <select className={commonStyles.configSelect} onChange={handleModelChange} value={selectedModel}>
                             {Array.from(models.entries()).map(([model], index) => (
@@ -163,10 +163,10 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                     Select Model
                 </button>
             </>) : (<>
-                <div className={styles.configContainer}>
+                <div className={commonStyles.configContainer}>
                     <h2 className='subtitle'>Field Configuration</h2>
                     {settingsFields.map((field, index) => (
-                        <div className={styles.configRow} key={index}>
+                        <div className={commonStyles.configRow} key={index}>
                             <label className={commonStyles.configLabel}>
                                 {field}
                             </label>

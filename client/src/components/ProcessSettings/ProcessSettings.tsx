@@ -104,8 +104,8 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
     return (
         <div className="card">
             <h2 className="title">Process Settings</h2>
-            <div className="settings">
-                <div>
+            <div className={commonStyles.configContainer}>
+                <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Word Check:
                         <input
@@ -115,7 +115,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         />
                     </label>
                 </div>
-                <div>
+                <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Frequency Minimum:
                         <input className={commonStyles.configInput}
@@ -126,7 +126,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         />
                     </label>
                 </div>
-                <div>
+                <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Minimum Word Length:
                         <input className={commonStyles.configInput}
@@ -137,7 +137,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         />
                     </label>
                 </div>
-                <div>
+                <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Requires Definition:
                         <input
@@ -147,7 +147,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                         />
                     </label>
                 </div>
-                <div>
+                <div className={commonStyles.configRow}>
                     <label className={commonStyles.configLabel}>
                         Anki Config:
                         <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
