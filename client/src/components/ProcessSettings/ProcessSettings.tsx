@@ -1,6 +1,5 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
-import styles from './ProcessSettings.css';
 import commonStyles from '../CommonConfigs.module.css';
 
 export type ProcessVideoSettings = {
@@ -151,7 +150,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                 <div>
                     <label className={commonStyles.configLabel}>
                         Anki Config:
-                        <select className={commonStyles.configInputsList} onChange={(e) => setSelectedInputs([e.target.value])}>
+                        <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
                             <option value="">Select Config</option>
                             {configs.map((config) => (
                                 <option key={config.name} value={config.name}>
@@ -162,7 +161,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     </label>
                 </div>
                 <h3 className="title">Select Inputs</h3>
-                <ul>
+                <ul className={commonStyles.configInputsList}>
                     {inputs.map((input) => (
                         <li key={input}>
                             <label className={commonStyles.configLabel}>
