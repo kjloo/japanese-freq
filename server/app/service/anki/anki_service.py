@@ -5,14 +5,14 @@ from app.service.anki import anki_settings_service
 from app.model.anki.anki_settings import AnkiSettings
 
 
-def create_card_in_deck(deck_id: int, card: AnkiCardRequest) -> dict[str, int]:
+def create_card_in_deck(config_id: int, card: AnkiCardRequest) -> dict[str, int]:
     """
     Create a card in a specific deck in Anki.
-    :param deck_id: The ID of the deck.
+    :param config_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     :raises ValueError: If the deck ID is invalid or if the card creation fails.
     """
-    config = anki_settings_service.get_anki_config(deck_id)
+    config = anki_settings_service.get_anki_config(config_id)
     return _create_card(config, card)
 
 

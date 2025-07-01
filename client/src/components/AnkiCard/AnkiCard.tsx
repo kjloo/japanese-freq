@@ -61,23 +61,22 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         fetchModelFieldsAndSettings();
     }, [modelSelected, selectedModelId]);
 
-    useEffect(() => {
-        setConfigFieldsSelected(
-            settingsFields.reduce((acc: Record<string, string>, field: string) => ({
-                ...acc,
-                [field]: modelFields[0] || ''
-            }), {})
+    const settingsFieldsDropDown = (field: string) => {
+        return (
+            <select
+                className={commonStyles.configSelect}
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                value={configFieldsSelected[field] || ""}
+                name={settingsFields[0]}
+            >
+                <option value="">Select...</option>
+                {settingsFields.map((optionField, index) => (
+                    <option key={index} value={optionField}>
+                        {optionField}
+                    </option>
+                ))}
+            </select>
         );
-    }, [modelFields, settingsFields]);
-
-    const modelFieldsDropDown = (field: string) => {
-        return <select className={commonStyles.configSelect} onChange={(e) => handleFieldChange(field, e.target.value)} name={modelFields[0]}>
-            {modelFields.map((field, index) => (
-                <option key={index} value={field}>
-                    {field}
-                </option>
-            ))}
-        </select>;
     }
 
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,10 +108,10 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         try {
             const configJson = {
                 deck_id: selectedDeckId,
-                config_name: configName,
+                name: configName,
                 deck_name: selectedDeck,
                 model_name: selectedModel,
-                ...configFieldsSelected
+                settings: configFieldsSelected
             };
             await axios.post('/api/anki/configs', configJson);
             console.log('Configuration saved successfully');
@@ -165,12 +164,12 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             </>) : (<>
                 <div className={commonStyles.configContainer}>
                     <h2 className='subtitle'>Field Configuration</h2>
-                    {settingsFields.map((field, index) => (
+                    {modelFields.map((field, index) => (
                         <div className={commonStyles.configRow} key={index}>
                             <label className={commonStyles.configLabel}>
                                 {field}
                             </label>
-                            {modelFieldsDropDown(field)}
+                            {settingsFieldsDropDown(field)}
                         </div>
                     ))}
                 </div>

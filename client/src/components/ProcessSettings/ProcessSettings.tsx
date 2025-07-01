@@ -11,7 +11,9 @@ export type ProcessVideoSettings = {
 };
 
 type AnkiConfig = {
-    config_name: string;
+    _id: number;
+    name: string;
+    deck_name: string;
 }
 
 export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
@@ -153,8 +155,8 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     </label>
                     <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
                         {configs.map((config) => (
-                            <option key={config.config_name} value={config.config_name}>
-                                {config.config_name}
+                            <option key={config.name} value={config.name}>
+                                {config.name}
                             </option>
                         ))}
                     </select>
