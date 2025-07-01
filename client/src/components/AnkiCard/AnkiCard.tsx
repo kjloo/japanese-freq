@@ -1,6 +1,5 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
-import styles from './AnkiCard.module.css';
 import commonStyles from '../CommonConfigs.module.css';
 
 interface AnkiCardProps {
