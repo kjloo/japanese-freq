@@ -4,7 +4,7 @@ from app.service import video_service
 from app.form.frequency.process_settings import ProcessSettings
 
 # Blueprint for routes
-video_routes = Blueprint('video_routes', __name__)
+video_routes = Blueprint("video_routes", __name__)
 
 
 @video_routes.route("/api/video/stream/<source>", methods=["GET"])

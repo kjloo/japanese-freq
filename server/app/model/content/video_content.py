@@ -9,16 +9,17 @@ from app.model.japanese_content import JapaneseContent, Timestamp
 from app.module.logging_module import logger
 
 
-VideoData = namedtuple('VideoData', ['subtitles', 'video', 'offset'])
+VideoData = namedtuple("VideoData", ["subtitles", "video", "offset"])
 
 
 class VideoContent(SourceContent):
-    def __init__(self, input_dir: str, output_dir: str, subtitles: str, video: str, offset: str):
+    def __init__(
+        self, input_dir: str, output_dir: str, subtitles: str, video: str, offset: str
+    ):
         super().__init__(input_dir, output_dir)
         subtitles = self._convert_subtitles_to_vtt(subtitles)
         self.video_data = VideoData(subtitles, video, offset)
-        self.video_downloader = VideoDownloader(
-            self.get_video(), self._get_offset())
+        self.video_downloader = VideoDownloader(self.get_video(), self._get_offset())
 
     def parse_file(self) -> list[JapaneseContent]:
         input_file = self.get_subtitles()
@@ -27,7 +28,7 @@ class VideoContent(SourceContent):
             data = f.readlines()
 
         time_pattern = re.compile(
-            r'((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})'
+            r"((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})"
         )
         build_sentence: list[str] | None = None
         timestamp: Timestamp = None
@@ -40,8 +41,11 @@ class VideoContent(SourceContent):
                 build_sentence = []
             elif not build_sentence is None and not line.strip():
                 # Found section break. Store and reset
-                jc = JapaneseContent(''.join(build_sentence), timestamp, os.path.join(self.output_dir, '%s_%d' % (
-                    self.get_name(), counter)))
+                jc = JapaneseContent(
+                    "".join(build_sentence),
+                    timestamp,
+                    os.path.join(self.output_dir, "%s_%d" % (self.get_name(), counter)),
+                )
                 counter += 1
                 content.append(jc)
                 build_sentence = None
@@ -64,13 +68,11 @@ class VideoContent(SourceContent):
         return content
 
     def download_media(self, content_dict: dict) -> dict:
-        rc = defaultdict(
-            lambda: {"frequency": 0, "definition": None, "sentences": []})
+        rc = defaultdict(lambda: {"frequency": 0, "definition": None, "sentences": []})
 
         for word in content_dict:
             for jc in content_dict[word]["content"]:
-                self._extract(
-                    jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
+                self._extract(jc.timestamp.start_time, jc.timestamp.end_time, jc.audio)
 
             rc[word]["frequency"] = content_dict[word]["frequency"]
             rc[word]["definition"] = content_dict[word]["definition"]
@@ -92,15 +94,15 @@ class VideoContent(SourceContent):
         result = []
 
         for char in text:
-            if char == '(' or char == '（':
+            if char == "(" or char == "（":
                 stack.append(len(result))
-            elif (char == ')' or char == '）') and stack:
+            elif (char == ")" or char == "）") and stack:
                 start = stack.pop()
                 result = result[:start]
             elif not stack:
                 result.append(char)
 
-        return ''.join(result)
+        return "".join(result)
 
     def _extract(self, start_time: str, end_time: str, audio: str):
         self.video_downloader.extract(start_time, end_time, audio)
@@ -113,8 +115,7 @@ class VideoContent(SourceContent):
         subtitles_path = os.path.join(self.input_dir, subtitles)
         # Check if the file is already a .vtt file
         if subtitles_path.endswith(FileType.VTT):
-            logger.debug(
-                f"Subtitles are already in .vtt format: {subtitles_path}")
+            logger.debug(f"Subtitles are already in .vtt format: {subtitles_path}")
             return subtitles
 
         # Ensure the file is an .srt file
@@ -127,21 +128,21 @@ class VideoContent(SourceContent):
         # Use ffmpeg to convert .srt to .vtt
         try:
             logger.debug(f"Converting {subtitles_path} to {vtt_path}...")
-            ffmpeg.input(subtitles_path).output(
-                vtt_path, format="webvtt").run(overwrite_output=True)
+            ffmpeg.input(subtitles_path).output(vtt_path, format="webvtt").run(
+                overwrite_output=True
+            )
             logger.debug(f"Conversion successful: {vtt_path}")
             # os.remove(subtitles_path)
             # Update the subtitles attribute to point to the new .vtt file
             return os.path.basename(vtt_path)
         except ffmpeg.Error as e:
-            logger.debug(
-                f"Error occurred during subtitle conversion: {e.stderr}")
+            logger.debug(f"Error occurred during subtitle conversion: {e.stderr}")
             raise RuntimeError(f"Failed to convert {subtitles_path} to .vtt")
 
 
 class VideoDownloader:
     def __init__(self, video_file: str, offset_file: str):
-        offset = '00:00:00.000'
+        offset = "00:00:00.000"
         with open(offset_file) as f:
             offset = f.read().strip()
         self.video_file = video_file
@@ -149,16 +150,17 @@ class VideoDownloader:
 
     def extract(self, start_time: str, end_time: str, output_file: str) -> str:
         try:
-            final_output_file = output_file + '.mp3'
-            print(f"Create {final_output_file} Start: {
-                  start_time} End: {end_time}")
+            final_output_file = output_file + ".mp3"
+            print(
+                f"Create {final_output_file} Start: {
+                  start_time} End: {end_time}"
+            )
             if os.path.exists(final_output_file):
                 return final_output_file
             (
-                self.in_file
-                .filter('atrim', start=start_time, end=end_time)
-                .filter('asetpts', 'PTS-STARTPTS')
-                .output(final_output_file, format='mp3', acodec='libmp3lame')
+                self.in_file.filter("atrim", start=start_time, end=end_time)
+                .filter("asetpts", "PTS-STARTPTS")
+                .output(final_output_file, format="mp3", acodec="libmp3lame")
                 .run(overwrite_output=True)
             )
             print(f"Extracted video segment saved as {final_output_file}")

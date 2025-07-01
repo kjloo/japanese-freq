@@ -21,7 +21,7 @@ class AnkiSettingsForm(BaseForm):
         super().__init__()
 
     def to_model(self) -> AnkiSettings:
-        attrs = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        attrs = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         return AnkiSettings(attrs)
 
     @override
@@ -38,13 +38,15 @@ class AnkiSettingsForm(BaseForm):
             raise ValueError("Settings must not be empty.")
 
     def __repr__(self):
-        return (f"AnkiConfig("
-                f"name={self.name}, "
-                f"deck_id={self.deck_id}, "
-                f"deck_name={self.deck_name}, "
-                f"model_name={self.model_name}, "
-                f"settings={self.settings})")
+        return (
+            f"AnkiConfig("
+            f"name={self.name}, "
+            f"deck_id={self.deck_id}, "
+            f"deck_name={self.deck_name}, "
+            f"model_name={self.model_name}, "
+            f"settings={self.settings})"
+        )
 
 
 def anki_config_form_fields() -> list[str]:
-    return ["kanji", "definition", "sentence"]
+    return ["audio", "definition", "kanji", "pitch_accent", "sentence"]

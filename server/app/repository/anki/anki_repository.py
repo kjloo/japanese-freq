@@ -10,9 +10,7 @@ class AnkiRepository(BaseRepository):
     def add_config(self, config: AnkiSettings):
         if config._id is not None:
             self.collection.update_one(
-                config.get_key(),
-                {"$set": config.to_dict()},
-                upsert=True
+                config.get_key(), {"$set": config.to_dict()}, upsert=True
             )
         else:
             # Remove _id from dict to let MongoDB generate it

@@ -8,8 +8,9 @@ from app.module.config_module import config
 
 
 # Initialize Flask app
-app: Flask = Flask(__name__, static_folder="/app/static/assets",
-                   template_folder="/app/static")
+app: Flask = Flask(
+    __name__, static_folder="/app/static/assets", template_folder="/app/static"
+)
 app.json = CustomJSONProvider(app)
 app.config.from_object(config)
 app.logger.setLevel(app.config["LOG_LEVEL"])
@@ -23,6 +24,7 @@ app.logger.setLevel(app.config["LOG_LEVEL"])
 def handle_bad_request(e):
     return jsonify({"error": str(e)}), 400
 
+
 # 401 - Unauthorized
 
 
@@ -30,12 +32,14 @@ def handle_bad_request(e):
 def handle_unauthorized(e):
     return jsonify({"error": "Unauthorized access"}), 401
 
+
 # 403 - Forbidden
 
 
 @app.errorhandler(PermissionError)
 def handle_forbidden(e):
     return jsonify({"error": "Forbidden"}), 403
+
 
 # 404 - Not Found
 
@@ -45,12 +49,14 @@ def handle_forbidden(e):
 def handle_not_found(e):
     return jsonify({"error": "Resource not found"}), 404
 
+
 # 405 - Method Not Allowed (handled by Flask/Werkzeug)
 
 
 @app.errorhandler(405)
 def handle_method_not_allowed(e):
     return jsonify({"error": "Method not allowed"}), 405
+
 
 # 409 - Conflict
 
@@ -59,6 +65,7 @@ def handle_method_not_allowed(e):
 def handle_conflict(e):
     return jsonify({"error": "Conflict: " + str(e)}), 409
 
+
 # 415 - Unsupported Media Type
 
 
@@ -66,12 +73,14 @@ def handle_conflict(e):
 def handle_unsupported_media_type(e):
     return jsonify({"error": "Unsupported media operation"}), 415
 
+
 # 422 - Unprocessable Entity
 
 
 @app.errorhandler(AttributeError)
 def handle_unprocessable_entity(e):
     return jsonify({"error": "Unprocessable entity: " + str(e)}), 422
+
 
 # 500 - Internal Server Error (catch-all)
 

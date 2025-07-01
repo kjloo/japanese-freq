@@ -15,8 +15,7 @@ class SourceContent:
         return os.path.basename(self.input_dir)
 
     def get_output_file(self) -> str:
-        output_file = os.path.join(
-            self.output_dir, self.get_name() + '_sub.json')
+        output_file = os.path.join(self.output_dir, self.get_name() + "_sub.json")
         return output_file
 
     @abstractmethod

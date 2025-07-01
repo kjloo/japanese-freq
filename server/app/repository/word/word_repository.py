@@ -10,14 +10,14 @@ class WordRepository(BaseRepository):
         self.collection.update_one(
             {"_id": "word_list"},
             {"$addToSet": {"words": {"$each": words}}},
-            upsert=True
+            upsert=True,
         )
 
     def remove_word(self, word: str):
         # Remove a word from the list in MongoDB
         self.collection.update_one(
             {"_id": "word_list"},
-            {"$pull": {"words": word}}  # `$pull` removes the item from the array
+            {"$pull": {"words": word}},  # `$pull` removes the item from the array
         )
 
     def get_words(self) -> list[str]:

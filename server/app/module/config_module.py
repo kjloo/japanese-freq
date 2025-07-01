@@ -17,15 +17,18 @@ def _load_yaml_config(env: str) -> dict:
     default_file_name = "config.yaml"
 
     try:
-        with pkg_resources.files('app.resources').joinpath(file_name).open('r') as file:
+        with pkg_resources.files("app.resources").joinpath(file_name).open("r") as file:
             return yaml.safe_load(file)
     except FileNotFoundError:
         try:
-            with pkg_resources.files('app.resources').joinpath(default_file_name).open('r') as file:
+            with pkg_resources.files("app.resources").joinpath(default_file_name).open(
+                "r"
+            ) as file:
                 return yaml.safe_load(file)
         except FileNotFoundError:
             raise FileNotFoundError(
-                "Neither environment-specific nor default configuration file found.")
+                "Neither environment-specific nor default configuration file found."
+            )
 
 
 def _get_env() -> str:
@@ -47,6 +50,7 @@ class BaseConfig(object):
     """
     Base configuration with default settings.
     """
+
     DEBUG = False
     TESTING = False
     JSONIFY_PRETTYPRINT_REGULAR = True
@@ -61,6 +65,7 @@ class LocalConfig(BaseConfig):
     """
     Local-specific configuration.
     """
+
     DEBUG = True
 
     LOG_LEVEL = "DEBUG"
@@ -70,6 +75,7 @@ class DevelopmentConfig(BaseConfig):
     """
     Development-specific configuration.
     """
+
     DEBUG = False
 
 
@@ -77,6 +83,7 @@ class TestingConfig(BaseConfig):
     """
     Testing-specific configuration.
     """
+
     TESTING = True
 
 
@@ -84,6 +91,7 @@ class ProductionConfig(BaseConfig):
     """
     Production-specific configuration.
     """
+
     SECRET_KEY = os.getenv("SECRET_KEY", "production-secret-key")
 
 

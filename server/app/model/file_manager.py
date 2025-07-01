@@ -25,19 +25,26 @@ class FileManager:
                     sub = name
                 elif name.lower().endswith(FileType.VTT):
                     sub = name
-                elif name.lower().endswith(FileType.MP4) or name.lower().endswith(FileType.MKV) or name.lower().endswith(FileType.MP3):
+                elif (
+                    name.lower().endswith(FileType.MP4)
+                    or name.lower().endswith(FileType.MKV)
+                    or name.lower().endswith(FileType.MP3)
+                ):
                     video = name
                 elif name.lower().endswith(FileType.OFFSET):
                     offset = name
                 elif name.lower().endswith(FileType.TXT):
                     text = name
             if text:
-                self.source_content.append(TextContent(full_path, os.path.join(
-                    output_dir, f), text))
+                self.source_content.append(
+                    TextContent(full_path, os.path.join(output_dir, f), text)
+                )
             elif sub and video:
                 self.source_content.append(
-                    VideoContent(full_path, os.path.join(
-                        output_dir, f), sub, video, offset))
+                    VideoContent(
+                        full_path, os.path.join(output_dir, f), sub, video, offset
+                    )
+                )
 
     def get_video_by_name(self, name: str) -> VideoContent:
         try:

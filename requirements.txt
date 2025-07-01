@@ -1,4 +1,5 @@
 unidic==1.1.0
+black==25.1.0
 ffmpeg-python==0.2.0
 fugashi[unidic]==1.4.0
 cutlet==0.5.0

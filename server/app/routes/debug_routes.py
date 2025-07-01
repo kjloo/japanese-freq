@@ -3,7 +3,7 @@ from flask import Blueprint, Response, jsonify
 from app.module.logging_module import logger
 
 # Blueprint for routes
-debug_routes = Blueprint('debug_routes', __name__)
+debug_routes = Blueprint("debug_routes", __name__)
 
 
 class Foo:
@@ -14,11 +14,7 @@ class Foo:
 
     def to_dict(self):
         logger.debug("Converting Foo to JSON")
-        return {
-            "a": self.a,
-            "b": self.b,
-            "c": self.c
-        }
+        return {"a": self.a, "b": self.b, "c": self.c}
 
 
 @debug_routes.route("/api/debug/serde", methods=["GET"])

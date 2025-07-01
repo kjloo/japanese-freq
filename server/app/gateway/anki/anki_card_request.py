@@ -1,5 +1,3 @@
-
-
 class AnkiCardRequest(object):
     kanji: str = ""
     definition: str = ""

@@ -11,20 +11,25 @@ def style_subtitles(subtitles: list[str]) -> list[str]:
     block = []
 
     for line in subtitles:
-        if not line.strip() or line.startswith("WEBVTT") or line.startswith("Kind:") or line.startswith("Language:"):
+        if (
+            not line.strip()
+            or line.startswith("WEBVTT")
+            or line.startswith("Kind:")
+            or line.startswith("Language:")
+        ):
             styled_subtitles.append(line)
             continue
 
         if "-->" in line:
             # New timestamp found, flush previous block
-            styled_subtitles.append(''.join(block))
+            styled_subtitles.append("".join(block))
             block = []
             styled_subtitles.append(line)
         else:
             block.append(_style_subtitle(line))
 
     # Flush the last block if present
-    styled_subtitles.append(''.join(block))
+    styled_subtitles.append("".join(block))
 
     return [line for line in styled_subtitles if line.strip()]
 
@@ -37,7 +42,9 @@ def _style_subtitle(line: str) -> str:
             logger.warning(f"Word content has no orth: {word_content}")
             continue
         line = line.replace(
-            word_content.feature.orth, f"<span class='new-word'>{word_content.feature.orth}</span>")
+            word_content.feature.orth,
+            f"<span class='new-word'>{word_content.feature.orth}</span>",
+        )
     return line
 
 

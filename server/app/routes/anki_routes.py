@@ -5,7 +5,7 @@ from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
 from app.form.anki.anki_card_form import AnkiCardForm
 
-anki_routes = Blueprint('anki_routes', __name__)
+anki_routes = Blueprint("anki_routes", __name__)
 
 
 @anki_routes.route("/api/anki/decks", methods=["GET"])

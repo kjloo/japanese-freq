@@ -74,8 +74,7 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
         if field_name in note["fields"]:
             field_values.append(note["fields"][field_name]["value"])
         else:
-            logger.warning(
-                f"Field '{field_name}' not found in note: {note['noteId']}")
+            logger.warning(f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
 
@@ -89,14 +88,14 @@ def _create_card(config: AnkiSettings, card: AnkiCardRequest) -> dict[str, int]:
     fields = {
         config.kanji: card.kanji,
         config.definition: card.definition,
-        config.sentence: card.sentence
+        config.sentence: card.sentence,
     }
 
     note = {
         "deckName": config.deck_name,
         "modelName": config.model_name,
         "fields": fields,
-        "tags": ["tinkerm0nk3y808"]
+        "tags": ["tinkerm0nk3y808"],
     }
 
     response = anki_gateway.post("addNote", {"note": note})
@@ -122,8 +121,7 @@ def _find_cards(deck_name: str) -> list[int]:
     :param deck_name: The name of the deck.
     :return: A list of card IDs in the specified deck.
     """
-    card_ids = anki_gateway.post(
-        "findCards", {"query": f"deck:\"{deck_name}\""})
+    card_ids = anki_gateway.post("findCards", {"query": f'deck:"{deck_name}"'})
     if not card_ids:
         raise ValueError(f"No cards found in deck '{deck_name}'")
     logger.debug(f"Card IDs: {card_ids}")

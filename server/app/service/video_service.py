@@ -26,8 +26,7 @@ def generate(source: str) -> Response:
 
     # Determine the file extension and content type
     file_extension = os.path.splitext(video_path)[1][1:].lower()
-    content_type = CONTENT_TYPE_MAP.get(
-        file_extension, "application/octet-stream")
+    content_type = CONTENT_TYPE_MAP.get(file_extension, "application/octet-stream")
 
     # Handle HTTP Range Requests
     range_header = request.headers.get("Range", None)
@@ -51,8 +50,7 @@ def generate(source: str) -> Response:
             chunk = f.read(chunk_size)
 
         response = Response(chunk, status=206, content_type=content_type)
-        response.headers.add(
-            "Content-Range", f"bytes {start}-{end}/{file_size}")
+        response.headers.add("Content-Range", f"bytes {start}-{end}/{file_size}")
         response.headers.add("Accept-Ranges", "bytes")
         response.headers.add("Content-Length", str(chunk_size))
         return response
@@ -63,8 +61,7 @@ def generate(source: str) -> Response:
             while chunk := f.read(1024 * 1024):  # Read in 1MB chunks
                 yield chunk
 
-    response = Response(read_video_chunks(video_path),
-                        content_type=content_type)
+    response = Response(read_video_chunks(video_path), content_type=content_type)
     response.headers.add("Accept-Ranges", "bytes")
     response.headers.add("Content-Length", str(os.path.getsize(video_path)))
     return response
@@ -82,7 +79,7 @@ def generate_subtitles(source: str, process_settings: ProcessSettings) -> dict[s
 
     # Read the subtitle file content
     def read_subtitle_file(subtitles_path) -> list[str]:
-        with open(subtitles_path, 'r', encoding='utf-8') as f:
+        with open(subtitles_path, "r", encoding="utf-8") as f:
             return f.readlines()
 
     subtitle_content: list[str] = read_subtitle_file(subtitles_path)

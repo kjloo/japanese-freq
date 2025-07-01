@@ -41,6 +41,10 @@ server-run: server-setup
 server-test: server-setup
 	cd server; pytest -vv
 
+.PHONY: server-format
+server-format:
+	cd server && black .
+
 .PHONY: client-run
 client-run:
 	cd client; npm run dev
