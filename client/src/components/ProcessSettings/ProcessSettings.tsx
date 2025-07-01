@@ -1,6 +1,7 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import commonStyles from '../CommonConfigs.module.css';
+import type { AnkiConfig } from '../../types/AnkiTypes'; // Assuming you have a type definition for AnkiConfig
 
 export type ProcessVideoSettings = {
     inputs: string[];
@@ -9,12 +10,6 @@ export type ProcessVideoSettings = {
     requires_definition: boolean;
     min_word_length: number;
 };
-
-type AnkiConfig = {
-    _id: number;
-    name: string;
-    deck_name: string;
-}
 
 export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
     inputs: [],
@@ -34,6 +29,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
     const [inputs, setInputs] = useState<string[]>([]);
     const [selectedInputs, setSelectedInputs] = useState<string[]>([]);
     const [configs, setConfigs] = useState<AnkiConfig[]>([]);
+    const [selectedConfig, setSelectedConfig] = useState<string>('');
     const [wordCheck, setWordCheck] = useState<boolean>(true);
     const [freqMin, setFreqMin] = useState<number>(2);
     const [requiresDefinition, setRequiresDefinition] = useState<boolean>(true);
@@ -153,9 +149,13 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                     <label className={commonStyles.configLabel}>
                         Anki Config:
                     </label>
-                    <select className={commonStyles.configInput} onChange={(e) => setSelectedInputs([e.target.value])}>
+                    <select
+                        className={commonStyles.configInput}
+                        value={selectedConfig}
+                        onChange={(e) => setSelectedConfig(e.target.value)}
+                    >
                         {configs.map((config) => (
-                            <option key={config.name} value={config.name}>
+                            <option key={config._id} value={config._id}>
                                 {config.name}
                             </option>
                         ))}

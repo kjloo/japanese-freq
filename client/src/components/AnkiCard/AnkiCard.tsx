@@ -1,12 +1,15 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import commonStyles from '../CommonConfigs.module.css';
+import type { AnkiConfig } from '../../types/AnkiTypes'; // Assuming you have a type definition for AnkiConfig
 
 interface AnkiCardProps {
     onCancel: () => void;
 }
 
 const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
+    const [configs, setConfigs] = useState<AnkiConfig[]>([]);
+    const [selectedConfig, setSelectedConfig] = useState<string | null>(null);
     const [decks, setDecks] = useState(new Map<string, number>());
     const [configName, setConfigName] = useState<string>('');
     const [selectedDeck, setSelectedDeck] = useState<string>('');
@@ -40,8 +43,17 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 console.error('Error fetching Anki models:', error);
             }
         };
-
+        const fetchConfigs = async () => {
+            try {
+                const response = await axios.get('/api/anki/configs');
+                setConfigs(response.data.configs);
+                setSelectedConfig(response.data.configs.length > 0 ? response.data.configs[0]._id : null);
+            } catch (error) {
+                console.error('Error fetching configs:', error);
+            }
+        };
         fetchDecks();
+        fetchConfigs();
     }, []);
 
     useEffect(() => {
@@ -127,13 +139,24 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 <div className={commonStyles.configContainer}>
                     <div className={commonStyles.configRow}>
                         <label className={commonStyles.configLabel}>Configuration Name</label>
-                        <input
-                            type="text"
-                            className={commonStyles.configInput}
-                            value={configName}
-                            onChange={(e) => setConfigName(e.target.value)}
-                            placeholder="Enter configuration name"
-                        />
+                        {selectedConfig === '' ? (
+                            <input
+                                type="text"
+                                className={commonStyles.configInput}
+                                value={configName}
+                                onChange={(e) => setConfigName(e.target.value)}
+                                placeholder="Enter configuration name"
+                            />
+                        ) : (
+                            <select className={commonStyles.configInput} onChange={(e) => setSelectedConfig(e.target.value)} value={selectedConfig || ''}>
+                                {configs.map((config) => (
+                                    <option key={config._id} value={config._id}>
+                                        {config.name}
+                                    </option>
+                                ))}
+                                <option value="">Create New Configuration</option>
+                            </select>
+                        )}
                     </div>
                     <h2 className="subtitle">Choose an Anki Deck</h2>
                     <div className={commonStyles.configRow}>
