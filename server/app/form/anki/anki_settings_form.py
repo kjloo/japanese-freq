@@ -49,4 +49,15 @@ class AnkiSettingsForm(BaseForm):
 
 
 def anki_config_form_fields() -> list[str]:
-    return ["audio", "definition", "kanji", "pitch_accent", "sentence"]
+    return [
+        "audio",
+        "conjugation",
+        "definition",
+        "hiragana",
+        "kanji",
+        "part_of_speech",
+        "pitch_accent",
+        "romaji",
+        "sentence",
+        "translation",
+    ]
