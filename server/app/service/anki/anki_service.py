@@ -110,7 +110,7 @@ def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     if note_id:
         try:
             # This will open the browser in Anki focused on the created note
-            anki_gateway.post("guiBrowse", {"query": f"nid:{note_id}"})
+            anki_gateway.post("guiEditNote", {"note": note_id})
         except Exception as e:
             logger.warning(f"Could not open card in Anki: {e}")
 
