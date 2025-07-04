@@ -8,5 +8,6 @@ from app.module.database_module import get_mongo_connector
 class BaseRepository(ABC):
     def __init__(self, collection_name: str):
         self.collection_name: str = collection_name
-        self.collection: Collection = get_mongo_connector(
-            app).get_collection(collection_name)
+        self.collection: Collection = get_mongo_connector(app).get_collection(
+            collection_name
+        )

@@ -19,7 +19,9 @@ class AnkiCardForm(BaseForm):
         super().__init__()
 
     def to_req(self) -> AnkiCardRequest:
-        return AnkiCardRequest(self.deck_id, self.deck_name, self.model_name, self.settings)
+        return AnkiCardRequest(
+            self.deck_id, self.deck_name, self.model_name, self.settings
+        )
 
     @override
     def _validate(self):

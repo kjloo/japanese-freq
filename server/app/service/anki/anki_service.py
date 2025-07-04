@@ -13,11 +13,13 @@ def create_card_in_deck(card: AnkiCardRequest) -> dict[str, int]:
     kanji = "飲む"
     definition = "to drink"
     sentence = "水を飲む。"
-    card.set_values({
-        "kanji": kanji,
-        "definition": definition,
-        "sentence": sentence,
-    })
+    card.set_values(
+        {
+            "kanji": kanji,
+            "definition": definition,
+            "sentence": sentence,
+        }
+    )
     return _create_card(card)
 
 
@@ -79,8 +81,7 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
         if field_name in note["fields"]:
             field_values.append(note["fields"][field_name]["value"])
         else:
-            logger.warning(
-                f"Field '{field_name}' not found in note: {note['noteId']}")
+            logger.warning(f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
 
@@ -91,8 +92,11 @@ def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     :param deck_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     """
-    fields = {key: req.values[value] for key,
-              value in req.settings.items() if value in req.values}
+    fields = {
+        key: req.values[value]
+        for key, value in req.settings.items()
+        if value in req.values
+    }
 
     note = {
         "deckName": req.deck_name,

@@ -53,7 +53,10 @@ def get_anki_config_fields() -> Response:
 @anki_routes.route("/api/anki/configs", methods=["GET"])
 def get_anki_configs() -> Response:
     configs = anki_settings_service.get_anki_configs()
-    return jsonify({"configs": [mongo_json_mapper.serialize_config(c) for c in configs]}), 200
+    return (
+        jsonify({"configs": [mongo_json_mapper.serialize_config(c) for c in configs]}),
+        200,
+    )
 
 
 @anki_routes.route("/api/anki/configs/<string:config_id>", methods=["GET"])

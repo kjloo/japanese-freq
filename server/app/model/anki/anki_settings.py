@@ -8,6 +8,4 @@ class AnkiSettings(Document):
     model_name = StringField(required=True)
     settings = DictField()
 
-    meta = {
-        'collection': 'anki_settings'
-    }
+    meta = {"collection": "anki_settings"}

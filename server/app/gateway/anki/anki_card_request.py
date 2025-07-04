@@ -5,7 +5,9 @@ class AnkiCardRequest(object):
     settings: dict[str, str]
     values: dict[str, str]
 
-    def __init__(self, deck_id: int, deck_name: str, model_name: str, settings: dict[str, str]):
+    def __init__(
+        self, deck_id: int, deck_name: str, model_name: str, settings: dict[str, str]
+    ):
         self.deck_id = deck_id
         self.deck_name = deck_name
         self.model_name = model_name

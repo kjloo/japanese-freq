@@ -5,6 +5,7 @@ class AnkiValues:
     """
     Class to hold Anki values for card creation.
     """
+
     audio: str
     conjugation: str
     definition: str
@@ -52,4 +53,8 @@ class AnkiValues:
         Return the list of attribute names based on the __init__ signature.
         """
         # Exclude 'self' from parameters
-        return [param for param in signature(AnkiValues.__init__).parameters if param != "self"]
+        return [
+            param
+            for param in signature(AnkiValues.__init__).parameters
+            if param != "self"
+        ]

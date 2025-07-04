@@ -30,8 +30,7 @@ def get_mongo_connector(app: Flask) -> MongoDBConnector:
     if mongo_connector is not None:
         return mongo_connector
     mongo_config = _get_mongo_config(app)
-    mongo_connector = MongoDBConnector(
-        mongo_config.get_server_url(), mongo_config.db)
+    mongo_connector = MongoDBConnector(mongo_config.get_server_url(), mongo_config.db)
     return mongo_connector
 
 
@@ -42,7 +41,8 @@ def initialize_mongo_connection(app: Flask):
     mongo_config = _get_mongo_config(app)
     if not isinstance(mongo_config, MongoConfig):
         raise TypeError(
-            "Expected MongoConfig instance, got: {}".format(type(mongo_config)))
+            "Expected MongoConfig instance, got: {}".format(type(mongo_config))
+        )
     if not mongo_config:
         raise ValueError("MongoDB configuration is not set in the app config.")
     connect(
@@ -51,5 +51,5 @@ def initialize_mongo_connection(app: Flask):
         port=mongo_config.port,
         username=mongo_config.user,
         password=mongo_config.password,
-        authentication_source="admin"
+        authentication_source="admin",
     )
