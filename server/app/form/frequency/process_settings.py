@@ -5,7 +5,7 @@ class ProcessSettings:
         word_check: bool,
         freq_min: int,
         requires_definition: bool,
-        min_word_length: int
+        min_word_length: int,
     ):
         self.inputs = inputs
         self.word_check = word_check
@@ -31,14 +31,15 @@ class ProcessSettings:
         if not isinstance(self.word_check, bool):
             raise ValueError("Word check must be a boolean.")
         if not isinstance(self.freq_min, int) or self.freq_min < 0:
-            raise ValueError(
-                "Frequency minimum must be a non-negative integer.")
+            raise ValueError("Frequency minimum must be a non-negative integer.")
         if not isinstance(self.min_word_length, int) or self.min_word_length < 1:
             raise ValueError("Minimum word length must be a positive integer.")
 
     def __repr__(self):
-        return (f"ProcessSettings(inputs={self.inputs}, "
-                f"word_check={self.word_check}, "
-                f"freq_min={self.freq_min}, "
-                f"requires_definition={self.requires_definition}, "
-                f"min_word_length={self.min_word_length})")
+        return (
+            f"ProcessSettings(inputs={self.inputs}, "
+            f"word_check={self.word_check}, "
+            f"freq_min={self.freq_min}, "
+            f"requires_definition={self.requires_definition}, "
+            f"min_word_length={self.min_word_length})"
+        )

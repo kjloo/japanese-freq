@@ -1,13 +1,17 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
-import styles from './AnkiCard.module.css';
+import commonStyles from '../CommonConfigs.module.css';
+import type { AnkiConfig } from '../../types/AnkiTypes'; // Assuming you have a type definition for AnkiConfig
 
 interface AnkiCardProps {
     onCancel: () => void;
 }
 
 const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
+    const [configs, setConfigs] = useState<AnkiConfig[]>([]);
+    const [selectedConfig, setSelectedConfig] = useState<string | null>(null);
     const [decks, setDecks] = useState(new Map<string, number>());
+    const [configName, setConfigName] = useState<string>('');
     const [selectedDeck, setSelectedDeck] = useState<string>('');
     const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
     const [models, setModels] = useState(new Map<string, number>());
@@ -39,8 +43,17 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 console.error('Error fetching Anki models:', error);
             }
         };
-
+        const fetchConfigs = async () => {
+            try {
+                const response = await axios.get('/api/anki/configs');
+                setConfigs(response.data.configs);
+                setSelectedConfig(response.data.configs.length > 0 ? response.data.configs[0]._id : '');
+            } catch (error) {
+                console.error('Error fetching configs:', error);
+            }
+        };
         fetchDecks();
+        fetchConfigs();
     }, []);
 
     useEffect(() => {
@@ -49,7 +62,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 try {
                     const ankiResp = await axios.get(`/api/anki/models/${selectedModelId}/fields`);
                     setModelFields(ankiResp.data.fields);
-                    const appSettings = await axios.get(`/api/anki/config`);
+                    const appSettings = await axios.get(`/api/anki/configs/fields`);
                     setSettingsFields(appSettings.data.fields);
                 } catch (error) {
                     console.error('Error fetching Anki model fields:', error);
@@ -59,23 +72,22 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         fetchModelFieldsAndSettings();
     }, [modelSelected, selectedModelId]);
 
-    useEffect(() => {
-        setConfigFieldsSelected(
-            settingsFields.reduce((acc: Record<string, string>, field: string) => ({
-                ...acc,
-                [field]: modelFields[0] || ''
-            }), {})
+    const settingsFieldsDropDown = (field: string) => {
+        return (
+            <select
+                className={commonStyles.configSelect}
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                value={configFieldsSelected[field] || ""}
+                name={settingsFields[0]}
+            >
+                <option value="">Select...</option>
+                {settingsFields.map((optionField, index) => (
+                    <option key={index} value={optionField}>
+                        {optionField}
+                    </option>
+                ))}
+            </select>
         );
-    }, [modelFields, settingsFields]);
-
-    const modelFieldsDropDown = (field: string) => {
-        return <select className={styles.configSelect} onChange={(e) => handleFieldChange(field, e.target.value)} name={modelFields[0]}>
-            {modelFields.map((field, index) => (
-                <option key={index} value={field}>
-                    {field}
-                </option>
-            ))}
-        </select>;
     }
 
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -107,11 +119,12 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         try {
             const configJson = {
                 deck_id: selectedDeckId,
+                name: configName,
                 deck_name: selectedDeck,
                 model_name: selectedModel,
-                ...configFieldsSelected
+                settings: configFieldsSelected
             };
-            await axios.post('/api/anki/config', configJson);
+            await axios.post('/api/anki/configs', configJson);
             console.log('Configuration saved successfully');
             onCancel();
         } catch (error) {
@@ -123,11 +136,32 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         <div className="card">
             <h1 className="title">Anki Settings</h1>
             {!modelSelected ? (<>
-                <div className={styles.configContainer}>
+                <div className={commonStyles.configContainer}>
+                    <div className={commonStyles.configRow}>
+                        <label className={commonStyles.configLabel}>Configuration Name</label>
+                        {selectedConfig === '' ? (
+                            <input
+                                type="text"
+                                className={commonStyles.configInput}
+                                value={configName}
+                                onChange={(e) => setConfigName(e.target.value)}
+                                placeholder="Enter configuration name"
+                            />
+                        ) : (
+                            <select className={commonStyles.configInput} onChange={(e) => setSelectedConfig(e.target.value)} value={selectedConfig || ''}>
+                                {configs.map((config) => (
+                                    <option key={config._id} value={config._id}>
+                                        {config.name}
+                                    </option>
+                                ))}
+                                <option value="">Create New Configuration</option>
+                            </select>
+                        )}
+                    </div>
                     <h2 className="subtitle">Choose an Anki Deck</h2>
-                    <div className={styles.configRow}>
-                        <label className={styles.configLabel}>Deck</label>
-                        <select className={styles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
+                    <div className={commonStyles.configRow}>
+                        <label className={commonStyles.configLabel}>Deck</label>
+                        <select className={commonStyles.configSelect} onChange={handleDeckChange} value={selectedDeck}>
                             {Array.from(decks.entries()).map(([deck], index) => (
                                 <option key={index} value={deck}>
                                     {deck}
@@ -135,9 +169,9 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                             ))}
                         </select>
                     </div>
-                    <div className={styles.configRow}>
-                        <label className={styles.configLabel}>Model</label>
-                        <select className={styles.configSelect} onChange={handleModelChange} value={selectedModel}>
+                    <div className={commonStyles.configRow}>
+                        <label className={commonStyles.configLabel}>Model</label>
+                        <select className={commonStyles.configSelect} onChange={handleModelChange} value={selectedModel}>
                             {Array.from(models.entries()).map(([model], index) => (
                                 <option key={index} value={model}>
                                     {model}
@@ -150,16 +184,18 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                     Select Model
                 </button>
             </>) : (<>
-                <div className={styles.configContainer}>
+                <div className={commonStyles.configContainer}>
                     <h2 className='subtitle'>Field Configuration</h2>
-                    {settingsFields.map((field, index) => (
-                        <div className={styles.configRow} key={index}>
-                            <label className={styles.configLabel}>
-                                {field}
-                            </label>
-                            {modelFieldsDropDown(field)}
-                        </div>
-                    ))}
+                    <div className={commonStyles.configScrollable}>
+                        {modelFields.map((field, index) => (
+                            <div className={commonStyles.configRow} key={index}>
+                                <label className={commonStyles.configLabel}>
+                                    {field}
+                                </label>
+                                {settingsFieldsDropDown(field)}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <button onClick={handleConfigSubmit}>
                     Submit

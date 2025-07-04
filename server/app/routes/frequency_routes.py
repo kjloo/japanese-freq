@@ -6,7 +6,7 @@ from app.module.logging_module import logger
 from app.form.frequency.process_settings import ProcessSettings
 
 # Blueprint for routes
-frequency_routes = Blueprint('frequency_routes', __name__)
+frequency_routes = Blueprint("frequency_routes", __name__)
 
 
 @frequency_routes.route("/api/frequency/process", methods=["POST"])
@@ -18,8 +18,7 @@ def start_process():
     logger.debug(f"Starting frequency process with inputs: {payload}")
 
     # Start the processing in a separate thread
-    thread = threading.Thread(
-        target=frequency_service.process_words, args=(payload,))
+    thread = threading.Thread(target=frequency_service.process_words, args=(payload,))
     thread.start()
 
     return jsonify({"status": "started"}), 200

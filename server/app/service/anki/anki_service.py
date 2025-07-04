@@ -1,19 +1,26 @@
 from app.module.logging_module import logger
 from app.gateway.anki import anki_gateway
 from app.gateway.anki.anki_card_request import AnkiCardRequest
-from app.service.anki import anki_settings_service
-from app.model.anki.anki_settings import AnkiSettings
 
 
-def create_card_in_deck(deck_id: int, card: AnkiCardRequest) -> dict[str, int]:
+def create_card_in_deck(card: AnkiCardRequest) -> dict[str, int]:
     """
     Create a card in a specific deck in Anki.
-    :param deck_id: The ID of the deck.
+    :param config_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     :raises ValueError: If the deck ID is invalid or if the card creation fails.
     """
-    config = anki_settings_service.get_anki_config(deck_id)
-    return _create_card(config, card)
+    kanji = "飲む"
+    definition = "to drink"
+    sentence = "水を飲む。"
+    card.set_values(
+        {
+            "kanji": kanji,
+            "definition": definition,
+            "sentence": sentence,
+        }
+    )
+    return _create_card(card)
 
 
 def get_deck_names() -> dict[str, int]:
@@ -74,34 +81,43 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
         if field_name in note["fields"]:
             field_values.append(note["fields"][field_name]["value"])
         else:
-            logger.warning(
-                f"Field '{field_name}' not found in note: {note['noteId']}")
+            logger.warning(f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
 
 
-def _create_card(config: AnkiSettings, card: AnkiCardRequest) -> dict[str, int]:
+def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     """
     Create a card in a specific deck.
     :param deck_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     """
     fields = {
-        config.kanji: card.kanji,
-        config.definition: card.definition,
-        config.sentence: card.sentence
+        key: req.values[value]
+        for key, value in req.settings.items()
+        if value in req.values
     }
 
     note = {
-        "deckName": config.deck_name,
-        "modelName": config.model_name,
+        "deckName": req.deck_name,
+        "modelName": req.model_name,
         "fields": fields,
-        "tags": ["tinkerm0nk3y808"]
+        "tags": ["tinkerm0nk3y808"],
     }
 
     response = anki_gateway.post("addNote", {"note": note})
     if not response:
         raise ValueError("Failed to create card in Anki")
+
+    # Try to open the card in Anki (using AnkiConnect's 'guiBrowse' action)
+    note_id = response
+    if note_id:
+        try:
+            # This will open the browser in Anki focused on the created note
+            anki_gateway.post("guiEditNote", {"note": note_id})
+        except Exception as e:
+            logger.warning(f"Could not open card in Anki: {e}")
+
     return response
 
 
@@ -122,8 +138,7 @@ def _find_cards(deck_name: str) -> list[int]:
     :param deck_name: The name of the deck.
     :return: A list of card IDs in the specified deck.
     """
-    card_ids = anki_gateway.post(
-        "findCards", {"query": f"deck:\"{deck_name}\""})
+    card_ids = anki_gateway.post("findCards", {"query": f'deck:"{deck_name}"'})
     if not card_ids:
         raise ValueError(f"No cards found in deck '{deck_name}'")
     logger.debug(f"Card IDs: {card_ids}")

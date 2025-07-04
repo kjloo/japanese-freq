@@ -16,7 +16,7 @@ class TextContent(SourceContent):
         data = []
         with open(input_file) as f:
             data = f.read().strip()
-        lines = re.findall(r'[^。？！]+.?', data)
+        lines = re.findall(r"[^。？！]+.?", data)
         content: list[JapaneseContent] = []
         for line in lines:
             jc = JapaneseContent(line, None, None)
@@ -24,14 +24,14 @@ class TextContent(SourceContent):
         return content
 
     def download_media(self, content_dict: dict) -> dict:
-        rc = defaultdict(
-            lambda: {"frequency": 0, "definition": None, "sentences": []})
+        rc = defaultdict(lambda: {"frequency": 0, "definition": None, "sentences": []})
 
         for word in content_dict:
             rc[word]["frequency"] = content_dict[word]["frequency"]
             rc[word]["definition"] = content_dict[word]["definition"]
-            rc[word]["sentences"] = [jc.to_dict()
-                                     for jc in content_dict[word]["content"]]
+            rc[word]["sentences"] = [
+                jc.to_dict() for jc in content_dict[word]["content"]
+            ]
 
         return rc
 

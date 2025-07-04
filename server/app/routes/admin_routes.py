@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, jsonify
 
 # Blueprint for routes
-admin_routes = Blueprint('admin_routes', __name__)
+admin_routes = Blueprint("admin_routes", __name__)
 
 
 @admin_routes.route("/health", methods=["GET"])

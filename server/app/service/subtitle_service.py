@@ -8,14 +8,30 @@ from app.module.logging_module import logger
 
 def style_subtitles(subtitles: list[str]) -> list[str]:
     styled_subtitles = []
+    block = []
+
     for line in subtitles:
-        # Ignore empty lines, title lines, and timestamp lines
-        if not line.strip() or line.startswith("WEBVTT") or line.startswith("Kind:") or line.startswith("Language:") or "-->" in line:
+        if (
+            not line.strip()
+            or line.startswith("WEBVTT")
+            or line.startswith("Kind:")
+            or line.startswith("Language:")
+        ):
             styled_subtitles.append(line)
             continue
-        styled_line = _style_subtitle(line)
-        styled_subtitles.append(styled_line)
-    return styled_subtitles
+
+        if "-->" in line:
+            # New timestamp found, flush previous block
+            styled_subtitles.append("".join(block))
+            block = []
+            styled_subtitles.append(line)
+        else:
+            block.append(_style_subtitle(line))
+
+    # Flush the last block if present
+    styled_subtitles.append("".join(block))
+
+    return [line for line in styled_subtitles if line.strip()]
 
 
 def _style_subtitle(line: str) -> str:
@@ -26,7 +42,9 @@ def _style_subtitle(line: str) -> str:
             logger.warning(f"Word content has no orth: {word_content}")
             continue
         line = line.replace(
-            word_content.feature.orth, f"<span class='new-word'>{word_content.feature.orth}</span>")
+            word_content.feature.orth,
+            f"<span class='new-word'>{word_content.feature.orth}</span>",
+        )
     return line
 
 

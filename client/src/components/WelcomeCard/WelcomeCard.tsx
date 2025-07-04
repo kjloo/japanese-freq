@@ -19,16 +19,15 @@ const WelcomeCard: FunctionComponent<WelcomeCardProps> = ({ isLoading, progress,
             </button>
 
             {isLoading && (
-                <div className="progress-bar">
+                <div className={styles.progressBar}>
                     <div
-                        className="progress-bar-fill"
+                        className={styles.progressBarFill}
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
-            )
-            }
+            )}
             {progress === 100 && <p>Process complete!</p>}
-        </div >
+        </div>
     );
 };
 

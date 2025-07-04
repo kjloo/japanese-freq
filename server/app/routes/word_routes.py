@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, Response, request
 from app.service import word_service
 
 # Blueprint for routes
-word_routes = Blueprint('word_routes', __name__)
+word_routes = Blueprint("word_routes", __name__)
 
 
 @word_routes.route("/api/word/ignore-list/sync", methods=["POST"])

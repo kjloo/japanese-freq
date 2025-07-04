@@ -1,23 +1,20 @@
-from app.repository.base_repository import BaseRepository
 from app.model.anki.anki_settings import AnkiSettings
+from bson import ObjectId
 
 
-class AnkiRepository(BaseRepository):
-    def __init__(self):
-        super().__init__("anki")
-
+class AnkiRepository:
     def add_config(self, config: AnkiSettings):
-        self.collection.update_one(
-            config.get_key(),
-            {"$set": config.to_dict()},
-            upsert=True
-        )
+        # Save or update using mongoengine's API
+        config.save()  # This will insert or update based on the presence of _id
 
-    def get_config(self, deck_id: int) -> AnkiSettings:
-        config_data = self.collection.find_one({"_id": deck_id})
-        if config_data:
-            return AnkiSettings(config_data)
-        return None
+    def get_config(self, config_id: str) -> AnkiSettings | None:
+        try:
+            return AnkiSettings.objects(id=ObjectId(config_id)).first()
+        except Exception:
+            return None
+
+    def get_all_configs(self) -> list[AnkiSettings]:
+        return list(AnkiSettings.objects.all())
 
 
 anki_repository = AnkiRepository()

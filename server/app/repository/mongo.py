@@ -17,7 +17,7 @@ class MongoDBConnector:
         try:
             self.client = MongoClient(self.uri)
             # Trigger a connection check
-            self.client.admin.command('ping')
+            self.client.admin.command("ping")
             self.db = self.client[self.db_name]
             logger.info(f"Connected to MongoDB: {self.uri}/{self.db_name}")
         except ConnectionFailure as e:

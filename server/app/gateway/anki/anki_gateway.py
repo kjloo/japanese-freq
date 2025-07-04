@@ -19,7 +19,8 @@ def post(action: str, params: dict = None) -> dict:
         response = requests.post(anki_server_url, json=payload)
         if response.status_code != 200:
             raise Exception(
-                f"Anki server error: {response.status_code} - {response.text}")
+                f"Anki server error: {response.status_code} - {response.text}"
+            )
     except requests.RequestException as e:
         logger.error(f"Anki server request failed: {e}")
         raise

@@ -4,8 +4,9 @@ from app.module.logging_module import logger
 from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
 from app.form.anki.anki_card_form import AnkiCardForm
+import app.mapper.mongo_json_mapper as mongo_json_mapper
 
-anki_routes = Blueprint('anki_routes', __name__)
+anki_routes = Blueprint("anki_routes", __name__)
 
 
 @anki_routes.route("/api/anki/decks", methods=["GET"])
@@ -38,18 +39,35 @@ def get_cards_in_deck(deck_id: int) -> Response:
 @anki_routes.route("/api/anki/decks/<int:deck_id>/cards", methods=["POST"])
 def create_card_in_deck(deck_id: int) -> Response:
     data = request.get_json()
-    payload = AnkiCardForm(data)
-    resp = anki_service.create_card_in_deck(deck_id, payload.to_req())
+    payload = AnkiCardForm(deck_id, data)
+    resp = anki_service.create_card_in_deck(payload.to_req())
     return jsonify({"note": resp}), 200
 
 
-@anki_routes.route("/api/anki/config", methods=["GET"])
+@anki_routes.route("/api/anki/configs/fields", methods=["GET"])
 def get_anki_config_fields() -> Response:
     fields = anki_settings_service.get_anki_config_fields()
     return jsonify({"fields": fields}), 200
 
 
-@anki_routes.route("/api/anki/config", methods=["POST"])
+@anki_routes.route("/api/anki/configs", methods=["GET"])
+def get_anki_configs() -> Response:
+    configs = anki_settings_service.get_anki_configs()
+    return (
+        jsonify({"configs": [mongo_json_mapper.serialize_config(c) for c in configs]}),
+        200,
+    )
+
+
+@anki_routes.route("/api/anki/configs/<string:config_id>", methods=["GET"])
+def get_anki_config(config_id: str) -> Response:
+    config = anki_settings_service.get_anki_config(config_id)
+    if not config:
+        return jsonify({"error": "Configuration not found"}), 404
+    return jsonify({"config": mongo_json_mapper.serialize_config(config)}), 200
+
+
+@anki_routes.route("/api/anki/configs", methods=["POST"])
 def save_anki_config() -> Response:
     data = request.get_json()
     payload = AnkiSettingsForm(data)

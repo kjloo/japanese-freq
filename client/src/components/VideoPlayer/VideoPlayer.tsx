@@ -1,7 +1,9 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
 import DOMPurify from "dompurify";
-import { ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
+import styles from './VideoPlayer.module.css';
+import { ProcessVideoSettings } from '../../types/ProcessVideoSettings';
+import { AnkiConfig } from '../../types/AnkiTypes';
 
 interface VideoPlayerProps {
     source: string;
@@ -22,6 +24,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
     const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
     const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
+    const [config, setConfig] = useState<AnkiConfig | null>(null); // State to store the Anki configuration
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
@@ -31,6 +34,18 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
         setSubtitleUrl(subtitleApiUrl);
     }, [source]);
+
+    useEffect(() => {
+        const getConfig = async () => {
+            try {
+                const response = await axios.get(`/api/anki/configs/${settings.anki_config_id}`);
+                setConfig(response.data.config);
+            } catch (error) {
+                console.error('Error fetching Anki configuration:', error);
+            }
+        };
+        getConfig();
+    }, []);
 
     useEffect(() => {
         // Fetch and parse subtitles along with ignored words
@@ -102,15 +117,22 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         );
     };
 
-    const handlePlayPause = () => {
-        if (videoRef.current) {
-            if (isPlaying) {
-                videoRef.current.pause();
-            } else {
-                videoRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
+    const handlePlayPause = (pause: boolean | null) => {
+        if (!videoRef.current) return;
+
+        let shouldPlay: boolean;
+        if (pause === null) {
+            shouldPlay = !isPlaying;
+        } else {
+            shouldPlay = !pause;
         }
+
+        if (shouldPlay) {
+            videoRef.current.play();
+        } else {
+            videoRef.current.pause();
+        }
+        setIsPlaying(shouldPlay);
     };
 
     const handleProgress = () => {
@@ -136,18 +158,30 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         }
     };
 
+    const handleAnkiCardCreation = async () => {
+        handlePlayPause(true);
+        try {
+            await axios.post(
+                `/api/anki/decks/${config?.deck_id}/cards`,
+                config
+            );
+        } catch (error) {
+            console.error('Error fetching Anki configuration:', error);
+        }
+    };
+
     const sanitizedSubtitle = (subtitle: string) => {
         return DOMPurify.sanitize(subtitle);
     }
 
     return (
-        <div className="video-player">
-            <div className="video-container">
+        <div className={styles.videoPlayer}>
+            <div className={styles.videoContainer}>
                 {videoUrl ? (
                     <video
                         ref={videoRef}
                         src={videoUrl}
-                        className="video-element"
+                        className={styles.videoElement}
                         onTimeUpdate={handleProgress}
                         controls
                     />
@@ -155,12 +189,12 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                     <p>Loading video...</p>
                 )}
                 <div
-                    className="subtitle-container"
-                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle) }}
+                    className={styles.subtitleContainer}
+                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle).replace(/\n/g, "<br />") }}
                 ></div>
             </div>
-            <div className="video-controls">
-                <button onClick={handlePlayPause} className="play-pause-button">
+            <div className={styles.videoControls}>
+                <button onClick={() => handlePlayPause(null)} className={styles.playPauseButton}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
                 <input
@@ -169,9 +203,14 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                     max="100"
                     value={progress}
                     onChange={handleSeek}
-                    className="progress-bar"
+                    className={styles.progressBar}
                 />
-                <span className="progress-text">{Math.round(progress)}%</span>
+                <span className={styles.progressText}>{Math.round(progress)}%</span>
+                {settings.anki_config_id && (
+                    <button onClick={handleAnkiCardCreation} className={styles.playPauseButton}>
+                        Create Anki Card
+                    </button>
+                )}
             </div>
         </div>
     );
