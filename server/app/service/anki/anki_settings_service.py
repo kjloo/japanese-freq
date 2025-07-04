@@ -1,6 +1,6 @@
-from app.form.anki import anki_settings_form
 from app.model.anki.anki_settings import AnkiSettings
 from app.repository.anki.anki_repository import anki_repository
+from app.model.anki.anki_values import AnkiValues
 
 
 def get_anki_config_fields() -> list[str]:
@@ -8,7 +8,7 @@ def get_anki_config_fields() -> list[str]:
     Get the fields of the Anki configuration.
     :return: A list of field names for the Anki configuration.
     """
-    return anki_settings_form.anki_config_form_fields()
+    return AnkiValues.attributes()
 
 
 def save_anki_config(data: AnkiSettings) -> AnkiSettings:

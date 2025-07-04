@@ -151,6 +151,17 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         }
     };
 
+    const handleAnkiCardCreation = async () => {
+        try {
+            await axios.post(
+                `/api/anki/decks/${config?.deck_id}/cards`,
+                { config: config }
+            );
+        } catch (error) {
+            console.error('Error fetching Anki configuration:', error);
+        }
+    };
+
     const sanitizedSubtitle = (subtitle: string) => {
         return DOMPurify.sanitize(subtitle);
     }
@@ -187,6 +198,11 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                     className={styles.progressBar}
                 />
                 <span className={styles.progressText}>{Math.round(progress)}%</span>
+                {settings.anki_config_id && (
+                    <button onClick={handleAnkiCardCreation} className={styles.playPauseButton}>
+                        Create Anki Card
+                    </button>
+                )}
             </div>
         </div>
     );

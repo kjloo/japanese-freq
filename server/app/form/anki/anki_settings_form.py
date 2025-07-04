@@ -46,18 +46,3 @@ class AnkiSettingsForm(BaseForm):
             f"model_name={self.model_name}, "
             f"settings={self.settings})"
         )
-
-
-def anki_config_form_fields() -> list[str]:
-    return [
-        "audio",
-        "conjugation",
-        "definition",
-        "hiragana",
-        "kanji",
-        "part_of_speech",
-        "pitch_accent",
-        "romaji",
-        "sentence",
-        "translation",
-    ]

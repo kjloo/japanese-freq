@@ -1,19 +1,23 @@
 from app.module.logging_module import logger
 from app.gateway.anki import anki_gateway
 from app.gateway.anki.anki_card_request import AnkiCardRequest
-from app.service.anki import anki_settings_service
-from app.model.anki.anki_settings import AnkiSettings
 
 
-def create_card_in_deck(config_id: int, card: AnkiCardRequest) -> dict[str, int]:
+def create_card_in_deck(card: AnkiCardRequest) -> dict[str, int]:
     """
     Create a card in a specific deck in Anki.
     :param config_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     :raises ValueError: If the deck ID is invalid or if the card creation fails.
     """
-    config = anki_settings_service.get_anki_config(config_id)
-    return _create_card(config, card)
+    kanji = "飲む"
+    definition = "to drink"
+    sentence = "水を飲む。"
+    return _create_card(card.set_values({
+        "kanji": kanji,
+        "definition": definition,
+        "sentence": sentence,
+    }))
 
 
 def get_deck_names() -> dict[str, int]:
@@ -74,12 +78,13 @@ def get_cards_in_deck(deck_id: int, field_name: str) -> list[str]:
         if field_name in note["fields"]:
             field_values.append(note["fields"][field_name]["value"])
         else:
-            logger.warning(f"Field '{field_name}' not found in note: {note['noteId']}")
+            logger.warning(
+                f"Field '{field_name}' not found in note: {note['noteId']}")
 
     return field_values
 
 
-def _create_card(config: AnkiSettings, card: AnkiCardRequest) -> dict[str, int]:
+def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     """
     Create a card in a specific deck.
     :param deck_id: The ID of the deck.
@@ -92,8 +97,8 @@ def _create_card(config: AnkiSettings, card: AnkiCardRequest) -> dict[str, int]:
     }
 
     note = {
-        "deckName": config.deck_name,
-        "modelName": config.model_name,
+        "deckName": req.deck_name,
+        "modelName": req.model_name,
         "fields": fields,
         "tags": ["tinkerm0nk3y808"],
     }

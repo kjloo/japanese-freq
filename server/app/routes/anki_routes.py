@@ -39,8 +39,8 @@ def get_cards_in_deck(deck_id: int) -> Response:
 @anki_routes.route("/api/anki/decks/<int:deck_id>/cards", methods=["POST"])
 def create_card_in_deck(deck_id: int) -> Response:
     data = request.get_json()
-    payload = AnkiCardForm(data)
-    resp = anki_service.create_card_in_deck(deck_id, payload.to_req())
+    payload = AnkiCardForm(deck_id, data)
+    resp = anki_service.create_card_in_deck(payload.to_req())
     return jsonify({"note": resp}), 200
 
 
