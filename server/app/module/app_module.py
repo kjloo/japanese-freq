@@ -1,3 +1,4 @@
+import traceback
 from http.client import HTTPException
 from flask import Flask, jsonify
 
@@ -5,6 +6,7 @@ from app.serde.encoder import CustomJSONProvider
 from app.module.socket_module import socketio
 from app.module.config_module import config
 from app.module.database_module import initialize_mongo_connection
+from app.module.logging_module import logger
 
 
 # Initialize Flask app
@@ -22,6 +24,7 @@ app.logger.setLevel(app.config["LOG_LEVEL"])
 @app.errorhandler(ValueError)
 @app.errorhandler(TypeError)
 def handle_bad_request(e):
+    logger.error("400 Bad Request: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": str(e)}), 400
 
 
@@ -30,6 +33,7 @@ def handle_bad_request(e):
 
 @app.errorhandler(PermissionError)
 def handle_unauthorized(e):
+    logger.error("401 Unauthorized: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Unauthorized access"}), 401
 
 
@@ -38,6 +42,7 @@ def handle_unauthorized(e):
 
 @app.errorhandler(PermissionError)
 def handle_forbidden(e):
+    logger.error("403 Forbidden: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Forbidden"}), 403
 
 
@@ -47,6 +52,7 @@ def handle_forbidden(e):
 @app.errorhandler(FileNotFoundError)
 @app.errorhandler(NotImplementedError)
 def handle_not_found(e):
+    logger.error("404 Not Found: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Resource not found"}), 404
 
 
@@ -55,6 +61,8 @@ def handle_not_found(e):
 
 @app.errorhandler(405)
 def handle_method_not_allowed(e):
+    logger.error("405 Method Not Allowed: %s\n%s",
+                 str(e), traceback.format_exc())
     return jsonify({"error": "Method not allowed"}), 405
 
 
@@ -63,6 +71,7 @@ def handle_method_not_allowed(e):
 
 @app.errorhandler(RuntimeError)
 def handle_conflict(e):
+    logger.error("409 Conflict: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Conflict: " + str(e)}), 409
 
 
@@ -71,6 +80,8 @@ def handle_conflict(e):
 
 @app.errorhandler(UnsupportedOperation := OSError)
 def handle_unsupported_media_type(e):
+    logger.error("415 Unsupported Media Type: %s\n%s",
+                 str(e), traceback.format_exc())
     return jsonify({"error": "Unsupported media operation"}), 415
 
 
@@ -79,6 +90,8 @@ def handle_unsupported_media_type(e):
 
 @app.errorhandler(AttributeError)
 def handle_unprocessable_entity(e):
+    logger.error("422 Unprocessable Entity: %s\n%s",
+                 str(e), traceback.format_exc())
     return jsonify({"error": "Unprocessable entity: " + str(e)}), 422
 
 
@@ -87,6 +100,8 @@ def handle_unprocessable_entity(e):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
+    logger.error("500 Internal Server Error: %s\n%s",
+                 str(e), traceback.format_exc())
     if isinstance(e, HTTPException):
         return jsonify({"error": e.description}), e.code
     return jsonify({"error": "Internal server error: " + str(e)}), 500

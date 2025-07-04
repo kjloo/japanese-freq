@@ -117,15 +117,22 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         );
     };
 
-    const handlePlayPause = () => {
-        if (videoRef.current) {
-            if (isPlaying) {
-                videoRef.current.pause();
-            } else {
-                videoRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
+    const handlePlayPause = (pause: boolean | null) => {
+        if (!videoRef.current) return;
+
+        let shouldPlay: boolean;
+        if (pause === null) {
+            shouldPlay = !isPlaying;
+        } else {
+            shouldPlay = !pause;
         }
+
+        if (shouldPlay) {
+            videoRef.current.play();
+        } else {
+            videoRef.current.pause();
+        }
+        setIsPlaying(shouldPlay);
     };
 
     const handleProgress = () => {
@@ -152,10 +159,11 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
     };
 
     const handleAnkiCardCreation = async () => {
+        handlePlayPause(true);
         try {
             await axios.post(
                 `/api/anki/decks/${config?.deck_id}/cards`,
-                { config: config }
+                config
             );
         } catch (error) {
             console.error('Error fetching Anki configuration:', error);
@@ -186,7 +194,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
                 ></div>
             </div>
             <div className={styles.videoControls}>
-                <button onClick={handlePlayPause} className={styles.playPauseButton}>
+                <button onClick={() => handlePlayPause(null)} className={styles.playPauseButton}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
                 <input

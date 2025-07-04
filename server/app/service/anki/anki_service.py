@@ -13,11 +13,12 @@ def create_card_in_deck(card: AnkiCardRequest) -> dict[str, int]:
     kanji = "飲む"
     definition = "to drink"
     sentence = "水を飲む。"
-    return _create_card(card.set_values({
+    card.set_values({
         "kanji": kanji,
         "definition": definition,
         "sentence": sentence,
-    }))
+    })
+    return _create_card(card)
 
 
 def get_deck_names() -> dict[str, int]:
@@ -90,11 +91,8 @@ def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     :param deck_id: The ID of the deck.
     :param card: AnkiCardRequest object containing card details.
     """
-    fields = {
-        config.kanji: card.kanji,
-        config.definition: card.definition,
-        config.sentence: card.sentence,
-    }
+    fields = {key: req.values[value] for key,
+              value in req.settings.items() if value in req.values}
 
     note = {
         "deckName": req.deck_name,
@@ -106,6 +104,16 @@ def _create_card(req: AnkiCardRequest) -> dict[str, int]:
     response = anki_gateway.post("addNote", {"note": note})
     if not response:
         raise ValueError("Failed to create card in Anki")
+
+    # Try to open the card in Anki (using AnkiConnect's 'guiBrowse' action)
+    note_id = response
+    if note_id:
+        try:
+            # This will open the browser in Anki focused on the created note
+            anki_gateway.post("guiBrowse", {"query": f"nid:{note_id}"})
+        except Exception as e:
+            logger.warning(f"Could not open card in Anki: {e}")
+
     return response
 
 
