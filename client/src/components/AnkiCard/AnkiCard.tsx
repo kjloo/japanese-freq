@@ -47,7 +47,7 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             try {
                 const response = await axios.get('/api/anki/configs');
                 setConfigs(response.data.configs);
-                setSelectedConfig(response.data.configs.length > 0 ? response.data.configs[0]._id : null);
+                setSelectedConfig(response.data.configs.length > 0 ? response.data.configs[0]._id : '');
             } catch (error) {
                 console.error('Error fetching configs:', error);
             }
@@ -186,14 +186,16 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
             </>) : (<>
                 <div className={commonStyles.configContainer}>
                     <h2 className='subtitle'>Field Configuration</h2>
-                    {modelFields.map((field, index) => (
-                        <div className={commonStyles.configRow} key={index}>
-                            <label className={commonStyles.configLabel}>
-                                {field}
-                            </label>
-                            {settingsFieldsDropDown(field)}
-                        </div>
-                    ))}
+                    <div className={commonStyles.configScrollable}>
+                        {modelFields.map((field, index) => (
+                            <div className={commonStyles.configRow} key={index}>
+                                <label className={commonStyles.configLabel}>
+                                    {field}
+                                </label>
+                                {settingsFieldsDropDown(field)}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <button onClick={handleConfigSubmit}>
                     Submit

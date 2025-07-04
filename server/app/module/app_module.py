@@ -1,10 +1,10 @@
 from http.client import HTTPException
 from flask import Flask, jsonify
-import logging
 
 from app.serde.encoder import CustomJSONProvider
 from app.module.socket_module import socketio
 from app.module.config_module import config
+from app.module.database_module import initialize_mongo_connection
 
 
 # Initialize Flask app
@@ -94,3 +94,6 @@ def handle_exception(e):
 
 # Initialize SocketIO with async mode
 socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
+
+# Initialize MongoDB connection
+initialize_mongo_connection(app)

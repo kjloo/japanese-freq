@@ -22,7 +22,7 @@ class AnkiSettingsForm(BaseForm):
 
     def to_model(self) -> AnkiSettings:
         attrs = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
-        return AnkiSettings(attrs)
+        return AnkiSettings(**attrs)
 
     @override
     def _validate(self):

@@ -4,6 +4,7 @@ from app.module.logging_module import logger
 from app.service.anki import anki_service, anki_settings_service
 from app.form.anki.anki_settings_form import AnkiSettingsForm
 from app.form.anki.anki_card_form import AnkiCardForm
+import app.mapper.mongo_json_mapper as mongo_json_mapper
 
 anki_routes = Blueprint("anki_routes", __name__)
 
@@ -52,7 +53,7 @@ def get_anki_config_fields() -> Response:
 @anki_routes.route("/api/anki/configs", methods=["GET"])
 def get_anki_configs() -> Response:
     configs = anki_settings_service.get_anki_configs()
-    return jsonify({"configs": [c.to_dict() for c in configs]}), 200
+    return jsonify({"configs": [mongo_json_mapper.serialize_config(c) for c in configs]}), 200
 
 
 @anki_routes.route("/api/anki/configs", methods=["POST"])
