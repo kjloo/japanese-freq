@@ -3,8 +3,9 @@ import { io } from 'socket.io-client';
 import AnkiCard from './AnkiCard/AnkiCard';
 import WordCheckForm from './WordCheckForm';
 import WelcomeCard from './WelcomeCard/WelcomeCard';
-import ProcessSettings, { defaultProcessVideoSettings, ProcessVideoSettings } from './ProcessSettings/ProcessSettings';
 import VideoPlayer from './VideoPlayer/VideoPlayer';
+import { defaultProcessVideoSettings, ProcessVideoSettings } from '../types/ProcessVideoSettings';
+import ProcessSettings from './ProcessSettings/ProcessSettings';
 
 const socket = io('http://localhost:5000');
 

@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect, FunctionComponent } from 'react';
 import axios from "axios";
 import DOMPurify from "dompurify";
-import { ProcessVideoSettings } from '../ProcessSettings/ProcessSettings';
 import styles from './VideoPlayer.module.css';
+import { ProcessVideoSettings } from '../../types/ProcessVideoSettings';
+import { AnkiConfig } from '../../types/AnkiTypes';
 
 interface VideoPlayerProps {
     source: string;
@@ -23,6 +24,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
     const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
     const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
+    const [config, setConfig] = useState<AnkiConfig | null>(null); // State to store the Anki configuration
 
     useEffect(() => {
         // Construct the video URL from the API endpoint
@@ -32,6 +34,18 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) 
         const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
         setSubtitleUrl(subtitleApiUrl);
     }, [source]);
+
+    useEffect(() => {
+        const getConfig = async () => {
+            try {
+                const response = await axios.get(`/api/anki/configs/${settings.anki_config_id}`);
+                setConfig(response.data.config);
+            } catch (error) {
+                console.error('Error fetching Anki configuration:', error);
+            }
+        };
+        getConfig();
+    }, []);
 
     useEffect(() => {
         // Fetch and parse subtitles along with ignored words

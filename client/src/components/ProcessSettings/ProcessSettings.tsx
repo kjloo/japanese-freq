@@ -2,22 +2,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import commonStyles from '../CommonConfigs.module.css';
 import type { AnkiConfig } from '../../types/AnkiTypes'; // Assuming you have a type definition for AnkiConfig
-
-export type ProcessVideoSettings = {
-    inputs: string[];
-    word_check: boolean;
-    freq_min: number;
-    requires_definition: boolean;
-    min_word_length: number;
-};
-
-export const defaultProcessVideoSettings = (): ProcessVideoSettings => ({
-    inputs: [],
-    word_check: true,
-    freq_min: 1,
-    requires_definition: false,
-    min_word_length: 2,
-});
+import { ProcessVideoSettings } from '../../types/ProcessVideoSettings';
 
 interface ProcessSettingsProps {
     onVideo: (video: string, settings: ProcessVideoSettings) => void;
@@ -49,6 +34,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
             try {
                 const response = await axios.get('/api/anki/configs');
                 setConfigs(response.data.configs);
+                setSelectedConfig(response.data.configs.length > 0 ? response.data.configs[0]._id : '');
             } catch (error) {
                 console.error('Error fetching configs:', error);
             }
@@ -75,6 +61,7 @@ const ProcessSettings: FunctionComponent<ProcessSettingsProps> = ({ onVideo, onP
                 freq_min: freqMin,
                 requires_definition: requiresDefinition,
                 min_word_length: minWordLength,
+                anki_config_id: selectedConfig,
             });
         } else {
             console.error('No video selected. Please select an input.');

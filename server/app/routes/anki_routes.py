@@ -56,6 +56,14 @@ def get_anki_configs() -> Response:
     return jsonify({"configs": [mongo_json_mapper.serialize_config(c) for c in configs]}), 200
 
 
+@anki_routes.route("/api/anki/configs/<string:config_id>", methods=["GET"])
+def get_anki_config(config_id: str) -> Response:
+    config = anki_settings_service.get_anki_config(config_id)
+    if not config:
+        return jsonify({"error": "Configuration not found"}), 404
+    return jsonify({"config": mongo_json_mapper.serialize_config(config)}), 200
+
+
 @anki_routes.route("/api/anki/configs", methods=["POST"])
 def save_anki_config() -> Response:
     data = request.get_json()
