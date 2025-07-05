@@ -6,6 +6,8 @@ import pytest
 @pytest.fixture
 def mongo_test():
     with MongoDbContainer("mongo:8.0.8") as mongo:
-        connect(host=mongo.get_connection_url())
+        # Always disconnect any existing connections before connecting
+        disconnect(alias="default")
+        connect(host=mongo.get_connection_url(), alias="default")
         yield
-        disconnect()
+        disconnect(alias="default")

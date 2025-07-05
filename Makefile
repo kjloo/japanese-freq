@@ -42,7 +42,7 @@ server-run: server-setup
 
 .PHONY: server-test
 server-test: server-setup
-	cd server; pytest -vv
+	cd server; export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; pytest -vv
 
 .PHONY: server-format
 server-format:

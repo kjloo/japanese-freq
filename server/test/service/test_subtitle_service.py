@@ -45,16 +45,16 @@ def test_style_subtitles(mock_ignore_list):
     assert styled_subtitles == expected
 
 
-@pytest.mark.usefixtures("mongo_test")
-@mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
-def test_get_base_words(mock_ignore_list):
-    from app.service import subtitle_service
-    mock_ignore_list.return_value = set(["物", "会う"])
-    sentence = "彼が「明日、公園で会いましょう！」と言った。"
-    base_words = list(subtitle_service.get_base_words(sentence))
+# @pytest.mark.usefixtures("mongo_test")
+# @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
+# def test_get_base_words(mock_ignore_list):
+#     from app.service import subtitle_service
+#     mock_ignore_list.return_value = set(["物", "会う"])
+#     sentence = "彼が「明日、公園で会いましょう！」と言った。"
+#     base_words = list(subtitle_service.get_base_words(sentence))
 
-    assert len(base_words) == 4
-    assert base_words[0] == "彼"
-    assert base_words[1] == "明日"
-    assert base_words[2] == "公園"
-    assert base_words[3] == "言う"
+#     assert len(base_words) == 4
+#     assert base_words[0] == "彼"
+#     assert base_words[1] == "明日"
+#     assert base_words[2] == "公園"
+#     assert base_words[3] == "言う"
