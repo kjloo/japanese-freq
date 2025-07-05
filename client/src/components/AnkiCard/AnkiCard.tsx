@@ -1,7 +1,7 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import axios from 'axios';
 import commonStyles from '../CommonConfigs.module.css';
-import type { AnkiConfig } from '../../types/AnkiTypes'; // Assuming you have a type definition for AnkiConfig
+import type { AnkiConfig } from '../../types/AnkiTypes';
 
 interface AnkiCardProps {
     onCancel: () => void;
@@ -9,9 +9,9 @@ interface AnkiCardProps {
 
 const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const [configs, setConfigs] = useState<AnkiConfig[]>([]);
-    const [selectedConfig, setSelectedConfig] = useState<string | null>(null);
+    const [selectedConfig, setSelectedConfig] = useState<AnkiConfig | null>(null);
     const [decks, setDecks] = useState(new Map<string, number>());
-    const [configName, setConfigName] = useState<string>('');
+    const [configName, setConfigName] = useState<string | null>(null);
     const [selectedDeck, setSelectedDeck] = useState<string>('');
     const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
     const [models, setModels] = useState(new Map<string, number>());
@@ -90,6 +90,28 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
         );
     }
 
+    const handleConfigChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedConfigId = event.target.value;
+        const config = configs.find(c => c._id === selectedConfigId);
+        if (config) {
+            setSelectedConfig(config);
+            setConfigName(config.name);
+            setSelectedDeck(config.deck_name);
+            setSelectedDeckId(config.deck_id);
+            setSelectedModel(config.model_name);
+            setSelectedModelId(config.model_id);
+            setConfigFieldsSelected(config.settings || {});
+        } else {
+            setSelectedConfig(null);
+            setConfigName('');
+            setSelectedDeck('');
+            setSelectedDeckId(0);
+            setSelectedModel('');
+            setSelectedModelId(0);
+            setConfigFieldsSelected({});
+        }
+    };
+
     const handleDeckChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedDeckName = event.target.value;
         const deckId = decks.get(selectedDeckName) || 0;
@@ -118,11 +140,13 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
     const handleConfigSubmit = async () => {
         try {
             const configJson = {
-                deck_id: selectedDeckId,
                 name: configName,
+                deck_id: selectedDeckId,
                 deck_name: selectedDeck,
+                model_id: selectedModelId,
                 model_name: selectedModel,
-                settings: configFieldsSelected
+                settings: configFieldsSelected,
+                ...(selectedConfig ? { id: selectedConfig._id } : {})
             };
             await axios.post('/api/anki/configs', configJson);
             console.log('Configuration saved successfully');
@@ -139,16 +163,16 @@ const AnkiCard: FunctionComponent<AnkiCardProps> = ({ onCancel }) => {
                 <div className={commonStyles.configContainer}>
                     <div className={commonStyles.configRow}>
                         <label className={commonStyles.configLabel}>Configuration Name</label>
-                        {selectedConfig === '' ? (
+                        {configName === '' ? (
                             <input
                                 type="text"
                                 className={commonStyles.configInput}
-                                value={configName}
+                                value={configName ? configName : ''}
                                 onChange={(e) => setConfigName(e.target.value)}
                                 placeholder="Enter configuration name"
                             />
                         ) : (
-                            <select className={commonStyles.configInput} onChange={(e) => setSelectedConfig(e.target.value)} value={selectedConfig || ''}>
+                            <select className={commonStyles.configInput} onChange={handleConfigChange} value={selectedConfig?._id || ''}>
                                 {configs.map((config) => (
                                     <option key={config._id} value={config._id}>
                                         {config.name}

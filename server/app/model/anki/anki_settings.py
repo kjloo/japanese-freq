@@ -5,6 +5,7 @@ class AnkiSettings(Document):
     name = StringField(required=True, unique=True)
     deck_id = IntField(required=True)
     deck_name = StringField(required=True)
+    model_id = IntField(required=True)
     model_name = StringField(required=True)
     settings = DictField()
 

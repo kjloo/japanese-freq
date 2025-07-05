@@ -6,22 +6,30 @@ from app.model.anki.anki_settings import AnkiSettings
 
 class AnkiSettingsForm(BaseForm):
 
+    id: int = -1
     name: str = ""
     deck_id: int = -1
     deck_name: str = ""
+    model_id: int = -1
     model_name: str = ""
     settings: dict[str, str] = {}
 
     def __init__(self, json_data: dict[str]):
+        self.id = json_data.get("id", -1)
         self.name = json_data.get("name", "")
         self.deck_id = json_data.get("deck_id", -1)
         self.deck_name = json_data.get("deck_name", "")
+        self.model_id = json_data.get("model_id", -1)
         self.model_name = json_data.get("model_name", "")
         self.settings = json_data.get("settings", {})
         super().__init__()
 
     def to_model(self) -> AnkiSettings:
         attrs = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        if self.id not in (-1, None, ""):
+            attrs["id"] = self.id
+        else:
+            attrs.pop("id", None)
         return AnkiSettings(**attrs)
 
     @override
@@ -32,6 +40,8 @@ class AnkiSettingsForm(BaseForm):
             raise ValueError("Deck ID is required.")
         if not self.deck_name:
             raise ValueError("Deck name is required.")
+        if self.model_id == -1:
+            raise ValueError("Model ID is required.")
         if not self.model_name:
             raise ValueError("Model name is required.")
         if not self.settings:
@@ -40,9 +50,11 @@ class AnkiSettingsForm(BaseForm):
     def __repr__(self):
         return (
             f"AnkiConfig("
+            f"id={self.id}, "
             f"name={self.name}, "
             f"deck_id={self.deck_id}, "
             f"deck_name={self.deck_name}, "
+            f"model_id={self.model_id}, "
             f"model_name={self.model_name}, "
             f"settings={self.settings})"
         )

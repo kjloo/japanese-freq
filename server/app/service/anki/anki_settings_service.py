@@ -17,7 +17,7 @@ def save_anki_config(data: AnkiSettings) -> AnkiSettings:
     :param data: The Anki configuration data.
     :return: The saved Anki configuration.
     """
-    anki_repository.add_config(data)
+    anki_repository.upsert_config(data)
     return data
 
 
