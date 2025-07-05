@@ -15,6 +15,7 @@ class AnkiValues:
     pitch_accent: str
     romaji: str
     sentence: str
+    sentence_audio: str
     translation: str
 
     def __init__(
@@ -28,6 +29,7 @@ class AnkiValues:
         pitch_accent: str,
         romaji: str,
         sentence: str,
+        sentence_audio: str,
         translation: str,
     ):
         self.audio = audio
@@ -39,6 +41,7 @@ class AnkiValues:
         self.pitch_accent = pitch_accent
         self.romaji = romaji
         self.sentence = sentence
+        self.sentence_audio = sentence_audio
         self.translation = translation
 
     def to_dict(self) -> dict[str, str]:

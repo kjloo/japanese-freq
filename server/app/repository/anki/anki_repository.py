@@ -3,9 +3,12 @@ from bson import ObjectId
 
 
 class AnkiRepository:
-    def add_config(self, config: AnkiSettings):
-        # Save or update using mongoengine's API
-        config.save()  # This will insert or update based on the presence of _id
+    def upsert_config(self, config: AnkiSettings):
+        """
+        Inserts a new AnkiSettings document or updates an existing one based on the presence of _id.
+        If _id is present, it updates the existing document; otherwise, it creates a new one.
+        """
+        config.save()
 
     def get_config(self, config_id: str) -> AnkiSettings | None:
         try:
