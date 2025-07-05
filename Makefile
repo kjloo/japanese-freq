@@ -26,6 +26,8 @@ server-setup:
 	if [ -d input ]; then cp -r input/* server/input/; fi
 	if [ -d output ]; then cp -r output/* server/output/; fi
 	cp -r dictionaries server/dictionaries
+	if [ ! -d .venv ]; then python3.12 -m venv .venv; fi
+	. .venv/bin/activate && pip install -r requirements.txt
 
 .PHONY: server-run
 server-run: server-setup

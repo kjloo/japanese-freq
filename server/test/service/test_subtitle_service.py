@@ -1,10 +1,13 @@
 from unittest import mock
+import pytest
 
-from app.service import subtitle_service
+from test.fixture.mongo_fixture import mongo_test
 
 
+@pytest.mark.usefixtures("mongo_test")
 @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
 def test_style_subtitles(mock_ignore_list):
+    from app.service import subtitle_service
     subtitles = [
         "WEBVTT",
         "Kind: captions",
@@ -42,8 +45,10 @@ def test_style_subtitles(mock_ignore_list):
     assert styled_subtitles == expected
 
 
+@pytest.mark.usefixtures("mongo_test")
 @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
 def test_get_base_words(mock_ignore_list):
+    from app.service import subtitle_service
     mock_ignore_list.return_value = set(["物", "会う"])
     sentence = "彼が「明日、公園で会いましょう！」と言った。"
     base_words = list(subtitle_service.get_base_words(sentence))
