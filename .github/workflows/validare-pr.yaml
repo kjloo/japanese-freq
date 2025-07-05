@@ -21,9 +21,5 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 ffmpeg
 
-      - name: Install server dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Run server tests
         run: make server-test
