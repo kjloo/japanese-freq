@@ -1,6 +1,7 @@
 from flask import Flask
 from mongoengine import connect
 from app.module.config.mongo_config import MongoConfig
+from app.module.config_module import config
 
 mongo_config: MongoConfig = None
 
@@ -23,6 +24,9 @@ def initialize_mongo_connection(app: Flask):
     """
     Initialize the MongoDB connection using the provided configuration.
     """
+    if config.TESTING:
+        return
+
     mongo_config = _get_mongo_config(app)
     if not isinstance(mongo_config, MongoConfig):
         raise TypeError(
