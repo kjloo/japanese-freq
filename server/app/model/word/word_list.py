@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, IntField, DictField, ListField
+from mongoengine import Document, ListField
 
 
 class WordList(Document):
