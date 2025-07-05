@@ -18,9 +18,9 @@ def _load_ignore_list() -> set[str]:
     """
     Load the ignore list from a database or file.
     """
-    ignore_list = word_repository.get_words()
+    ignore_list: set[str] = set(word_repository.get_words())
     if ignore_list:
-        return set(ignore_list)
+        return ignore_list
 
     if os.path.exists(ignore_list_file):
         with open(ignore_list_file, "r") as f:
