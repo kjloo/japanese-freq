@@ -22,8 +22,9 @@ stop:
 
 .PHONY: server-setup
 server-setup:
-	cp -r input server/input
-	cp -r output server/output
+	mkdir -p server/input server/output
+	if [ -d input ]; then cp -r input/* server/input/; fi
+	if [ -d output ]; then cp -r output/* server/output/; fi
 	cp -r dictionaries server/dictionaries
 
 .PHONY: server-run
