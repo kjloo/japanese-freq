@@ -1,0 +1,30 @@
+name: Validate PR
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  validate-pr:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 ffmpeg
+
+      - name: Install server dependencies
+        run: |
+          cd server
+          pip install -r requirements.txt
+
+      - name: Run server tests
+        run: make server-test
