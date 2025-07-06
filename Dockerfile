@@ -16,10 +16,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies early to leverage Docker cache
-RUN pip install unidic==1.1.0
-RUN python -m unidic download
-
 # Set environment variable for MeCab dictionary path
 ENV MECABRC=/usr/local/etc/mecabrc
 

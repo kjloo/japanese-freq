@@ -1,29 +1,29 @@
-from app.repository.base_repository import BaseRepository
+from app.model.word.word_list import WordList
 
 
-class WordRepository(BaseRepository):
-    def __init__(self):
-        super().__init__("words")
-
-    def add_words(self, words: list[str]):
-        # Add a list of words to the list in MongoDB
-        self.collection.update_one(
-            {"_id": "word_list"},
-            {"$addToSet": {"words": {"$each": words}}},
-            upsert=True,
-        )
-
-    def remove_word(self, word: str):
-        # Remove a word from the list in MongoDB
-        self.collection.update_one(
-            {"_id": "word_list"},
-            {"$pull": {"words": word}},  # `$pull` removes the item from the array
-        )
+class WordRepository:
+    def add_words(self, words: list[str]) -> WordList:
+        # Add a list of words to the WordList document in MongoDB
+        word_list: WordList = WordList.objects.first()
+        if not word_list:
+            word_list = WordList(words=[])
+        # Add only unique new words
+        word_list.words = list(set(word_list.words) | set(words))
+        word_list.save()
+        return word_list
 
     def get_words(self) -> list[str]:
         # Retrieve the current list of words from MongoDB
-        result = self.collection.find_one({"_id": "word_list"})
-        return result.get("words", [])
+        word_list: WordList = WordList.objects.first()
+        return word_list.words if word_list else []
+
+    def remove_word(self, word: str) -> WordList:
+        # Remove a word from the WordList document in MongoDB
+        word_list: WordList = WordList.objects.first()
+        if word_list and word in word_list.words:
+            word_list.words.remove(word)
+            word_list.save()
+        return word_list
 
 
 word_repository = WordRepository()

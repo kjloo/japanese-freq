@@ -22,9 +22,12 @@ stop:
 
 .PHONY: server-setup
 server-setup:
-	cp -r input server/input
-	cp -r output server/output
+	mkdir -p server/input server/output
+	if [ -d input ]; then cp -r input/* server/input/; fi
+	if [ -d output ]; then cp -r output/* server/output/; fi
 	cp -r dictionaries server/dictionaries
+	if [ ! -d .venv ]; then python3.12 -m venv .venv; fi
+	. .venv/bin/activate && pip install -r requirements.txt
 
 .PHONY: server-run
 server-run: server-setup
@@ -39,7 +42,7 @@ server-run: server-setup
 
 .PHONY: server-test
 server-test: server-setup
-	cd server; pytest -vv
+	cd server; export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; pytest -vv
 
 .PHONY: server-format
 server-format:

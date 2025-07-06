@@ -1,10 +1,9 @@
 from flask import Flask
 from mongoengine import connect
-from app.repository.mongo import MongoDBConnector
 from app.module.config.mongo_config import MongoConfig
+from app.module.config_module import config
 
 mongo_config: MongoConfig = None
-mongo_connector: MongoDBConnector = None
 
 
 def _get_mongo_config(app: Flask) -> MongoConfig:
@@ -21,23 +20,13 @@ def _get_mongo_config(app: Flask) -> MongoConfig:
     return mongo_config
 
 
-def get_mongo_connector(app: Flask) -> MongoDBConnector:
-    """
-    Get the MongoDB connector instance.
-    :return: MongoDBConnector instance.
-    """
-    global mongo_connector
-    if mongo_connector is not None:
-        return mongo_connector
-    mongo_config = _get_mongo_config(app)
-    mongo_connector = MongoDBConnector(mongo_config.get_server_url(), mongo_config.db)
-    return mongo_connector
-
-
 def initialize_mongo_connection(app: Flask):
     """
     Initialize the MongoDB connection using the provided configuration.
     """
+    if config.TESTING:
+        return
+
     mongo_config = _get_mongo_config(app)
     if not isinstance(mongo_config, MongoConfig):
         raise TypeError(
