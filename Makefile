@@ -27,7 +27,7 @@ server-setup:
 	if [ -d output ]; then cp -r output/* server/output/; fi
 	cp -r dictionaries server/dictionaries
 	if [ ! -d .venv ]; then python3.12 -m venv .venv; fi
-	. .venv/bin/activate && pip install -r requirements.txt
+	. .venv/bin/activate; pip install -r requirements.txt
 
 .PHONY: server-run
 server-run: server-setup
@@ -42,7 +42,7 @@ server-run: server-setup
 
 .PHONY: server-test
 server-test: server-setup
-	cd server; export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; pytest -vv
+	. .venv/bin/activate; cd server; export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; pytest -vv
 
 .PHONY: server-format
 server-format:
