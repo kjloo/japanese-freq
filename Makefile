@@ -42,7 +42,12 @@ server-run: server-setup
 
 .PHONY: server-test
 server-test: server-setup
-	. .venv/bin/activate; cd server; export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; pytest -vv
+	. .venv/bin/activate; \
+	cd server; \
+	if [ "$$(uname)" = "Darwin" ]; then \
+		export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; \
+	fi; \
+	pytest -vv
 
 .PHONY: server-format
 server-format:
