@@ -1,8 +1,20 @@
 import zipfile
+import os
 import json
 import cutlet
 
-katsu = cutlet.Cutlet()
+katsu: cutlet.Cutlet = None
+
+
+def _get_katsu():
+    """
+    Returns a Cutlet instance for text processing.
+    """
+    global katsu
+    if not katsu:
+        dict_dir = os.path.join("dictionaries", "unidic")
+        katsu = cutlet.Cutlet(mecab_args=f"-r /dev/null -d {dict_dir}")
+    return katsu
 
 
 class ShortDef:
@@ -22,7 +34,6 @@ class ShortDef:
 
 
 class Dictionary:
-
     def __init__(self, input_file: str):
         self.dictionary = self._load_dictionary(input_file)
 
@@ -67,7 +78,8 @@ class Dictionary:
         hiragana = definition[1] if definition[1] else definition[0]
 
         kanji = "\n".join(
-            [f"({i + 1}): {d[0] if d[1] else None}" for i, d in enumerate(definitions)]
+            [f"({i + 1}): {d[0] if d[1] else None}" for i,
+                d in enumerate(definitions)]
         )
-        romaji = katsu.romaji(hiragana).lower()
+        romaji = _get_katsu().romaji(hiragana).lower()
         return ShortDef(meaning, kanji, hiragana, romaji)

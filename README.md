@@ -15,6 +15,13 @@ brew install mecab
 brew install mecab-ipadic
 ```
 
+2. Install `git-lfs`
+
+```shell
+brew install git-lfs
+git lfs install
+```
+
 ## Setup Inputs and Ignorelist
 
 1. Create an `input` directory in the base directory

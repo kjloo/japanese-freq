@@ -143,6 +143,9 @@ data/
 # VSCode
 .vscode/
 
+# Dictionaries
+dictionaries/unidic
+
 # Inputs and Outputs
 input/
 output/

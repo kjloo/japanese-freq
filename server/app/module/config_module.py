@@ -96,7 +96,7 @@ class ProductionConfig(BaseConfig):
 
 
 # Configuration mapping for different environments
-config_map = {
+config_map: dict[str, BaseConfig] = {
     "local": LocalConfig,
     "development": DevelopmentConfig,
     "testing": TestingConfig,
