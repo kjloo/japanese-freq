@@ -12,6 +12,7 @@ Be sure to have MeCab installed on the machine where the code will be running.
 ```shell
 brew install direnv
 direnv allow
+echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
 ```
 
 2. Install MeCab
