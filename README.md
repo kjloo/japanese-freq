@@ -8,14 +8,20 @@ Be sure to have MeCab installed on the machine where the code will be running.
 
 ### Mac
 
-1. Install MeCab
+1. Install direnv
+```shell
+brew install direnv
+direnv allow
+```
+
+2. Install MeCab
 
 ```shell
 brew install mecab
 brew install mecab-ipadic
 ```
 
-2. Install `git-lfs`
+3. Install `git-lfs`
 
 ```shell
 brew install git-lfs

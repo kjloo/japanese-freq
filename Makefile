@@ -1,6 +1,5 @@
 .PHONY: setup
-setup:
-	cd client; npm install
+setup: server-setup client-setup
 
 .PHONY: build
 build:
@@ -52,6 +51,10 @@ server-test: server-setup
 .PHONY: server-format
 server-format:
 	cd server && black .
+
+.PHONY: client-setup
+setup:
+	cd client; npm install
 
 .PHONY: client-run
 client-run:
