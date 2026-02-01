@@ -1,6 +1,6 @@
 .PHONY: setup
 setup:
-	npm install
+	cd client; npm install
 
 .PHONY: build
 build:
