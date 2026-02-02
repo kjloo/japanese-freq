@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     git \
     make \
+    g++ \
     curl \
     xz-utils \
     file \
