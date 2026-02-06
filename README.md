@@ -27,6 +27,7 @@ brew install mecab-ipadic
 ```shell
 brew install git-lfs
 git lfs install
+git lfs pull
 ```
 
 ## Setup Inputs and Ignorelist

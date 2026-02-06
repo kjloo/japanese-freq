@@ -22,11 +22,11 @@ stop:
 .PHONY: server-setup
 server-setup:
 	mkdir -p server/input server/output
-	if [ -d input ]; then cp -r input/* server/input/; fi
-	if [ -d output ]; then cp -r output/* server/output/; fi
-	cp -r dictionaries server/dictionaries
+	if [ -d input ]; then rsync -a input/ server/input/; fi
+	if [ -d output ]; then rsync -a output/ server/output/; fi
+	rsync -a dictionaries/ server/dictionaries/
 	if [ ! -d .venv ]; then python3.12 -m venv .venv; fi
-	. .venv/bin/activate; pip install -r requirements.txt
+	. .venv/bin/activate && pip install -r requirements.txt
 
 .PHONY: server-run
 server-run: server-setup
