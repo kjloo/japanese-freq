@@ -1,7 +1,10 @@
 import pytest
 from unittest.mock import patch
 
+from test.fixture.client_fixture import client
 
+
+@pytest.mark.usefixtures("client")
 @patch("app.service.llm.llm_service.prompt_llm")
 def test_generate_response_success(mock_prompt, client):
     # Mock service return
@@ -21,6 +24,7 @@ def test_generate_response_success(mock_prompt, client):
     assert "model" in data
 
 
+@pytest.mark.usefixtures("client")
 def test_generate_response_validation_error(client):
     # Send empty prompt to trigger LLMPromptForm ValueError
     payload = {"prompt": ""}
@@ -31,6 +35,7 @@ def test_generate_response_validation_error(client):
     assert "error" in response.get_json()
 
 
+@pytest.mark.usefixtures("client")
 def test_get_status_route(client):
     response = client.get("/api/llm/status")
     assert response.status_code == 200
