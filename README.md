@@ -12,8 +12,9 @@ This project is designed to be **largely zero-config** using:
 - `pyenv` for Python version control  
 - `make` for command orchestration  
 - `docker` for containerized execution  
+- `pre-commit` for automatic code quality enforcement  
 
-Once set up, most environment steps happen automatically when you enter the project directory.
+Once set up, most environment steps happen automatically when you enter the project directory, and code formatting/linting runs automatically on every commit.
 
 ---
 
@@ -22,7 +23,7 @@ Once set up, most environment steps happen automatically when you enter the proj
 ### macOS Dependencies
 
 ```sh
-brew install direnv mecab mecab-ipadic git-lfs pyenv
+brew install direnv mecab mecab-ipadic git-lfs pyenv pre-commit
 ```
 
 ---
@@ -51,6 +52,23 @@ direnv allow
 
 ---
 
+### 3. Install Git Hooks (pre-commit)
+
+After cloning the repo:
+
+```sh
+pre-commit install
+```
+
+This installs git hooks that automatically run:
+
+- Client formatting (Prettier)
+- Client linting (ESLint auto-fix)
+- Server formatting (Black)
+- Server linting (Ruff auto-fix)
+
+---
+
 ## What Happens Automatically
 
 When you `cd` into the project, `.envrc` will:
@@ -71,6 +89,22 @@ When you `cd` into the project, `.envrc` will:
 
 ### Environment Variables
 - Set `VIRTUAL_ENV` automatically
+
+---
+
+## Code Quality (Pre-commit)
+
+On every commit, the following runs automatically:
+
+### Client (TypeScript)
+- Prettier formatting
+- ESLint with auto-fix
+
+### Server (Python)
+- Black formatting
+- Ruff linting with auto-fix
+
+If fixes are applied, files will be updated automatically and you may need to re-stage them before committing.
 
 ---
 
@@ -117,11 +151,13 @@ make setup
 ```
 
 This will:
-- Prepare server directories
-- Sync input/output files
-- Copy dictionaries
-- Install Python dependencies
-- Install client dependencies
+
+- Prepare server directories  
+- Sync input/output files  
+- Copy dictionaries  
+- Install Python dependencies  
+- Install client dependencies  
+- Install pre-commit hooks  
 
 ---
 
@@ -133,8 +169,8 @@ This will:
 make run
 ```
 
-- Starts all services in the background
-- Opens: http://localhost:5000
+- Starts all services in the background  
+- Opens: http://localhost:5000  
 
 ---
 
@@ -162,9 +198,9 @@ make stop
 make server/run
 ```
 
-- Starts MongoDB via Docker
-- Waits for it to become healthy
-- Runs Gunicorn server locally
+- Starts MongoDB via Docker  
+- Waits for it to become healthy  
+- Runs Gunicorn server locally  
 
 ---
 
@@ -203,6 +239,16 @@ make client/format
 
 ---
 
+## Linting (Manual)
+
+```sh
+make client/lint
+make server/lint
+make quality
+```
+
+---
+
 ## Docker Commands
 
 ### Build Containers
@@ -225,6 +271,7 @@ make run
 - No need to manually install Python (`pyenv` handles it)
 - Dependencies auto-update when `requirements.txt` changes
 - VS Code setup is automatic
+- Code formatting and linting are enforced automatically via pre-commit
 
 ---
 
@@ -238,6 +285,7 @@ make run
 ├── output/
 ├── dictionaries/
 ├── .envrc
+├── .pre-commit-config.yaml
 ├── Makefile
 ```
 
@@ -249,6 +297,13 @@ make run
 
 ```sh
 direnv allow
+```
+
+### pre-commit not running
+
+```sh
+pre-commit install
+pre-commit run --all-files
 ```
 
 ### Python version issues
