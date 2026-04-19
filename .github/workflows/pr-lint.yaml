@@ -36,7 +36,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install server dependencies
-        run: cd server && pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run server lint
         run: make server/lint
