@@ -1,0 +1,14 @@
+repos:
+  - repo: local
+    hooks:
+      - id: client-format
+        name: Client Format (Prettier)
+        entry: make client/format
+        language: system
+        pass_filenames: false
+
+      - id: client-lint
+        name: Client Lint (ESLint Auto-Fix)
+        entry: make client/lint
+        language: system
+        pass_filenames: false

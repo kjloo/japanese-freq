@@ -82,8 +82,8 @@ client/run: ## 🌐 Run client dev server
 	cd client && npm run dev
 
 .PHONY: client/lint
-client/lint: ## 🔍 Lint client code
-	cd client && npm run lint
+client/lint: ## 🔍 Lint client code (auto-fix)
+	cd client && npm run lint -- --fix
 
 .PHONY: client/format
 client/format: ## ✒️  Format client code
