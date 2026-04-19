@@ -39,7 +39,7 @@ class VideoContent(SourceContent):
             if build_sentence is None and time_pattern.match(line):
                 # Section start
                 build_sentence = []
-            elif not build_sentence is None and not line.strip():
+            elif build_sentence is not None and not line.strip():
                 # Found section break. Store and reset
                 jc = JapaneseContent(
                     "".join(build_sentence),

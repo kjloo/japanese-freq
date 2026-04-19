@@ -78,8 +78,7 @@ class Dictionary:
         hiragana = definition[1] if definition[1] else definition[0]
 
         kanji = "\n".join(
-            [f"({i + 1}): {d[0] if d[1] else None}" for i,
-                d in enumerate(definitions)]
+            [f"({i + 1}): {d[0] if d[1] else None}" for i, d in enumerate(definitions)]
         )
         romaji = _get_katsu().romaji(hiragana).lower()
         return ShortDef(meaning, kanji, hiragana, romaji)
