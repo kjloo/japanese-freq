@@ -1,4 +1,3 @@
-from pathlib import Path
 import zipfile
 import fugashi
 import os
@@ -18,7 +17,7 @@ def _check_and_create_directory() -> str:
     zip_path = os.path.join(base_dir, "unidic-3.10.zip")
     if not os.path.exists(dict_dir):
         logger.info(f"Dictionary not found at {dict_dir}, extracting...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(base_dir)
         logger.info("Extraction complete.")
     else:

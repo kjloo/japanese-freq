@@ -67,6 +67,10 @@ server/test: ## 🧪 Run server tests
     fi; \
 	cd server && pytest -vv
 
+.PHONY: server/lint
+server/lint: ## 🔍 Lint server code
+	cd server && ruff check . --fix
+
 .PHONY: server/format
 server/format: ## ✒️  Format Python code with Black
 	cd server && black .

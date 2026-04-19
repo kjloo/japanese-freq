@@ -61,8 +61,7 @@ def handle_not_found(e):
 
 @app.errorhandler(405)
 def handle_method_not_allowed(e):
-    logger.error("405 Method Not Allowed: %s\n%s",
-                 str(e), traceback.format_exc())
+    logger.error("405 Method Not Allowed: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Method not allowed"}), 405
 
 
@@ -80,8 +79,7 @@ def handle_conflict(e):
 
 @app.errorhandler(UnsupportedOperation := OSError)
 def handle_unsupported_media_type(e):
-    logger.error("415 Unsupported Media Type: %s\n%s",
-                 str(e), traceback.format_exc())
+    logger.error("415 Unsupported Media Type: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Unsupported media operation"}), 415
 
 
@@ -90,8 +88,7 @@ def handle_unsupported_media_type(e):
 
 @app.errorhandler(AttributeError)
 def handle_unprocessable_entity(e):
-    logger.error("422 Unprocessable Entity: %s\n%s",
-                 str(e), traceback.format_exc())
+    logger.error("422 Unprocessable Entity: %s\n%s", str(e), traceback.format_exc())
     return jsonify({"error": "Unprocessable entity: " + str(e)}), 422
 
 
@@ -100,8 +97,7 @@ def handle_unprocessable_entity(e):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.error("500 Internal Server Error: %s\n%s",
-                 str(e), traceback.format_exc())
+    logger.error("500 Internal Server Error: %s\n%s", str(e), traceback.format_exc())
     if isinstance(e, HTTPException):
         return jsonify({"error": e.description}), e.code
     return jsonify({"error": "Internal server error: " + str(e)}), 500

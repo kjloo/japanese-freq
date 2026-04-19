@@ -13,13 +13,17 @@ class ProcessSettings:
         self.requires_definition = requires_definition
         self.min_word_length = min_word_length
 
-    def __init__(self, json_data: dict[str]):
-        self.inputs = json_data.get("inputs", [])
-        self.word_check = json_data.get("word_check", True)
-        self.freq_min = json_data.get("freq_min", 2)
-        self.requires_definition = json_data.get("requires_definition", False)
-        self.min_word_length = json_data.get("min_word_length", 1)
         self._validate()
+
+    @classmethod
+    def from_json(cls, json_data: dict[str, object]) -> "ProcessSettings":
+        return cls(
+            inputs=json_data.get("inputs", []),
+            word_check=json_data.get("word_check", True),
+            freq_min=json_data.get("freq_min", 2),
+            requires_definition=json_data.get("requires_definition", False),
+            min_word_length=json_data.get("min_word_length", 1),
+        )
 
     def with_word_check(self, word_check: bool):
         self.word_check = word_check
@@ -28,10 +32,13 @@ class ProcessSettings:
     def _validate(self):
         if not self.inputs:
             raise ValueError("Inputs list is required.")
+
         if not isinstance(self.word_check, bool):
             raise ValueError("Word check must be a boolean.")
+
         if not isinstance(self.freq_min, int) or self.freq_min < 0:
             raise ValueError("Frequency minimum must be a non-negative integer.")
+
         if not isinstance(self.min_word_length, int) or self.min_word_length < 1:
             raise ValueError("Minimum word length must be a positive integer.")
 

@@ -7,7 +7,10 @@ import pytest
 def mongo_test():
     with MongoDbContainer("mongo:8.0.8") as mongo:
         disconnect(alias="default")
-        connect(host=mongo.get_connection_url(),
-                alias="default", uuidRepresentation='standard')
+        connect(
+            host=mongo.get_connection_url(),
+            alias="default",
+            uuidRepresentation="standard",
+        )
         yield
         disconnect(alias="default")

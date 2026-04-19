@@ -1,14 +1,26 @@
 repos:
   - repo: local
     hooks:
+      - id: client-lint
+        name: Client Lint (ESLint Auto-Fix)
+        entry: make client/lint
+        language: system
+        pass_filenames: false
+
       - id: client-format
         name: Client Format (Prettier)
         entry: make client/format
         language: system
         pass_filenames: false
 
-      - id: client-lint
-        name: Client Lint (ESLint Auto-Fix)
-        entry: make client/lint
+      - id: server-lint
+        name: Server Lint (Ruff)
+        entry: make server/lint
+        language: system
+        pass_filenames: false
+
+      - id: server-format
+        name: Server Format (Black)
+        entry: make server/format
         language: system
         pass_filenames: false

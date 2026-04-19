@@ -29,4 +29,3 @@ def get_foo_by_id() -> Response:
     foo = Foo()
     raise ValueError("This is a test error")
     return jsonify(foo)
-    rc = {}
