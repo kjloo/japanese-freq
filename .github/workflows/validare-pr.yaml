@@ -28,4 +28,4 @@ jobs:
           sudo systemctl start docker
 
       - name: Run server tests
-        run: make server-test
+        run: make server/test
