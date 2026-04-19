@@ -1,109 +1,265 @@
 # Japanese Word Frequency
 
-A Python project that utilizes MeCab to analyze a SRT file and return the frequency of the words.
+A Python project that utilizes MeCab to analyze an SRT file and return the frequency of words.
+
+---
+
+## Overview
+
+This project is designed to be **largely zero-config** using:
+
+- `direnv` for automatic environment management  
+- `pyenv` for Python version control  
+- `make` for command orchestration  
+- `docker` for containerized execution  
+
+Once set up, most environment steps happen automatically when you enter the project directory.
+
+---
 
 ## System Setup
 
-Be sure to have MeCab installed on the machine where the code will be running.
+### macOS Dependencies
 
-### Mac
-
-1. Install direnv
-```shell
-brew install direnv
-direnv allow
-echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
+```sh
+brew install direnv mecab mecab-ipadic git-lfs pyenv
 ```
 
-2. Install MeCab
+---
 
-```shell
-brew install mecab
-brew install mecab-ipadic
+## One-Time Setup
+
+### 1. Configure Shell for `direnv`
+
+Add to your shell config (`~/.zshrc` or `~/.bash_profile`):
+
+```sh
+eval "$(direnv hook zsh)"
 ```
 
-3. Install `git-lfs`
+Restart your shell after this.
 
-```shell
-brew install git-lfs
+---
+
+### 2. Initialize Project
+
+```sh
 git lfs install
 git lfs pull
+direnv allow
 ```
 
-## Setup Inputs and Ignorelist
+---
 
-1. Create an `input` directory in the base directory
+## What Happens Automatically
 
-```shell
-mkdir -p input
-```
+When you `cd` into the project, `.envrc` will:
 
-2. Add a folder in the `input` directory and ensure there is a `.mp4` and a corresponding `.srt` file
+### Python Environment
+- Install `pyenv` (if missing)
+- Install Python **3.13.13** (if missing)
+- Create and activate a project-local virtual environment
 
-```shell
-mkdir -p input/anime
-```
+### Dependencies
+- Automatically install/update `requirements.txt` when it changes
 
-3. Copy `.ignorelist.example` into `.ignorelist.json` and add words you wish to ignore to the JSON list.
+### VS Code Integration
+- Auto-configure `.vscode/settings.json` with:
+  - Correct Python interpreter
+  - Test configuration
+  - Import paths
 
-```shell
-cat .ignorelist.example > .ignorelist.json
-```
+### Environment Variables
+- Set `VIRTUAL_ENV` automatically
 
-4. Copy `.env.example` into `.env` and update the settings
+---
 
-```shell
+## Configuration
+
+### Environment File
+
+```sh
 cp .env.example .env
 ```
 
-## Run Server Locally
+### Ignore List
 
-1. Install python 3.12
-
-```shell
-brew install python@3.12
+```sh
+cp .ignorelist.example .ignorelist.json
 ```
 
-2. Setup virtual python env
+---
 
-```shell
-python3.12 -m venv .venv
-source ./.venv/bin/activate
+## Input Files
+
+Place your media files here:
+
+```sh
+mkdir -p input/anime
 ```
 
-3. Install dependencies
+- Add `.mp4` and matching `.srt` files
 
-```shell
-pip install -r requirements.txt
-python -m unidic download
-```
+---
 
-4. Run program
+## Development Commands
 
-```shell
-make server-run
-```
+Use `make help` to see all available commands.
 
-## Run Client Locally
+---
 
-1. Install dependencies
+## Quick Start
 
-```shell
-npm install --prefix client
-```
+### Initial Setup
 
-2. Run client
-
-```shell
-make client-run
-```
-
-## Run with Docker
-
-1. Use Make Commands
-
-```shell
+```sh
 make setup
-make build
+```
+
+This will:
+- Prepare server directories
+- Sync input/output files
+- Copy dictionaries
+- Install Python dependencies
+- Install client dependencies
+
+---
+
+## Running the App
+
+### Run Full Stack (Docker - Background)
+
+```sh
 make run
+```
+
+- Starts all services in the background
+- Opens: http://localhost:5000
+
+---
+
+### Run Full Stack (Dev Mode - Attached Logs)
+
+```sh
+make dev
+```
+
+---
+
+### Stop Services
+
+```sh
+make stop
+```
+
+---
+
+## Local Development
+
+### Run Server (Local Python)
+
+```sh
+make server/run
+```
+
+- Starts MongoDB via Docker
+- Waits for it to become healthy
+- Runs Gunicorn server locally
+
+---
+
+### Run Client
+
+```sh
+make client/run
+```
+
+---
+
+## Testing
+
+### Run Server Tests
+
+```sh
+make server/test
+```
+
+---
+
+## Formatting
+
+### Format All Code
+
+```sh
+make format
+```
+
+### Individually
+
+```sh
+make server/format
+make client/format
+```
+
+---
+
+## Docker Commands
+
+### Build Containers
+
+```sh
+make build
+```
+
+### Run Containers
+
+```sh
+make run
+```
+
+---
+
+## Notes
+
+- No need to manually activate a virtual environment (`direnv` handles it)
+- No need to manually install Python (`pyenv` handles it)
+- Dependencies auto-update when `requirements.txt` changes
+- VS Code setup is automatic
+
+---
+
+## Project Structure (Simplified)
+
+```
+.
+├── client/
+├── server/
+├── input/
+├── output/
+├── dictionaries/
+├── .envrc
+├── Makefile
+```
+
+---
+
+## Troubleshooting
+
+### direnv not loading
+
+```sh
+direnv allow
+```
+
+### Python version issues
+
+```sh
+pyenv install 3.13.13
+```
+
+### Rebuild environment
+
+```sh
+rm -rf .direnv
+direnv allow
 ```
