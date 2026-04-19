@@ -21,4 +21,4 @@ jobs:
         run: cd client && npm ci
 
       - name: Run client lint
-        run: make client-lint
+        run: make client/lint
