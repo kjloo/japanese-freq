@@ -60,11 +60,17 @@ server/run: ## ⚡ Run server locally with Gunicorn
 	@echo "MongoDB is ready. Starting the server..."
 	cd server && gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
 
+.PHONY: server/test-env
+server/test-env:
+	docker compose up mongodb -d
+	@echo "Waiting for MongoDB to be ready..."
+	@until [ "$$(docker inspect --format='{{.State.Health.Status}}' mongodb)" = "healthy" ]; do \
+		echo "MongoDB not healthy yet..."; \
+		sleep 2; \
+	done
+
 .PHONY: server/test
-server/test: ## 🧪 Run server tests
-	@if [ "$(OS)" = "Darwin" ]; then \
-        export DOCKER_HOST=unix:///Users/kalebloo/.docker/run/docker.sock; \
-    fi; \
+server/test: server/test-env ## 🧪 Run server tests
 	cd server && pytest -vv
 
 .PHONY: server/lint

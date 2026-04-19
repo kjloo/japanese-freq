@@ -2,6 +2,8 @@ import pytest
 
 from app.model.word.word_list import WordList
 
+from test.fixture.mongo_fixture import mongo_test
+
 
 @pytest.fixture(autouse=True)
 def clear_word_list():

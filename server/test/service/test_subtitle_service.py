@@ -1,6 +1,8 @@
 from unittest import mock
 import pytest
 
+from test.fixture.mongo_fixture import mongo_test
+
 
 @pytest.mark.usefixtures("mongo_test")
 @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
