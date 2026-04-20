@@ -1,3 +1,6 @@
+-include .env
+export
+
 # Default goal displays the help menu
 .DEFAULT_GOAL := help
 
@@ -49,15 +52,32 @@ server/setup: ## 🐍 Setup directories and install requirements
 	rsync -a dictionaries/ server/dictionaries/
 	pip install -r requirements.txt
 
+.PHONY: sidecar/run
+sidecar/run: ## 🤖 Start the MLX-LM sidecar server (Qwen 3.5 9B)
+	@echo "Checking if mlx-lm is installed..."
+	@pip show mlx-lm > /dev/null || pip install mlx-lm
+	@echo "🚀 Starting Qwen3.5 9B on Metal GPU..."
+	# The '/dev/null' redirections are key to preventing the freeze
+	@((nohup mlx_lm server --model mlx-community/Qwen3.5-9B-MLX-4bit --host 0.0.0.0 > sidecar.log 2>&1 < /dev/null) &)
+
 .PHONY: server/run
 server/run: ## ⚡ Run server locally with Gunicorn
 	docker compose up mongodb -d
 	@echo "Waiting for MongoDB to be ready..."
 	@until [ "$$(docker inspect --format='{{.State.Health.Status}}' mongodb)" = "healthy" ]; do \
-        echo "MongoDB not healthy yet..."; \
-        sleep 2; \
-    done
-	@echo "MongoDB is ready. Starting the server..."
+		sleep 2; \
+	done
+	@echo "Checking for MLX Sidecar..."
+	@if ! curl -s http://localhost:8080/v1/models > /dev/null; then \
+		echo "Sidecar not detected. Launching..."; \
+		$(MAKE) sidecar/run; \
+		echo "Waiting for MLX to load (this can take a minute)..."; \
+		while ! curl -s http://localhost:8080/v1/models > /dev/null; do \
+			echo "Still loading model..."; \
+			sleep 5; \
+		done; \
+	fi
+	@echo "All systems green. Starting the server..."
 	cd server && gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
 
 .PHONY: server/test
@@ -71,6 +91,18 @@ server/lint: ## 🔍 Lint server code
 .PHONY: server/format
 server/format: ## ✒️  Format Python code with Black
 	cd server && black .
+
+.PHONY: server/clean
+server/clean: ## 🧹 Stop services and remove logs/cache
+	@echo "Stopping Docker services..."
+	docker compose down
+	@echo "Killing MLX Sidecar process..."
+	@pkill -f "mlx_lm server" || echo "Sidecar was not running."
+	@echo "Removing log files..."
+	rm -f sidecar.log
+	@echo "Cleaning Python cache files..."
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	@echo "✨ Workspace is clean."
 
 # --- CLIENT ---
 

@@ -15,9 +15,10 @@ class LLMPromptForm(BaseForm):
         self.prompt = json_data.get("prompt", "")
         # Default to a Japanese-focused assistant if not provided
         self.system_prompt = json_data.get(
-            "system_prompt", "あなたは日本語のプロフェッショナルです。"
+            "system_prompt",
+            "あなたは日本語のプロフェッショナルです。思考プロセスを出力せず、簡潔に回答のみを出力してください。",
         )
-        self.max_tokens = json_data.get("max_tokens", 1000)
+        self.max_tokens = json_data.get("max_tokens", 2048)
         super().__init__()
 
     def to_dict(self) -> dict:

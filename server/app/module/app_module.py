@@ -111,7 +111,7 @@ initialize_mongo_connection(app)
 
 
 # Routes
-def register_all_blueprints():
+def register_all_blueprints(app: Flask):
     from app.routes.admin_routes import admin_routes
     from app.routes.anki_routes import anki_routes
     from app.routes.debug_routes import debug_routes
