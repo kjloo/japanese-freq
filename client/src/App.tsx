@@ -12,13 +12,14 @@ function App() {
       <Router>
         <Suspense fallback={<div>Loading...</div>}>
           <div className="content">
-            <Routes>
-              <Route path="/" element={<WelcomeCard />} />
-              <Route path="/anki" element={<div>Settings coming soon!</div>} />
-              <Route path="/mine" element={<MineMenu />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="*" element={<div>Page not found</div>} />
-            </Routes>
+            <div className="container">
+              <Routes>
+                <Route path="/" element={<WelcomeCard />} />
+                <Route path="/mine" element={<MineMenu />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="*" element={<div>Page not found</div>} />
+              </Routes>
+            </div>
           </div>
         </Suspense>
       </Router>
