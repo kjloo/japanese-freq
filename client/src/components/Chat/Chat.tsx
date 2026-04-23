@@ -49,20 +49,23 @@ const Chat: FunctionComponent = () => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      // Extract the most descriptive error message available
-      const detailedError =
-        error.response?.data?.error ||
-        error.message ||
-        "Unknown error occurred";
+    } catch (error: unknown) {
+      let message = "An unexpected error occurred";
+
+      if (axios.isAxiosError(error)) {
+        // Now TypeScript knows 'error' is an AxiosError
+        message = error.response?.data?.error || error.message;
+      } else if (error instanceof Error) {
+        // Handles standard JavaScript errors
+        message = error.message;
+      }
 
       const errorMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: "assistant",
-        content: `Error: ${detailedError}. Please try again.`,
+        content: `Error: ${message}`,
       };
       setMessages((prev) => [...prev, errorMessage]);
-      console.error("API Error:", error);
     } finally {
       setIsLoading(false);
     }
