@@ -1,219 +1,230 @@
-import { useRef, useState, useEffect, FunctionComponent } from 'react';
+import { useRef, useState, useEffect, FunctionComponent } from "react";
 import axios from "axios";
 import DOMPurify from "dompurify";
-import styles from './VideoPlayer.module.css';
-import { ProcessVideoSettings } from '../../types/ProcessVideoSettings';
-import { AnkiConfig } from '../../types/AnkiTypes';
+import styles from "./VideoPlayer.module.css";
+import { ProcessVideoSettings } from "../../types/ProcessVideoSettings";
+import { AnkiConfig } from "../../types/AnkiTypes";
 
 interface VideoPlayerProps {
-    source: string;
-    settings: ProcessVideoSettings;
+  source: string;
+  settings: ProcessVideoSettings;
 }
 
 interface Subtitle {
-    start: number;
-    end: number;
-    text: string;
+  start: number;
+  end: number;
+  text: string;
 }
 
-const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ source, settings }) => {
-    const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-    const [progress, setProgress] = useState(0); // State to track video progress
-    const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
-    const [videoUrl, setVideoUrl] = useState<string | null>(null); // State to store the video URL
-    const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
-    const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
-    const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
-    const [config, setConfig] = useState<AnkiConfig | null>(null); // State to store the Anki configuration
+const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
+  source,
+  settings,
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
+  const [progress, setProgress] = useState(0); // State to track video progress
+  const [isPlaying, setIsPlaying] = useState(false); // State to track if the video is playing
+  const [videoUrl, setVideoUrl] = useState<string | null>(null); // State to store the video URL
+  const [subtitleUrl, setSubtitleUrl] = useState<string | null>(null); // State to store the subtitle URL
+  const [subtitles, setSubtitles] = useState<Subtitle[]>([]); // Parsed subtitles
+  const [currentSubtitle, setCurrentSubtitle] = useState<string>(""); // Current subtitle text
+  const [config, setConfig] = useState<AnkiConfig | null>(null); // State to store the Anki configuration
 
-    useEffect(() => {
-        // Construct the video URL from the API endpoint
-        const apiUrl = `http://localhost:5000/api/video/stream/${source}`;
-        setVideoUrl(apiUrl);
+  useEffect(() => {
+    // Construct the video URL from the API endpoint
+    const apiUrl = `http://localhost:5000/api/video/stream/${source}`;
+    setVideoUrl(apiUrl);
 
-        const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
-        setSubtitleUrl(subtitleApiUrl);
-    }, [source]);
+    const subtitleApiUrl = `http://localhost:5000/api/video/subtitles/${source}`;
+    setSubtitleUrl(subtitleApiUrl);
+  }, [source]);
 
-    useEffect(() => {
-        const getConfig = async () => {
-            try {
-                const response = await axios.get(`/api/anki/configs/${settings.anki_config_id}`);
-                setConfig(response.data.config);
-            } catch (error) {
-                console.error('Error fetching Anki configuration:', error);
-            }
-        };
-        getConfig();
-    }, []);
-
-    useEffect(() => {
-        // Fetch and parse subtitles along with ignored words
-        if (subtitleUrl) {
-            axios
-                .post(subtitleUrl, settings)
-                .then((response) => {
-                    const { subtitles: subtitleContent } = response.data;
-
-                    // Parse the subtitle content
-                    const parsedSubtitles = parseVTT(subtitleContent);
-                    setSubtitles(parsedSubtitles);
-                })
-                .catch((error) => {
-                    console.error("Error fetching subtitles:", error);
-                });
-        }
-    }, [subtitleUrl]);
-
-    const parseVTT = (data: string[]): Subtitle[] => {
-        const subtitles: Subtitle[] = [];
-        let start = 0;
-        let end = 0;
-        let text = "";
-
-        data.forEach((line, index) => {
-            // Skip empty lines or metadata like "WEBVTT"
-            if (!line.trim() || line.trim() === "WEBVTT") {
-                return;
-            }
-
-            // Match timestamp lines
-            const timeMatch = line.match(
-                /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/
-            );
-            if (timeMatch) {
-                start = parseTime(timeMatch[1]); // Start timestamp
-                end = parseTime(timeMatch[3]); // End timestamp
-                text = data[index + 1]?.trim() || ""; // Subtitle text is usually on the next line
-                if (text) {
-                    subtitles.push({ start, end, text });
-                }
-            }
-        });
-
-        return subtitles;
-    };
-
-    const parseTime = (time: string): number => {
-        const parts = time.split(":");
-        let hours = "0";
-        let minutes = "0";
-        let seconds = "0.0";
-
-        if (parts.length === 3) {
-            // Format: HH:MM:SS.mmm
-            [hours, minutes, seconds] = parts;
-        } else if (parts.length === 2) {
-            // Format: MM:SS.mmm (no hours)
-            [minutes, seconds] = parts;
-        }
-
-        const [secs, millis] = seconds.split(".");
-        return (
-            parseInt(hours) * 3600 +
-            parseInt(minutes) * 60 +
-            parseInt(secs) +
-            parseFloat(`0.${millis}`)
+  useEffect(() => {
+    const getConfig = async () => {
+      try {
+        const response = await axios.get(
+          `/api/anki/configs/${settings.anki_config_id}`,
         );
+        setConfig(response.data.config);
+      } catch (error) {
+        console.error("Error fetching Anki configuration:", error);
+      }
     };
+    getConfig();
+  }, []);
 
-    const handlePlayPause = (pause: boolean | null) => {
-        if (!videoRef.current) return;
+  useEffect(() => {
+    // Fetch and parse subtitles along with ignored words
+    if (subtitleUrl) {
+      axios
+        .post(subtitleUrl, settings)
+        .then((response) => {
+          const { subtitles: subtitleContent } = response.data;
 
-        let shouldPlay: boolean;
-        if (pause === null) {
-            shouldPlay = !isPlaying;
-        } else {
-            shouldPlay = !pause;
+          // Parse the subtitle content
+          const parsedSubtitles = parseVTT(subtitleContent);
+          setSubtitles(parsedSubtitles);
+        })
+        .catch((error) => {
+          console.error("Error fetching subtitles:", error);
+        });
+    }
+  }, [subtitleUrl]);
+
+  const parseVTT = (data: string[]): Subtitle[] => {
+    const subtitles: Subtitle[] = [];
+    let start = 0;
+    let end = 0;
+    let text = "";
+
+    data.forEach((line, index) => {
+      // Skip empty lines or metadata like "WEBVTT"
+      if (!line.trim() || line.trim() === "WEBVTT") {
+        return;
+      }
+
+      // Match timestamp lines
+      const timeMatch = line.match(
+        /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/,
+      );
+      if (timeMatch) {
+        start = parseTime(timeMatch[1]); // Start timestamp
+        end = parseTime(timeMatch[3]); // End timestamp
+        text = data[index + 1]?.trim() || ""; // Subtitle text is usually on the next line
+        if (text) {
+          subtitles.push({ start, end, text });
         }
+      }
+    });
 
-        if (shouldPlay) {
-            videoRef.current.play();
-        } else {
-            videoRef.current.pause();
-        }
-        setIsPlaying(shouldPlay);
-    };
+    return subtitles;
+  };
 
-    const handleProgress = () => {
-        if (videoRef.current) {
-            const currentTime = videoRef.current.currentTime;
-            const duration = videoRef.current.duration;
-            setProgress((currentTime / duration) * 100);
+  const parseTime = (time: string): number => {
+    const parts = time.split(":");
+    let hours = "0";
+    let minutes = "0";
+    let seconds = "0.0";
 
-            // Update the current subtitle
-            const current = subtitles.find(
-                (subtitle) =>
-                    currentTime >= subtitle.start && currentTime <= subtitle.end
-            );
-            setCurrentSubtitle(current ? current.text : "");
-        }
-    };
-
-    const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (videoRef.current) {
-            const newTime = (Number(event.target.value) / 100) * videoRef.current.duration;
-            videoRef.current.currentTime = newTime;
-            setProgress(Number(event.target.value));
-        }
-    };
-
-    const handleAnkiCardCreation = async () => {
-        handlePlayPause(true);
-        try {
-            await axios.post(
-                `/api/anki/decks/${config?.deck_id}/cards`,
-                config
-            );
-        } catch (error) {
-            console.error('Error fetching Anki configuration:', error);
-        }
-    };
-
-    const sanitizedSubtitle = (subtitle: string) => {
-        return DOMPurify.sanitize(subtitle);
+    if (parts.length === 3) {
+      // Format: HH:MM:SS.mmm
+      [hours, minutes, seconds] = parts;
+    } else if (parts.length === 2) {
+      // Format: MM:SS.mmm (no hours)
+      [minutes, seconds] = parts;
     }
 
+    const [secs, millis] = seconds.split(".");
     return (
-        <div className={styles.videoPlayer}>
-            <div className={styles.videoContainer}>
-                {videoUrl ? (
-                    <video
-                        ref={videoRef}
-                        src={videoUrl}
-                        className={styles.videoElement}
-                        onTimeUpdate={handleProgress}
-                        controls
-                    />
-                ) : (
-                    <p>Loading video...</p>
-                )}
-                <div
-                    className={styles.subtitleContainer}
-                    dangerouslySetInnerHTML={{ __html: sanitizedSubtitle(currentSubtitle).replace(/\n/g, "<br />") }}
-                ></div>
-            </div>
-            <div className={styles.videoControls}>
-                <button onClick={() => handlePlayPause(null)} className={styles.playPauseButton}>
-                    {isPlaying ? "Pause" : "Play"}
-                </button>
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={progress}
-                    onChange={handleSeek}
-                    className={styles.progressBar}
-                />
-                <span className={styles.progressText}>{Math.round(progress)}%</span>
-                {settings.anki_config_id && (
-                    <button onClick={handleAnkiCardCreation} className={styles.playPauseButton}>
-                        Create Anki Card
-                    </button>
-                )}
-            </div>
-        </div>
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(secs) +
+      parseFloat(`0.${millis}`)
     );
+  };
+
+  const handlePlayPause = (pause: boolean | null) => {
+    if (!videoRef.current) return;
+
+    let shouldPlay: boolean;
+    if (pause === null) {
+      shouldPlay = !isPlaying;
+    } else {
+      shouldPlay = !pause;
+    }
+
+    if (shouldPlay) {
+      videoRef.current.play();
+    } else {
+      videoRef.current.pause();
+    }
+    setIsPlaying(shouldPlay);
+  };
+
+  const handleProgress = () => {
+    if (videoRef.current) {
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      setProgress((currentTime / duration) * 100);
+
+      // Update the current subtitle
+      const current = subtitles.find(
+        (subtitle) =>
+          currentTime >= subtitle.start && currentTime <= subtitle.end,
+      );
+      setCurrentSubtitle(current ? current.text : "");
+    }
+  };
+
+  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (videoRef.current) {
+      const newTime =
+        (Number(event.target.value) / 100) * videoRef.current.duration;
+      videoRef.current.currentTime = newTime;
+      setProgress(Number(event.target.value));
+    }
+  };
+
+  const handleAnkiCardCreation = async () => {
+    handlePlayPause(true);
+    try {
+      await axios.post(`/api/anki/decks/${config?.deck_id}/cards`, config);
+    } catch (error) {
+      console.error("Error fetching Anki configuration:", error);
+    }
+  };
+
+  const sanitizedSubtitle = (subtitle: string) => {
+    return DOMPurify.sanitize(subtitle);
+  };
+
+  return (
+    <div className={styles.videoPlayer}>
+      <div className={styles.videoContainer}>
+        {videoUrl ? (
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className={styles.videoElement}
+            onTimeUpdate={handleProgress}
+            controls
+          />
+        ) : (
+          <p>Loading video...</p>
+        )}
+        <div
+          className={styles.subtitleContainer}
+          dangerouslySetInnerHTML={{
+            __html: sanitizedSubtitle(currentSubtitle).replace(/\n/g, "<br />"),
+          }}
+        ></div>
+      </div>
+      <div className={styles.videoControls}>
+        <button
+          onClick={() => handlePlayPause(null)}
+          className={styles.playPauseButton}
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={progress}
+          onChange={handleSeek}
+          className={styles.progressBar}
+        />
+        <span className={styles.progressText}>{Math.round(progress)}%</span>
+        {settings.anki_config_id && (
+          <button
+            onClick={handleAnkiCardCreation}
+            className={styles.playPauseButton}
+          >
+            Create Anki Card
+          </button>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default VideoPlayer;
