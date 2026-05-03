@@ -1,131 +1,135 @@
 input[type="checkbox"] {
-    margin-right: 0.5em;
-    /* Add spacing between the checkbox and the label */
-    width: 1.25em;
-    /* Set a consistent size for the checkbox */
-    height: 1.25em;
-    /* Set a consistent size for the checkbox */
-    cursor: pointer;
-    /* Change cursor to pointer for better UX */
-    accent-color: #4caf50;
-    /* Use a green accent color for the checkbox */
+  margin-right: 0.5em;
+  /* Add spacing between the checkbox and the label */
+  width: 1.25em;
+  /* Set a consistent size for the checkbox */
+  height: 1.25em;
+  /* Set a consistent size for the checkbox */
+  cursor: pointer;
+  /* Change cursor to pointer for better UX */
+  accent-color: #4caf50;
+  /* Use a green accent color for the checkbox */
 }
 
 input[type="checkbox"]:hover {
-    filter: brightness(0.9);
-    /* Slightly darken the checkbox on hover */
+  filter: brightness(0.9);
+  /* Slightly darken the checkbox on hover */
 }
 
 input[type="checkbox"]:checked {
-    border-color: #4caf50;
-    /* Add a green border when checked */
+  border-color: #4caf50;
+  /* Add a green border when checked */
 }
 
 input[type="number"] {
-    margin-left: 0.5em;
-    padding: 0.25em;
-    font-size: 1em;
-    width: 2em;
+  margin-left: 0.5em;
+  padding: 0.25em;
+  font-size: 1em;
+  width: 2em;
 }
 
 .configContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-    margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem;
+  margin: auto;
 }
 
 .configRow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .configRow:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .configScrollable {
-    max-height: 250px;
-    overflow: auto;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
+  max-height: 250px;
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 .configLabel {
-    font-size: 1rem;
-    color: #222;
-    font-weight: 500;
-    flex: 1;
-    padding-right: 2rem;
-    text-align: left; }
+  font-size: 1rem;
+  color: #222;
+  font-weight: 500;
+  flex: 1;
+  padding-right: 2rem;
+  text-align: left;
+}
 
 .configInput {
-    flex: 1;
-    min-width: 160px;
-    max-width: 240px;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #f9fafb;
-    font-size: 1rem;
-    color: #222;
-    transition: border-color 0.2s, background 0.2s;
-    outline: none;
-    box-sizing: border-box;
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 1rem;
+  color: #222;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  outline: none;
+  box-sizing: border-box;
 }
 
 .configInput:focus {
-    border-color: #6366f1;
-    background: #fff;     }
+  border-color: #6366f1;
+  background: #fff;
+}
 
 .configInputsList {
-    list-style: none;
-    max-height: 15em;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 0.5em;
-    padding: 0.5em;
-    background-color: #f9f9f9;
+  list-style: none;
+  max-height: 15em;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 0.5em;
+  padding: 0.5em;
+  background-color: #f9f9f9;
 }
 
 .configSelect {
-    flex: 1;
-    min-width: 160px;
-    max-width: 240px;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #f9fafb;
-    font-size: 1rem;
-    color: #222;
-    transition: border-color 0.2s;
-    outline: none;
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 1rem;
+  color: #222;
+  transition: border-color 0.2s;
+  outline: none;
 }
 
 .configSelect:focus {
-    border-color: #6366f1;
-    background: #fff;
+  border-color: #6366f1;
+  background: #fff;
 }
 
 @media (max-width: 600px) {
-    .configContainer {
-        padding: 1rem;
-    }
+  .configContainer {
+    padding: 1rem;
+  }
 
-    .configRow {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
+  .configRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
 
-    .configLabel,
-    .configSelect {
-        padding-right: 0;
-        max-width: 100%;
-    }
+  .configLabel,
+  .configSelect {
+    padding-right: 0;
+    max-width: 100%;
+  }
 }

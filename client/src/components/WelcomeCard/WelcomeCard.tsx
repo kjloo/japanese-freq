@@ -1,34 +1,31 @@
-import { FunctionComponent } from 'react';
-import styles from './WelcomeCard.module.css';
+import { FunctionComponent } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface WelcomeCardProps {
-    isLoading: boolean;
-    progress: number;
-    onStart: () => void;
-    onAnki: () => void;
-}
+const WelcomeCard: FunctionComponent = () => {
+  const navigate = useNavigate();
 
-const WelcomeCard: FunctionComponent<WelcomeCardProps> = ({ isLoading, progress, onStart, onAnki }) => {
-    return (
-        <div className="card">
-            <button className={styles.ankiButton} onClick={onAnki} >⚙️</button>
-            <h1 className="title">Welcome</h1>
-            <p className="text">Get started by clicking the button below</p>
-            <button className="start-button" onClick={onStart} disabled={isLoading}>
-                {isLoading ? 'Processing...' : 'Start'}
-            </button>
+  const handleMineClick = () => {
+    navigate("/mine");
+  };
 
-            {isLoading && (
-                <div className={styles.progressBar}>
-                    <div
-                        className={styles.progressBarFill}
-                        style={{ width: `${progress}%` }}
-                    ></div>
-                </div>
-            )}
-            {progress === 100 && <p>Process complete!</p>}
-        </div>
-    );
+  const handleChatClick = () => {
+    navigate("/chat");
+  };
+
+  return (
+    <div className="card">
+      <h1 className="title">Welcome</h1>
+      <p className="text">Get started by clicking the button below</p>
+
+      <button className="start-button" onClick={handleMineClick}>
+        Mine
+      </button>
+
+      <button className="start-button" onClick={handleChatClick}>
+        Chat
+      </button>
+    </div>
+  );
 };
 
 export default WelcomeCard;

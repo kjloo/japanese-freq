@@ -17,3 +17,4 @@ pytest-env==1.1.5
 testcontainers[mongodb]>=4.10.0
 docker===7.1.0
 ruff===0.15.11
+mlx-lm===0.31.2

@@ -1,0 +1,129 @@
+import { useState, useEffect, FunctionComponent } from "react";
+import { io } from "socket.io-client";
+import AnkiCard from "../AnkiCard/AnkiCard";
+import WordCheckForm from "../WordCheckForm";
+import VideoPlayer from "../VideoPlayer/VideoPlayer";
+import {
+  defaultProcessVideoSettings,
+  ProcessVideoSettings,
+} from "../../types/ProcessVideoSettings";
+import ProcessSettings from "../ProcessSettings/ProcessSettings";
+import styles from "./MineMenu.module.css";
+
+const socket = io("http://localhost:5000");
+
+// Define an enum to manage the component's state
+enum ViewState {
+  Anki,
+  Welcome,
+  ProcessSettings,
+  WordCheckForm,
+  VideoPlayer,
+}
+
+const Mine: FunctionComponent = () => {
+  const [viewState, setViewState] = useState<ViewState>(ViewState.Welcome); // Single state variable to manage views
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [videoSource, setVideoSource] = useState<string | null>(null); // State to store the selected video source
+  const [settings, setSettings] = useState<ProcessVideoSettings>(
+    defaultProcessVideoSettings,
+  );
+
+  useEffect(() => {
+    socket.on("progress", (data) => {
+      setProgress(data.progress);
+      if (data.progress >= 100) {
+        setIsLoading(false);
+      }
+    });
+
+    socket.on("word_check_complete", () => {
+      // Hack
+      if (viewState !== ViewState.VideoPlayer) {
+        setViewState(ViewState.Welcome);
+      }
+    });
+
+    return () => {
+      socket.off("progress");
+      socket.off("word_check_complete");
+    };
+  }, [viewState]);
+
+  const startProcess = () => {
+    setIsLoading(true);
+    setProgress(0);
+  };
+
+  const handleStartClick = () => {
+    setViewState(ViewState.ProcessSettings);
+  };
+
+  const handleAnkiClick = () => {
+    setViewState(ViewState.Anki);
+  };
+
+  const handleInputSelectorSubmit = () => {
+    setViewState(ViewState.WordCheckForm); // Reset to Welcome while processing
+    startProcess(); // Start the process with the selected inputs
+  };
+
+  const handleInputSelectorCancel = () => {
+    setViewState(ViewState.Welcome); // Reset to Welcome if canceled
+  };
+
+  const handleVideoPlayerClick = (
+    source: string,
+    settings: ProcessVideoSettings,
+  ) => {
+    setViewState(ViewState.VideoPlayer);
+    setSettings(settings);
+    setVideoSource(source);
+  };
+
+  return (
+    <>
+      {viewState === ViewState.Anki ? (
+        <AnkiCard onCancel={handleInputSelectorCancel} />
+      ) : viewState === ViewState.ProcessSettings ? (
+        <ProcessSettings
+          onVideo={handleVideoPlayerClick} // Pass the handler to ProcessSettings
+          onProcess={handleInputSelectorSubmit}
+          onCancel={handleInputSelectorCancel}
+        />
+      ) : viewState === ViewState.WordCheckForm ? (
+        <WordCheckForm />
+      ) : viewState === ViewState.VideoPlayer && videoSource ? (
+        <VideoPlayer source={videoSource} settings={settings} /> // Pass the selected video source to VideoPlayer
+      ) : (
+        <div className="card">
+          <button className={styles.ankiButton} onClick={handleAnkiClick}>
+            ⚙️
+          </button>
+          <h1 className="title">Welcome</h1>
+          <p className="text">Get started by clicking the button below</p>
+          <button
+            className="start-button"
+            onClick={handleStartClick}
+            disabled={isLoading}
+          >
+            {isLoading ? "Processing..." : "Start"}
+          </button>
+
+          {isLoading && (
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressBarFill}
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          )}
+          {progress === 100 && <p>Process complete!</p>}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Mine;

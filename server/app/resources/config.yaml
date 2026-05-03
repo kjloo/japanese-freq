@@ -7,3 +7,17 @@ mongo:
   db: language
   user: tinkerm0nk3y808
   password: tinkerm0nk3y808
+llm:
+  # Provider type: "mlx" or "openrouter"
+  provider: mlx
+  # MLX-specific configuration
+  mlx_server_url: "http://localhost:8080/v1"
+  mlx_model_name: "mlx-community/Qwen3.5-9B-MLX-4bit"
+  # OpenRouter-specific configuration (uncomment to use)
+  # openrouter_api_key: "" # Set via environment variable OPENROUTER_API_KEY
+  # openrouter_model: "openai/gpt-4-turbo"
+  # openrouter_base_url: "https://openrouter.ai/api/v1"
+  # Common settings
+  temperature: 0.7
+  max_tokens: 2000
+  timeout: 120

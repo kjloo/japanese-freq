@@ -1,0 +1,117 @@
+/* Container for the whole component */
+.chatArea {
+  display: flex;
+  flex-direction: column;
+  padding: 0rem 1rem;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.header {
+  padding: 1.5rem 2.5rem; /* Increased horizontal padding */
+  margin: 0;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.chatMessages {
+  width: 100%;
+  height: 28rem;
+  overflow-y: auto;
+  padding: 2.5rem; /* Increased padding around the bubbles */
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Space between bubbles */
+  background: #f7f7f5; /* Off-white background */
+}
+
+.message {
+  display: flex;
+  width: 100%;
+  max-width: 80rem; /* Keeps bubbles from hitting the far edges on wide screens */
+  margin: 0 auto; /* Centers the chat thread area */
+}
+
+/* User Messages: Right Aligned */
+.user {
+  justify-content: flex-end;
+}
+
+.user .messageContent {
+  background: #007aff;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+/* Assistant Messages: Left Aligned */
+.assistant {
+  justify-content: flex-start;
+}
+
+.assistant .messageContent {
+  background: #e9e9eb;
+  color: #2c2c2e;
+  border-radius: 18px 18px 18px 4px;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 0rem 1.4rem; /* Padding inside the bubble */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.chatInputArea {
+  display: flex;
+  padding: 2rem 2.5rem; /* Increased vertical and horizontal padding for the container */
+  gap: 1.25rem; /* Slightly more gap between input and button */
+  background: white;
+  border-top: 1px solid #eee;
+  align-items: center; /* Ensures input and button stay centered vertically */
+}
+
+.chatInput {
+  flex: 1;
+  padding: 1rem 1.5rem; /* Substantial padding inside the text box */
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  outline: none;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
+  box-sizing: border-box; /* Prevents padding from increasing the width */
+}
+
+.chatInput:focus {
+  border-color: #007aff;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.sendButton {
+  height: 100%; /* Matches the height of the padded input */
+  min-height: 48px; /* Ensures a comfortable touch/click target */
+  padding: 0 2rem;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.1s active,
+    opacity 0.2s;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #0063cc;
+}
+
+.sendButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
