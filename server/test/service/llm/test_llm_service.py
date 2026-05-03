@@ -1,19 +1,12 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from app.service.llm import llm_service
 
 
-@patch("app.module.llm_module.llm_module.get_model_and_tokenizer")
-@patch("app.service.llm.llm_service.generate")
-def test_prompt_llm_calls_generate(mock_generate, mock_get_assets):
-    # Setup mocks
-    mock_model = MagicMock()
-    mock_tokenizer = MagicMock()
-    mock_get_assets.return_value = (mock_model, mock_tokenizer)
-
-    # Mock the tokenizer's chat template application
-    mock_tokenizer.apply_chat_template.return_value = "<formatted_prompt>"
-    mock_generate.return_value = "こんにちは！"
+@patch("app.service.llm.llm_service.llm_gateway")
+def test_prompt_llm_calls_gateway(mock_gateway):
+    # Setup mock return value
+    mock_gateway.generate.return_value = "こんにちは！"
 
     # Execute
     response = llm_service.prompt_llm(
@@ -22,17 +15,28 @@ def test_prompt_llm_calls_generate(mock_generate, mock_get_assets):
 
     # Assertions
     assert response == "こんにちは！"
-    mock_tokenizer.apply_chat_template.assert_called_once()
-    mock_generate.assert_called_once_with(
-        mock_model,
-        mock_tokenizer,
-        prompt="<formatted_prompt>",
-        max_tokens=100,
-        temp=0.7,
+    mock_gateway.generate.assert_called_once_with(
+        prompt="Hello", system_prompt="You are helpful", max_tokens=100
     )
 
 
-def test_get_llm_status():
+@patch("app.service.llm.llm_service.llm_gateway")
+def test_prompt_llm_raises_exception_on_none(mock_gateway):
+    # Setup gateway to return None
+    mock_gateway.generate.return_value = None
+
+    # Execute and Assert
+    with pytest.raises(Exception, match="LLM provider returned no response"):
+        llm_service.prompt_llm("Hello", "System", 100)
+
+
+@patch("app.service.llm.llm_service.llm_gateway")
+def test_get_llm_status(mock_gateway):
+    # Setup mock status data
+    expected_status = {"loaded": True, "model_path": "/path/to/model"}
+    mock_gateway.get_provider_info.return_value = expected_status
+
     status = llm_service.get_llm_status()
-    assert "loaded" in status
-    assert "model_path" in status
+
+    assert status == expected_status
+    mock_gateway.get_provider_info.assert_called_once()
