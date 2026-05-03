@@ -1,5 +1,5 @@
 from app.module.logging_module import logger
-from app.module.gateway_module import llm_config, llm_provider
+from app.module.llm_module import llm_config, llm_provider
 
 
 def generate(prompt: str, system_prompt: str, max_tokens: int) -> str | None:

@@ -11,7 +11,7 @@ def prompt_llm(user_prompt: str, system_prompt: str, max_tokens: int) -> str:
 
     # Use the gateway function from llm_module.py
     response = llm_gateway.generate(
-        user_prompt=user_prompt, system_prompt=system_prompt, max_tokens=max_tokens
+        prompt=user_prompt, system_prompt=system_prompt, max_tokens=max_tokens
     )
 
     if response is None:
