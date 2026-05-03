@@ -1,20 +1,21 @@
 from app.module.logging_module import logger
-from app.module.llm_module import llm_module
+from app.gateway.llm import llm_gateway
 
 
 def prompt_llm(user_prompt: str, system_prompt: str, max_tokens: int) -> str:
     """
-    Sends a prompt to the Sidecar MLX server and returns the generated text.
+    Sends a prompt to the LLM and returns the generated text.
+    Delegates to the configured LLM provider via the gateway.
     """
     logger.debug(f"LLM Prompting with: {user_prompt[:50]}...")
 
-    # Use the new generate method in llm_module.py
-    response = llm_module.generate(
-        prompt=user_prompt, system_prompt=system_prompt, max_tokens=max_tokens
+    # Use the gateway function from llm_module.py
+    response = llm_gateway.generate(
+        user_prompt=user_prompt, system_prompt=system_prompt, max_tokens=max_tokens
     )
 
     if response is None:
-        raise Exception("LLM Sidecar returned no response. Check sidecar.log.")
+        raise Exception("LLM provider returned no response. Check logs.")
 
     logger.debug(f"LLM Response: {response[:50]}...")
     return response
@@ -22,8 +23,6 @@ def prompt_llm(user_prompt: str, system_prompt: str, max_tokens: int) -> str:
 
 def get_llm_status() -> dict:
     """
-    Check if the sidecar is responsive.
+    Get the status of the LLM provider.
     """
-    # Note: model_path logic moved to sidecar server,
-    # but we can return the URL for status.
-    return {"loaded": llm_module.is_loaded, "endpoint": llm_module.base_url}
+    return llm_gateway.get_provider_info()
