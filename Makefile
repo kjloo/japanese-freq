@@ -118,6 +118,10 @@ client/lint: ## 🔍 Lint and auto-fix client code
 	@echo "Running ESLint with --fix..."
 	cd client && npm run lint -- --fix
 
+.PHONY: client/test
+client/test: ## 🧪 Run client tests
+	cd client && npm test
+
 .PHONY: client/format
 client/format: ## ✒️  Format client code (Auto-fix)
 	@echo "Formatting client code..."

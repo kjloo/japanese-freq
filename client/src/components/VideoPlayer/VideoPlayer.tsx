@@ -16,6 +16,54 @@ interface Subtitle {
   text: string;
 }
 
+const parseVTT = (data: string[]): Subtitle[] => {
+  const subtitles: Subtitle[] = [];
+  let start = 0;
+  let end = 0;
+  let text = "";
+
+  data.forEach((line, index) => {
+    if (!line.trim() || line.trim() === "WEBVTT") {
+      return;
+    }
+
+    const timeMatch = line.match(
+      /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/,
+    );
+    if (timeMatch) {
+      start = parseTime(timeMatch[1]);
+      end = parseTime(timeMatch[3]);
+      text = data[index + 1]?.trim() || "";
+      if (text) {
+        subtitles.push({ start, end, text });
+      }
+    }
+  });
+
+  return subtitles;
+};
+
+const parseTime = (time: string): number => {
+  const parts = time.split(":");
+  let hours = "0";
+  let minutes = "0";
+  let seconds = "0.0";
+
+  if (parts.length === 3) {
+    [hours, minutes, seconds] = parts;
+  } else if (parts.length === 2) {
+    [minutes, seconds] = parts;
+  }
+
+  const [secs, millis] = seconds.split(".");
+  return (
+    parseInt(hours) * 3600 +
+    parseInt(minutes) * 60 +
+    parseInt(secs) +
+    parseFloat(`0.${millis}`)
+  );
+};
+
 const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
   source,
   settings,
@@ -50,7 +98,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
       }
     };
     getConfig();
-  }, []);
+  }, [settings.anki_config_id]);
 
   useEffect(() => {
     // Fetch and parse subtitles along with ignored words
@@ -68,59 +116,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
           console.error("Error fetching subtitles:", error);
         });
     }
-  }, [subtitleUrl]);
-
-  const parseVTT = (data: string[]): Subtitle[] => {
-    const subtitles: Subtitle[] = [];
-    let start = 0;
-    let end = 0;
-    let text = "";
-
-    data.forEach((line, index) => {
-      // Skip empty lines or metadata like "WEBVTT"
-      if (!line.trim() || line.trim() === "WEBVTT") {
-        return;
-      }
-
-      // Match timestamp lines
-      const timeMatch = line.match(
-        /((\d{2}:)?\d{2}:\d{2}[,.]\d{3}) --> ((\d{2}:)?\d{2}:\d{2}[,.]\d{3})/,
-      );
-      if (timeMatch) {
-        start = parseTime(timeMatch[1]); // Start timestamp
-        end = parseTime(timeMatch[3]); // End timestamp
-        text = data[index + 1]?.trim() || ""; // Subtitle text is usually on the next line
-        if (text) {
-          subtitles.push({ start, end, text });
-        }
-      }
-    });
-
-    return subtitles;
-  };
-
-  const parseTime = (time: string): number => {
-    const parts = time.split(":");
-    let hours = "0";
-    let minutes = "0";
-    let seconds = "0.0";
-
-    if (parts.length === 3) {
-      // Format: HH:MM:SS.mmm
-      [hours, minutes, seconds] = parts;
-    } else if (parts.length === 2) {
-      // Format: MM:SS.mmm (no hours)
-      [minutes, seconds] = parts;
-    }
-
-    const [secs, millis] = seconds.split(".");
-    return (
-      parseInt(hours) * 3600 +
-      parseInt(minutes) * 60 +
-      parseInt(secs) +
-      parseFloat(`0.${millis}`)
-    );
-  };
+  }, [subtitleUrl, settings]);
 
   const handlePlayPause = (pause: boolean | null) => {
     if (!videoRef.current) return;

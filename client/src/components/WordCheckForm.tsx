@@ -1,4 +1,4 @@
-import { useState, useEffect, FunctionComponent } from "react";
+import { useState, useEffect, FunctionComponent, useCallback } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:5000");
@@ -44,16 +44,17 @@ const WordCheckForm: FunctionComponent = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [wordData]);
+  }, [handleResponse]);
 
-  const handleResponse = (answer: boolean) => {
-    if (wordData) {
-      // Emit the response back to the server
-      socket.emit("word_response", { word: wordData.word, answer });
-      // Clear the current word data after submitting the response
-      setWordData(null);
-    }
-  };
+  const handleResponse = useCallback(
+    (answer: boolean) => {
+      if (wordData) {
+        socket.emit("word_response", { word: wordData.word, answer });
+        setWordData(null);
+      }
+    },
+    [wordData],
+  );
 
   return (
     <div>

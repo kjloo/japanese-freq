@@ -40,3 +40,10 @@ This skill helps navigate and understand the React client components of the Japa
 - Routes defined in App.tsx only — no nested routers
 - `Suspense` boundary around lazy-loaded routes
 - Type declarations in `client/src/types/` directory
+
+### 7. Testing Requirements
+- **When modifying any `.ts`/`.tsx` file in `client/src/`, always verify changes by running client tests**
+- Run tests with: `make client/test` or `cd client && npm test`
+- Tests are written with Vitest + Testing Library
+- Test files are co-located in `client/src/components/__tests__/` or alongside components as `*.test.tsx`
+
