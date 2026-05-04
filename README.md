@@ -265,6 +265,71 @@ make run
 
 ---
 
+## Server Architecture
+
+The server is a **Flask-based Python application** with the following structure:
+
+- **Entry Point**: `server/app/main.py` initializes the Flask app and registers blueprints
+- **Blueprints** (in `server/app/routes/`):
+  - `admin_routes` - Administrative endpoints
+  - `anki_routes` - Anki deck integration  
+  - `debug_routes` - Debugging endpoints
+  - `frequency_routes` - Word frequency analysis
+  - `io_routes` - Real-time communication (SocketIO)
+  - `llm_routes` - LLM chat integration
+  - `word_routes` - Word lookup/management
+  - `video_routes` - Video processing endpoints
+
+- **Form Processing** (`server/app/form/`):
+  - `base_form.py` - Abstract base class for form validation
+  - `anki/` - Anki card and settings forms
+  - `frequency/` - Frequency analysis forms
+  - `llm/` - LLM chat forms
+
+- **Services** (`server/app/service/`): Business logic layer
+- **Repositories** (`server/app/repository/`): Data access layer
+- **Mappers** (`server/app/mapper/`): Data transformation
+- **Models** (`server/app/model/`): Data models
+- **Utilities** (`server/app/util/`): Helper functions
+
+- **Key Features**:
+  - **SocketIO** for real-time updates
+  - **MongoDB** for data persistence
+  - **Custom JSON encoder** for specialized serialization
+  - **MeCab integration** for Japanese text analysis
+
+---
+
+## Client Architecture
+
+The client is a **React/TypeScript application** built with:
+
+- **Framework**: React with TypeScript
+- **Build Tool**: Vite for fast development and production builds
+- **Package Management**: npm with `package-lock.json`
+- **Linting**: ESLint with React plugins
+- **Formatting**: Prettier
+
+- **Key Directories**:
+  - `client/src/` - Source code
+  - `client/public/` - Static assets
+  - `client/node_modules/` - Dependencies (auto-generated)
+
+- **Configuration Files**:
+  - `vite.config.ts` - Vite configuration
+  - `tsconfig*.json` - TypeScript configurations
+  - `eslint.config.js` - ESLint rules
+
+---
+
+## Integration Points
+
+- **Shared Data**: Dictionaries in `dictionaries/`, media in `input/` and `output/`
+- **API Communication**: Client ↔ Server via REST API and SocketIO
+- **Build System**: Unified `Makefile` orchestrates both stacks
+
+---
+
 ## Notes
 
 - No need to manually activate a virtual environment (`direnv` handles it)
@@ -279,14 +344,14 @@ make run
 
 ```
 .
-├── client/
-├── server/
-├── input/
-├── output/
-├── dictionaries/
-├── .envrc
+├── client/          # React/TypeScript frontend
+├── server/          # Flask/Python backend
+├── input/           # Media files (SRT/MP4)
+├── output/          # Analysis results
+├── dictionaries/    # Language data for MeCab
+├── .envrc           # direnv configuration
 ├── .pre-commit-config.yaml
-├── Makefile
+├── Makefile         # Unified command interface
 ```
 
 ---
