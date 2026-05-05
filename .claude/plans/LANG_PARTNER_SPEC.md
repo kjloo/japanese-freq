@@ -49,9 +49,10 @@ A LLM-powered Japanese language learning companion that combines speech processi
   - Balance correction with flow: max 1–2 corrections per minute unless user requests more.
 
 **Data used**:
-- `db.vocab.find({ user_id, known: true })` for known words
-- `db.user_profile.findOne({ user_id }).jlpt_level`
-- `db.user_profile.findOne({ user_id }).interests`
+- `db.user_vocab.find({ user_id, known: true })` for known words (maps to current `word_list` for global ignore list)
+- `db.user_profile.findOne({ user_id }).jlpt_level` for complexity gauging
+- `db.user_profile.findOne({ user_id }).interests` for scenario selection
+- Word definitions from existing `Dictionary.short_lookup()` via JMDict
 
 **Example**:
 > LLM (Haru): Ah, I'm so tired today… stayed up late watching anime.
@@ -68,16 +69,18 @@ A LLM-powered Japanese language learning companion that combines speech processi
 **Flow**:
 1. Query MongoDB for unknown words at or below user JLPT level:
    ```javascript
-   db.words.find({
+   db.user_vocab.find({
+     user_id: user_id,
      jlpt_level: { $lte: user_jlpt_level },
-     known: false,
-     user_id: user_id
+     known: false
    }).limit(10).sort({ frequency: -1 })
    ```
+   **Current Integration**: Word frequency ranks from `frequency_service` output will populate initial `user_vocab` collection.
+
 2. LLM picks **one word** (prefer nouns/verbs over obscure kanji).
 3. Ask: "Do you know the word _[target]_?" (User: yes/no/skip via quick button or speech)
 4. If **no**:
-   - Give brief English meaning + hiragana/kanji.
+   - Give brief English meaning + hiragana/kanji (from JMDict lookup via existing `Dictionary.short_lookup()`)
    - Generate a **mini dialogue (4–6 lines)** where the word appears 2–3× naturally.
    - Ask user to repeat sentences containing the word.
    - After practice, mark `known: true` or `review_later` in DB.
@@ -85,7 +88,13 @@ A LLM-powered Japanese language learning companion that combines speech processi
 
 **Constraints**:
 - Word must fit user's **interest domain** (e.g., music, food, tech) when possible.
-- Avoid words already encountered in last 7 days (track via `db.review_log`).
+- Avoid words already encountered in last 7 days (track via review log).
+- Leverage existing `word_service` ignore list to exclude already-known words.
+
+**Data Integration**:
+- Word definitions sourced from existing `Dictionary.short_lookup()` (JMDict)
+- Word frequency sourced from `frequency_service.py` analysis
+- User progress tracked in new `user_vocab` collection
 
 ---
 
@@ -156,7 +165,36 @@ Collections to create/extend in MongoDB:
 }
 ```
 
-### 3.2 `words`
+### 3.2 `word_list` (Current Implementation)
+**Storage Model**: Single MongoDB document storing user's known/ignored words.
+
+```json
+{
+  "_id": ObjectId,
+  "words": ["日本語", "複雑", "単語", ...]
+}
+```
+
+**Implementation Details** (`server/app/model/word/word_list.py`, `server/app/repository/word/word_repository.py`):
+- Stores a flat list of word strings in `words` array
+- CRUD operations via `WordRepository`:
+  - `add_words(words: list[str])` - Adds words with automatic deduplication using set union
+  - `get_words()` - Retrieves current word list
+  - `remove_word(word: str)` - Removes individual word
+- Singleton pattern: `word_repository` instance accessible throughout app
+- Synced from Anki via `word_service.update_from_anki(deck_id, field_name)` 
+- Exported to file via `.ignorelist.json` for backup/offline use
+
+**Definition Lookup**: 
+- Definitions retrieved on-demand from **JMDict** dictionary via `app/model/dictionary.py`
+- `Dictionary.short_lookup(word: str)` returns `ShortDef` object with:
+  - `definition` - Primary meaning
+  - `kanji` - Kanji form 
+  - `hiragana` - Hiragana reading
+  - `romaji` - Romanization
+
+**Future Enhancement**:
+Evolve to structured `words` collection with rich metadata:
 ```json
 {
   "_id": ObjectId,
@@ -169,8 +207,9 @@ Collections to create/extend in MongoDB:
   "topics": ["food", "business", ...]
 }
 ```
+This would enable pre-computed frequency ranking and topic categorization.
 
-### 3.3 `user_vocab`
+### 3.3 `user_vocab` (Proposed)
 ```json
 {
   "user_id": "string",
@@ -182,8 +221,9 @@ Collections to create/extend in MongoDB:
   "repetitions": int
 }
 ```
+**Note**: Currently word list is global (not per-user). Implement per-user tracking for personalized vocab mastery.
 
-### 3.4 `scenarios`
+### 3.4 `scenarios` (Proposed)
 ```json
 {
   "_id": ObjectId,
@@ -208,7 +248,7 @@ Collections to create/extend in MongoDB:
 }
 ```
 
-### 3.5 `conversation_log`
+### 3.5 `conversation_log` (Proposed)
 ```json
 {
   "user_id": "string",
@@ -233,6 +273,87 @@ Collections to create/extend in MongoDB:
   ]
 }
 ```
+
+### 3.6 Word Frequency Processing Pipeline (Current Implementation)
+
+**Location**: `server/app/service/frequency_service.py`
+
+**Pipeline Overview**:
+The system extracts and ranks words from Japanese content (subtitles, videos) through multi-stage filtering:
+
+```
+Source Content (SRT/MP4) 
+  ↓
+Parse Content → Tokenize (MeCab) → Filter Ignore List 
+  ↓
+POS Filter (remove particles, punctuation, auxiliaries)
+  ↓
+Length Filter (min_word_length)
+  ↓
+Definition Lookup (JMDict)
+  ↓
+Frequency Aggregation + Sorting
+  ↓
+User Confirmation (Optional)
+  ↓
+JSON Output (by frequency)
+```
+
+**Processing Details** (`_process_input`, `_analyze_content`):
+
+1. **Content Parsing**: 
+   - SRT files parsed to extract sentences (`JapaneseContent` objects)
+   - Video files decomposed to subtitle stream
+
+2. **Tokenization**: 
+   - MeCab morphological analyzer via `subtitle_service.get_base_words(sentence)`
+   - Returns base form (lemma) of each token
+
+3. **Filtering Stages** (applied in order):
+   ```python
+   # Stage 1: Ignore list
+   if word in ignore_list:
+       skip
+   
+   # Stage 2: Minimum length
+   if len(word) < min_word_length:
+       skip
+   
+   # Stage 3: POS filtering (handled upstream in get_base_words)
+   # Removes: 助詞 (particles), 補助記号 (punctuation), 助動詞 (auxiliaries)
+   ```
+
+4. **Definition Lookup** (per unique word):
+   - `dictionary.short_lookup(word)` queries JMDict
+   - Returns `ShortDef` or `None`
+   - Cached in frequency map to avoid redundant lookups
+
+5. **Frequency Aggregation**:
+   ```python
+   word_freq[word] = {
+       "frequency": count,      # occurrence count
+       "definition": ShortDef,  # definition object or False if not found
+       "content": [content_obj, ...]  # source sentences
+   }
+   ```
+
+6. **Output Filtering & Sorting**:
+   - Filter by: `frequency >= freq_min`, optionally `requires_definition` 
+   - Sort by frequency (descending)
+   - Return as ordered dict
+
+7. **User Confirmation** (Optional):
+   - `word_service.ask_user(content_dict)` via SocketIO
+   - User confirms known words
+   - Confirmed words added to ignore_list
+   - Unknown words remain in output
+
+**Configuration Parameters** (`ProcessSettings`):
+- `freq_min` - Minimum frequency threshold (default: 1)
+- `min_word_length` - Minimum character length (default: 1)
+- `requires_definition` - Filter to words with definitions (default: false)
+- `word_check` - Enable user confirmation dialog (default: true)
+- `inputs` - List of source content files to process
 
 ---
 
@@ -267,12 +388,15 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
 
 ### Phase 1: Foundations (1–2 weeks)
 - [ ] Add new MongoDB collections & indexes (`user_vocab`, `scenarios`, `conversation_log`)
+  - Migrate word list data from global `word_list` collection to per-user `user_vocab`
+  - Initialize `user_vocab` entries from current `frequency_service` analysis outputs
 - [ ] Extend `config_module` for STT/TTS/LLM provider selection
 - [ ] Create wrapper services:
   - `stt_service.py` (Qwen/Whisper + fallback)
   - `tts_service.py` (Qwen/Bark/F5 + fallback)
   - `llm_service.py` (OpenRouter/MLX; mirrors existing chat brain pattern)
 - [ ] Implement audio I/O utilities (microphone, playback, format conversion)
+- [ ] **Integration Point**: Wire new services to existing `Dictionary` and `word_repository` for definition/word lookups
 
 ### Phase 2: Core Modes (2–3 weeks)
 - [ ] Conversational mode engine:
@@ -335,3 +459,143 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
 ---
 
 *This spec aligns with existing `japanese-freq` architecture and builds on established patterns in `app.module.*`, `app.routes.llm_routes`, and MongoDB usage.*
+
+---
+
+## Appendix A: Integration with Existing Word Processing Architecture
+
+### A.1 Current Word Processing Components
+The existing system extracts word frequency data from Japanese media sources through these key components:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `FrequencyService` | `server/app/service/frequency_service.py` | Core word extraction & frequency ranking pipeline |
+| `SubtitleService` | `server/app/service/subtitle_service.py` | MeCab tokenization, base form extraction |
+| `Dictionary` | `server/app/model/dictionary.py` | JMDict definition lookup (kanji, hiragana, meaning) |
+| `WordRepository` | `server/app/repository/word/word_repository.py` | MongoDB CRUD for ignore list |
+| `WordService` | `server/app/service/word_service.py` | High-level word list management, Anki sync |
+
+### A.2 Data Flow: From Media to LLM Modes
+
+```
+1. CONTENT INGESTION (Existing)
+   Video/SRT files → File Manager
+   
+2. WORD EXTRACTION (Existing)
+   Subtitle Service (MeCab tokenization)
+   ↓
+   Frequency Service (multi-stage filtering)
+   - Ignore list filter
+   - POS filtering
+   - Length filtering
+   - Definition lookup (JMDict)
+   ↓
+   Frequency-ranked word dictionary with definitions
+   
+3. USER CONFIRMATION (Existing)
+   Word Service (ask_user via SocketIO)
+   ↓
+   Update ignore_list in MongoDB
+   
+4. NEW: POPULATE USER_VOCAB COLLECTION
+   Existing frequency data → User Vocab Service
+   - Create per-user entries from frequency output
+   - Map frequency rank to priority for learning
+   - Initialize "known" status from ignore_list
+   
+5. NEW: SUPPORT LEARNING MODES
+   User Vocab + Dictionary lookups
+   ↓
+   Learn Mode Service queries unknown words
+   ↓
+   LLM generates contextual dialogues
+   ↓
+   Track user progress in user_vocab (repetitions, ease_factor)
+```
+
+### A.3 Service Integration Points
+
+**For Learn Mode Word Selection**:
+- Query `user_vocab` (not yet implemented) filtered by `known: false`
+- Fallback to existing `word_service.get_ignore_list()` for global known words
+- Merge with frequency rankings from `frequency_service` outputs
+
+**For Word Definitions**:
+- Continue using existing `Dictionary.short_lookup(word)` 
+- Returns `ShortDef` with kanji, hiragana, meaning
+- No DB schema change needed; JMDict is external reference
+
+**For Anki Integration**:
+- Existing `word_service.update_from_anki()` syncs known words
+- These become initial "known" entries in `user_vocab`
+- No changes to Anki gateway needed
+
+**For Word Frequency Ranking**:
+- Existing `frequency_service._analyze_content()` produces ranked dict
+- Use frequency count as learning priority (higher frequency words first)
+- Store frequency data in `user_vocab.frequency_rank` field (new)
+
+### A.4 Database Migration Strategy
+
+**Phase 1 (Foundation)**: Create new collections in parallel
+```
+Old: word_list (single doc with global string array)
+New: user_vocab (per-user entries with rich metadata)
+```
+
+**Phase 2 (Migration)**: 
+- Map global `word_list` to initial `user_vocab` entries
+- For each word in `word_list`:
+  ```
+  {
+    user_id: "system",  // or default user
+    word: word_string,
+    known: true,
+    frequency_rank: <from frequency_service>,
+    last_seen: now(),
+    ease_factor: 2.5,   // Default SM-2 factor
+    repetitions: 0
+  }
+  ```
+- Preserve Anki sync flow into new structure
+- Keep `word_repository` for backward compatibility (reads from `user_vocab`)
+
+**Phase 3 (Cleanup)**:
+- Deprecate single-user `word_list` collection
+- Transition all routes to use per-user `user_vocab`
+- Archive old `word_list` as historical data
+
+### A.5 Code Patterns to Reuse
+
+**Existing Service Pattern** (for new STT/TTS/LLM services):
+```python
+# From app.service.llm - existing pattern
+class LLMService:
+    def __init__(self, config):
+        self.client = OpenRouter(config)  # or MLX client
+    
+    def chat(self, messages: list[dict]) -> str:
+        return self.client.complete(messages)
+```
+
+**Existing Repository Pattern** (for user_vocab):
+```python
+# Modeled after WordRepository
+class UserVocabRepository:
+    def find_unknown_words(self, user_id: str, limit: int = 10):
+        return UserVocab.objects(user_id=user_id, known=False).limit(limit)
+    
+    def update_mastery(self, word_id: ObjectId, repetitions: int, ease: float):
+        # SM-2 algorithm integration
+        pass
+```
+
+**Existing Socket Pattern** (for real-time streaming):
+```python
+# From frequency_service - existing pattern  
+socketio.emit("progress", progress.to_json())
+socketio.on_event("word_response", handle_response)
+```
+Use same pattern for audio chunk streaming in STT/TTS pipeline.
+
+---
