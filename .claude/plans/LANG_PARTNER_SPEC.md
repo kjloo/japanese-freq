@@ -41,7 +41,7 @@ A LLM-powered Japanese language learning companion that combines speech processi
 - **Correction flow**:
   1. User speaks → STT → text analysis
   2. If phrase is unnatural / non-idiomatic → LLM **pauses**
-  3. LLM presents 1–2 natural alternatives with brief explanation (in English + Japanese)
+  3. LLM presents 1–2 natural alternatives with brief explanation (in Japanese)
   4. User repeats corrected phrase → conversation continues
 - **Rules**:
   - LLM should NOT over-ask questions (avoid interview vibe).
