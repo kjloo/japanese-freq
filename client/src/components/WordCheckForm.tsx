@@ -1,7 +1,11 @@
-import { useState, useEffect, FunctionComponent } from "react";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:5000");
+import {
+  useState,
+  useEffect,
+  FunctionComponent,
+  useCallback,
+  useRef,
+} from "react";
+import { io, Socket } from "socket.io-client";
 
 interface WordDefinition {
   definition: string;
@@ -18,20 +22,37 @@ interface WordData {
 
 const WordCheckForm: FunctionComponent = () => {
   const [wordData, setWordData] = useState<WordData | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
+    const socket = io("http://localhost:5000");
+    socketRef.current = socket;
+
     socket.on("word_check", (data: WordData) => {
       setWordData(data);
     });
+
     return () => {
       socket.off("word_check");
+      socket.disconnect();
     };
   }, []);
 
+  const handleResponse = useCallback(
+    (answer: boolean) => {
+      if (wordData && socketRef.current) {
+        socketRef.current.emit("word_response", {
+          word: wordData.word,
+          answer,
+        });
+        setWordData(null);
+      }
+    },
+    [wordData],
+  );
+
   useEffect(() => {
-    // Add key press listeners
     const handleKeyPress = (event: KeyboardEvent) => {
-      console.log("Key pressed:", event.key);
       if (event.key === "y") {
         handleResponse(true);
       } else if (event.key === "n") {
@@ -40,20 +61,8 @@ const WordCheckForm: FunctionComponent = () => {
     };
 
     window.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [wordData]);
-
-  const handleResponse = (answer: boolean) => {
-    if (wordData) {
-      // Emit the response back to the server
-      socket.emit("word_response", { word: wordData.word, answer });
-      // Clear the current word data after submitting the response
-      setWordData(null);
-    }
-  };
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [handleResponse]);
 
   return (
     <div>
