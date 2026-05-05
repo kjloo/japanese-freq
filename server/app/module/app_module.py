@@ -118,6 +118,7 @@ def register_all_blueprints(app: Flask):
     from app.routes.frequency_routes import frequency_routes
     from app.routes.io_routes import io_routes
     from app.routes.llm_routes import llm_routes
+    from app.routes.speech_routes import speech_routes
     from app.routes.word_routes import word_routes
     from app.routes.video_routes import video_routes
 
@@ -128,6 +129,7 @@ def register_all_blueprints(app: Flask):
         frequency_routes,
         io_routes,
         llm_routes,
+        speech_routes,
         word_routes,
         video_routes,
     ]

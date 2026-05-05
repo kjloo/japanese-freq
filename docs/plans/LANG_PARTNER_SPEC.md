@@ -463,8 +463,6 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
 
 ### Phase 1: Foundations (1–2 weeks)
 - [ ] Define `Scenario` and `ConversationLog` models if needed (new collections, no migrations)
-  - Migrate word list data from global `word_list` collection to per-user `user_vocab`
-  - Initialize `user_vocab` entries from current `frequency_service` analysis outputs
 - [ ] Extend `config_module` for STT/TTS/LLM provider selection
 - [ ] Create wrapper services:
   - `stt_service.py` (Qwen/Whisper + fallback)
