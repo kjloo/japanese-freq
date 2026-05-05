@@ -463,8 +463,8 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
 
 ### Phase 1: Foundations (1–2 weeks)
 - [ ] Define `Scenario` and `ConversationLog` models if needed (new collections, no migrations)
-- [ ] Extend `config_module` for STT/TTS/LLM provider selection
-- [ ] Create wrapper services:
+- [x] Extend `config_module` for STT/TTS/LLM provider selection
+- [x] Create wrapper services:
   - `stt_service.py` (Qwen/Whisper + fallback)
   - `tts_service.py` (Qwen/Bark/F5 + fallback)
   - `llm_service.py` (OpenRouter/MLX; mirrors existing chat brain pattern)
