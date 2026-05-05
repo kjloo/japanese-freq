@@ -5,33 +5,31 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import { vi, Mock } from "vitest";
+import { vi } from "vitest";
 
-interface MockSocket {
-  on: Mock;
-  off: Mock;
-  emit: Mock;
-}
-
-let mockedSocket: MockSocket;
+// Create mock functions at module scope (hoisted with vi.mock)
+const mockOn = vi.fn();
+const mockOff = vi.fn();
+const mockEmit = vi.fn();
 
 vi.mock("socket.io-client", () => {
-  const on = vi.fn();
-  const off = vi.fn();
-  const emit = vi.fn();
-  mockedSocket = { on, off, emit };
-  return { io: vi.fn(() => mockedSocket) };
+  return {
+    io: vi.fn(() => ({
+      on: mockOn,
+      off: mockOff,
+      emit: mockEmit,
+      disconnect: vi.fn(),
+    })),
+  };
 });
+
 import WordCheckForm from "../WordCheckForm";
 
 // Helper to get the registered callback for a given event
 function getCallbackForEvent(
   eventName: string,
 ): ((data: unknown) => void) | undefined {
-  const calls = mockedSocket.on.mock.calls as [
-    string,
-    (data: unknown) => void,
-  ][];
+  const calls = mockOn.mock.calls as [string, (data: unknown) => void][];
   const call = calls.find((c) => c[0] === eventName);
   return call?.[1];
 }
@@ -95,7 +93,7 @@ describe("WordCheckForm", () => {
     await waitFor(() => screen.getByText(/word:/i));
     const yesBtn = screen.getByText("Yes");
     fireEvent.click(yesBtn);
-    expect(mockedSocket.emit).toHaveBeenCalledWith("word_response", {
+    expect(mockEmit).toHaveBeenCalledWith("word_response", {
       word: "sample",
       answer: true,
     });
