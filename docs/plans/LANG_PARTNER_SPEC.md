@@ -294,19 +294,9 @@ Evolve to structured `words` collection with rich metadata:
 ```
 This would enable pre-computed frequency ranking and topic categorization.
 
-### 3.3 `user_vocab` (Proposed)
-```json
-{
-  "user_id": "string",
-  "word_id": ObjectId,
-  "known": boolean,
-  "last_seen": ISODate,
-  "next_review": ISODate,
-  "ease_factor": float,
-  "repetitions": int
-}
-```
-**Note**: Currently word list is global (not per-user). Implement per-user tracking for personalized vocab mastery.
+### 3.3 `user_vocab` (Removed)
+> The `word_list` collection already serves as the user's known‑words list. No separate `user_vocab` collection is required.
+
 
 ### 3.4 `scenarios` (Proposed)
 ```json
@@ -472,7 +462,7 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
 ## 5. Implementation Plan
 
 ### Phase 1: Foundations (1–2 weeks)
-- [ ] Add new MongoDB collections & indexes (`user_vocab`, `scenarios`, `conversation_log`)
+- [ ] Define `Scenario` and `ConversationLog` models if needed (new collections, no migrations)
   - Migrate word list data from global `word_list` collection to per-user `user_vocab`
   - Initialize `user_vocab` entries from current `frequency_service` analysis outputs
 - [ ] Extend `config_module` for STT/TTS/LLM provider selection
@@ -620,36 +610,8 @@ The existing system extracts word frequency data from Japanese media sources thr
 - Use frequency count as learning priority (higher frequency words first)
 - Store frequency data in `user_vocab.frequency_rank` field (new)
 
-### A.4 Database Migration Strategy
-
-**Phase 1 (Foundation)**: Create new collections in parallel
-```
-Old: word_list (single doc with global string array)
-New: user_vocab (per-user entries with rich metadata)
-```
-
-**Phase 2 (Migration)**: 
-- Map global `word_list` to initial `user_vocab` entries
-- For each word in `word_list`:
-  ```
-  {
-    user_id: "system",  // or default user
-    word: word_string,
-    known: true,
-    frequency_rank: <from frequency_service>,
-    last_seen: now(),
-    ease_factor: 2.5,   // Default SM-2 factor
-    repetitions: 0
-  }
-  ```
-- Preserve Anki sync flow into new structure
-- Keep `word_repository` for backward compatibility (reads from `user_vocab`)
-
-**Phase 3 (Cleanup)**:
-- Deprecate single-user `word_list` collection
-- Transition all routes to use per-user `user_vocab`
-- Archive old `word_list` as historical data
-
+### A.4 MongoDB Note
+> MongoDB is schemaless, so no migrations are needed. The existing `WordList` model (`server/app/model/word/word_list.py`) already stores the user's known words. If additional fields are needed later, they can be added to the model class without downtime. No separate `user_vocab` collection is required.
 ### A.5 Code Patterns to Reuse
 
 **Existing Service Pattern** (for new STT/TTS/LLM services):
