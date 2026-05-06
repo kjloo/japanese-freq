@@ -58,7 +58,20 @@ Casual Japanese friend (JLPT N3 level).
 ## Implementation Approach
 
 1. **Define a spec file** `LANG_PARTNER_SPEC.md` describing the above constraints in a structured YAML/JSON block that the assistant code will read.
-2. **Implement two assistant classes** in `server/app/assistant/` (e.g., `conversation_assistant.py` and `script_assistant.py`). Each class:
+2. **Speech Infrastructure** (Implemented) — Low-level STT/TTS stack:
+   - `app.gateway.speech.*` – Provider abstractions (`STTProvider`/`TTSProvider`) with MLX and OpenRouter implementations.
+   - `app.module.speech_module` – Wires `SpeechConfig` to provider instances.
+   - `app.service.speech.*` – Thin façade (`transcribe_audio`, `synthesize_speech`) used by routes.
+   - `app.routes.speech_routes` – `/api/speech/stt`, `/api/speech/tts`, `/api/speech/status`.
+   - `server/tts_sidecar.py` – Optional local TTS side‑car for clone/design modes.
+   - Dataset `app/mapper/tts_dataset/` supplies reference audio for voice‑cloning.
+   - Makefile target `sidecar/tts` to launch the side‑car.
+3. **LLM Infrastructure** (Implemented) — Chat brain:
+   - `app.gateway.llm.*` – Provider abstractions with MLX and OpenRouter implementations.
+   - `app.module.llm_module` – Wires `LLMConfig` to provider instances.
+   - `app.service.llm.*` – Thin façade (`prompt_llm`) used by routes.
+   - `app.routes.llm_routes` – `/api/llm/generate`, `/api/llm/status`.
+4. **Implement assistant classes** in `server/app/assistant/` (e.g., `conversation_assistant.py` and `script_assistant.py`). Each class:
    - Loads the spec.
    - Generates an initialization scene (random name, location, situation) using existing utility `random.choice` over predefined lists.
    - Provides a `process(input_text)` method that:
@@ -66,18 +79,27 @@ Casual Japanese friend (JLPT N3 level).
      * Checks Japanese naturalness via a lightweight heuristic (presence of hiragana/katakana, no stray ASCII).
      * If natural → format with Output A, prepend ✅, include furigana via a helper `add_furigana()` that uses a small built‑in dictionary (or fallback to `pykakasi` if available).
      * If unnatural → format with Output B, prepend 🛑, add brief explanation and corrected sentence.
-3. **Integrate into server routes** (`/api/conversation` and `/api/script`) in `server/app/main.py`.
-4. **Expose client‑side TypeScript wrappers** in `client/src/api/partner.ts` that call the new endpoints.
-5. **Add unit tests** under `server/app/tests/assistant_test.py` covering natural and unnatural paths.
-6. **Update documentation** (`README.md` and a new `LANG_PARTNER_SPEC.md` in the repo root) describing the spec format.
+   - Uses `/api/speech/*` endpoints for voice I/O and `/api/llm/generate` for LLM responses.
+5. **Integrate into server routes** (`/api/chat/*`) in `server/app/main.py` (or dedicated blueprint).
+6. **Expose client‑side TypeScript wrappers** in `client/src/api/partner.ts` that call the new endpoints.
+7. **Add unit tests** under `server/test/` covering natural and unnatural paths.
+8. **Update documentation** (`README.md` and `LANG_PARTNER_SPEC.md`) describing the spec format.
 
 ## Critical Files
-- `server/app/assistant/conversation_assistant.py`
-- `server/app/assistant/script_assistant.py`
-- `server/app/main.py` (new routes)
-- `client/src/api/partner.ts`
-- `LANG_PARTNER_SPEC.md` (spec definition)
-- `server/app/tests/assistant_test.py`
+- `server/app/gateway/speech/*` – STT/TTS provider abstractions (implemented)
+- `server/app/module/speech_module.py` – Provider wiring (implemented)
+- `server/app/service/speech/*` – Speech service layer (implemented)
+- `server/app/routes/speech_routes.py` – Speech API endpoints (implemented)
+- `server/app/gateway/llm/*` – LLM provider abstractions (implemented)
+- `server/app/module/llm_module.py` – LLM wiring (implemented)
+- `server/app/service/llm/*` – LLM service layer (implemented)
+- `server/app/routes/llm_routes.py` – LLM API endpoints (implemented)
+- `server/tts_sidecar.py` – TTS side‑car server (implemented)
+- `server/app/assistant/conversation_assistant.py` – (to be implemented)
+- `server/app/assistant/script_assistant.py` – (to be implemented)
+- `client/src/api/partner.ts` – (to be implemented)
+- `LANG_PARTNER_SPEC.md` – (this file, spec definition)
+- `server/test/*` – Unit tests (partially implemented for speech/llm)
 
 ## Verification
 - Run `make test` – all new tests must pass.
@@ -432,7 +454,19 @@ JSON Output (by frequency)
 
 ---
 
-## 4. API Endpoints (to be added)
+## 4. API Endpoints
+
+### 4.1 Speech Infrastructure (Implemented)
+These low-level endpoints provide STT/TTS capabilities and are used internally by the higher-level chat/learn endpoints.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/speech/stt` | Speech-to-Text: expects audio file, returns transcribed text |
+| `POST` | `/api/speech/tts` | Text-to-Speech: expects JSON with `text`, returns audio bytes |
+| `GET`  | `/api/speech/status` | Get STT/TTS provider availability and names |
+
+### 4.2 Chat & Learning Endpoints (To Be Implemented)
+These endpoints will use the speech infrastructure above for voice-enabled interactions.
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -468,6 +502,7 @@ WebSocket message shape (STT ↔ LLM ↔ TTS):
   - `stt_service.py` (Qwen/Whisper + fallback)
   - `tts_service.py` (Qwen/Bark/F5 + fallback)
   - `llm_service.py` (OpenRouter/MLX; mirrors existing chat brain pattern)
+- [x] Add Speech‑IO gateway, services, routes, and side‑car
 - [ ] Implement audio I/O utilities (microphone, playback, format conversion)
 - [ ] **Integration Point**: Wire new services to existing `Dictionary` and `word_repository` for definition/word lookups
 

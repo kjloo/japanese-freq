@@ -7,12 +7,14 @@ A hybrid Python/Node.js Japanese word frequency analyzer built with:
 
 ## Core Components
 - **Server Stack**:
+  - refer to the python-server-helper skill
   - `server/app/main.py` - Central application entry point
   - `server/app/form/` - Form processors including Anki integration
   - `server/app/mapper/` - Data transformation utilities
   - `server/app/service/` - Business logic services
 
 - **Client Stack**:
+  - refer to the node-client-helper skill
   - React components in `client/src`
   - Vite-powered development server
   - TypeScript type definitions
@@ -28,5 +30,6 @@ A hybrid Python/Node.js Japanese word frequency analyzer built with:
 - `Makefile` - Centralized build/test/command interface
 
 ## Github Integration
+- Refer to the github-helper skill
 - Utilize the gh api cli client to access information from GitHub `https://github.com/kjloo/japanese-freq` repo
 - Ensure that gh api is properly installed and setup on the user's machine when executing commands
