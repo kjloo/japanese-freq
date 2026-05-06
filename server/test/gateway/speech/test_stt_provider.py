@@ -9,14 +9,10 @@ from app.gateway.speech.stt_provider import (
 FAKE_AUDIO_BYTES = b"fake wav data"
 
 
-def test_stt_provider_interface():
-    """STTProvider abstract methods raise NotImplementedError."""
-    with pytest.raises(NotImplementedError):
-        STTProvider().transcribe(FAKE_AUDIO_BYTES)
-    with pytest.raises(NotImplementedError):
-        STTProvider().is_available()
-    with pytest.raises(NotImplementedError):
-        STTProvider().get_provider_name()
+def test_stt_provider_cannot_instantiate():
+    """STTProvider cannot be instantiated without implementing abstract methods."""
+    with pytest.raises(TypeError):
+        STTProvider()
 
 
 def test_mlx_stt_constructor():
@@ -30,7 +26,7 @@ def test_mlx_stt_transcribe_success(mocker):
     mocker.patch("requests.post", return_value=fake_resp)
 
     provider = MLXSTTProvider(server_url="http://localhost:8081/v1")
-    out = provider.transcribe(b"audio")
+    out = provider.transcribe(b"dummy_audio")
     assert out == "こんにちは"
 
 
@@ -62,7 +58,7 @@ def test_openrouter_stt_transcribe_success(mocker):
         model="openai/whisper-large-v3",
         base_url="https://openrouter.ai/api/v1",
     )
-    out = provider.transcribe(b"audio")
+    out = provider.transcribe(b"dummy_audio")
     assert out == "テスト"
 
 

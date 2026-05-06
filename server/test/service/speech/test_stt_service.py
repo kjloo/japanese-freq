@@ -8,7 +8,9 @@ FAKE_AUDIO = b"dummy_audio"
 def test_transcribe_audio_success(mocker):
     """transcribe_audio() should return mocked result."""
     mock_transcribe = mock.Mock(return_value="結果")
-    mocker.patch("app.gateway.speech.transcribe", return_value=mock_transcribe)
+    mocker.patch(
+        "app.service.speech.stt_service.stt_gateway_transcribe", mock_transcribe
+    )
 
     result = transcribe_audio(FAKE_AUDIO)
     assert result == "結果"
@@ -17,7 +19,10 @@ def test_transcribe_audio_success(mocker):
 
 def test_transcribe_audio_raises_on_none(mocker):
     """transcribe_audio() should raise on failed response."""
-    mocker.patch("app.gateway.speech.transcribe", return_value=None)
+    mocker.patch(
+        "app.service.speech.stt_service.stt_gateway_transcribe",
+        mock.Mock(return_value=None),
+    )
 
     with pytest.raises(Exception) as exc:
         transcribe_audio(FAKE_AUDIO)
@@ -25,9 +30,12 @@ def test_transcribe_audio_raises_on_none(mocker):
 
 
 def test_get_stt_status_delegates(mocker):
+    """get_stt_status() should return provider info dictionary."""
     mock_info = {"stt": {"provider": "mock-stt", "available": True}}
-    mocker.patch("app.gateway.speech.get_provider_info", return_value=mock_info)
+    mock_get_info = mocker.patch(
+        "app.gateway.speech.get_provider_info", return_value=mock_info
+    )
 
     info = get_stt_status()
     assert info == {"stt": {"provider": "mock-stt", "available": True}}
-    mock_info.assert_called_once()
+    mock_get_info.assert_called_once()

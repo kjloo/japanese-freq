@@ -15,7 +15,7 @@ def synthesize_speech(text: str, language: str = "Japanese", **kwargs) -> bytes:
     result = tts_gateway_synthesize(text, language=language, **kwargs)
     if result is None:
         logger.error("TTS Service: Provider returned no audio.")
-        raise Exception("TTS provider returned no response. Check logs.")
+        raise Exception("TTS provider returned no audio. Check logs.")
     logger.debug("TTS Service: Synthesis successful.")
     return result
 

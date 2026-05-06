@@ -1,4 +1,5 @@
 import pytest
+from io import BytesIO
 from unittest import mock
 from flask import Flask
 from app.routes.speech_routes import speech_routes
@@ -19,11 +20,12 @@ def client():
 
 def test_stt_endpoint_success(client, mocker):
     """POST /api/speech/stt returns transcribed text."""
-    mock_transcribe = mock.Mock(return_value="こんにちは")
-    mocker.patch("app.service.speech.transcribe_audio", return_value="こんにちは")
+    mock_transcribe = mocker.patch(
+        "app.service.speech.stt_service.transcribe_audio", return_value="こんにちは"
+    )
 
-    # Simulate file upload
-    data = {"audio": (FAKE_AUDIO, "test.wav")}
+    # Simulate file upload using Flask test client format
+    data = {"audio": (BytesIO(FAKE_AUDIO), "test.wav", "audio/wav")}
     response = client.post(
         "/api/speech/stt", data=data, content_type="multipart/form-data"
     )
@@ -43,8 +45,11 @@ def test_stt_endpoint_missing_file(client):
 
 def test_stt_endpoint_internal_error(client, mocker):
     """POST /api/speech/stt when service raises returns 500."""
-    mocker.patch("app.service.speech.transcribe_audio", side_effect=Exception("boom"))
-    data = {"audio": (FAKE_AUDIO, "test.wav")}
+    mocker.patch(
+        "app.service.speech.stt_service.transcribe_audio",
+        side_effect=Exception("boom"),
+    )
+    data = {"audio": (BytesIO(FAKE_AUDIO), "test.wav", "audio/wav")}
     response = client.post(
         "/api/speech/stt", data=data, content_type="multipart/form-data"
     )
@@ -55,8 +60,10 @@ def test_stt_endpoint_internal_error(client, mocker):
 
 def test_tts_endpoint_success(client, mocker):
     """POST /api/speech/tts returns audio."""
-    mock_synthesize = mock.Mock(return_value=b"fake mp3 bytes")
-    mocker.patch("app.service.speech.synthesize_speech", return_value=b"fake mp3 bytes")
+    mock_synthesize = mocker.patch(
+        "app.service.speech.tts_service.synthesize_speech",
+        return_value=b"fake mp3 bytes",
+    )
 
     payload = {"text": "こんにちは", "language": "Japanese"}
     response = client.post("/api/speech/tts", json=payload)
@@ -76,7 +83,10 @@ def test_tts_endpoint_missing_text(client):
 
 def test_tts_endpoint_internal_error(client, mocker):
     """POST /api/speech/tts when service raises returns 500."""
-    mocker.patch("app.service.speech.synthesize_speech", side_effect=Exception("boom"))
+    mocker.patch(
+        "app.service.speech.tts_service.synthesize_speech",
+        side_effect=Exception("boom"),
+    )
     payload = {"text": "こんにちは"}
     response = client.post("/api/speech/tts", json=payload)
     assert response.status_code == 500

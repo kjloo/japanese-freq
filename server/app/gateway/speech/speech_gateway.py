@@ -1,5 +1,5 @@
 from app.module.logging_module import logger
-from app.module.speech_module import stt_provider, tts_provider
+from app.module import speech_module
 
 
 def transcribe(audio_bytes: bytes) -> str | None:
@@ -10,7 +10,7 @@ def transcribe(audio_bytes: bytes) -> str | None:
     :return: Transcribed text or None if failed.
     """
     logger.debug("Speech Gateway: Transcribing audio...")
-    result = stt_provider.transcribe(audio_bytes)
+    result = speech_module.stt_provider.transcribe(audio_bytes)
     if result:
         logger.debug(f"Speech Gateway: Transcription: {result[:50]}...")
     else:
@@ -27,7 +27,7 @@ def synthesize(text: str, language: str = "Japanese", **kwargs) -> bytes | None:
     :return: Audio bytes or None if failed.
     """
     logger.debug(f"Speech Gateway: Synthesizing text: {text[:50]}...")
-    result = tts_provider.synthesize(text, language=language, **kwargs)
+    result = speech_module.tts_provider.synthesize(text, language=language, **kwargs)
     if result:
         logger.debug("Speech Gateway: Synthesis successful.")
     else:
@@ -36,11 +36,11 @@ def synthesize(text: str, language: str = "Japanese", **kwargs) -> bytes | None:
 
 
 def is_stt_available() -> bool:
-    return stt_provider.is_available()
+    return speech_module.stt_provider.is_available()
 
 
 def is_tts_available() -> bool:
-    return tts_provider.is_available()
+    return speech_module.tts_provider.is_available()
 
 
 def get_provider_info() -> dict:
@@ -51,11 +51,11 @@ def get_provider_info() -> dict:
     """
     return {
         "stt": {
-            "provider": stt_provider.get_provider_name(),
+            "provider": speech_module.stt_provider.get_provider_name(),
             "available": is_stt_available(),
         },
         "tts": {
-            "provider": tts_provider.get_provider_name(),
+            "provider": speech_module.tts_provider.get_provider_name(),
             "available": is_tts_available(),
         },
     }

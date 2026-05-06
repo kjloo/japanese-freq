@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, Response, request
-from app.service.speech import transcribe_audio, synthesize_speech
+from app.service.speech import stt_service, tts_service
 from app.module.logging_module import logger
 
 speech_routes = Blueprint("speech_routes", __name__)
@@ -19,7 +19,7 @@ def stt() -> Response:
     audio_bytes = audio_file.read()
 
     try:
-        text = transcribe_audio(audio_bytes)
+        text = stt_service.transcribe_audio(audio_bytes)
         return jsonify({"text": text}), 200
     except Exception as e:
         logger.error(f"speech_routes.py.stt: STT failed: {str(e)}")
@@ -41,7 +41,7 @@ def tts() -> Response:
     language = data.get("language", "Japanese")
 
     try:
-        audio_bytes = synthesize_speech(text, language=language)
+        audio_bytes = tts_service.synthesize_speech(text, language=language)
         return Response(audio_bytes, mimetype="audio/mp3")
     except Exception as e:
         logger.error(f"speech_routes.py.tts: TTS failed: {str(e)}")

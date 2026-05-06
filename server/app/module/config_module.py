@@ -5,6 +5,7 @@ import importlib.resources as pkg_resources
 from app.module.config.anki_config import AnkiConfig
 from app.module.config.mongo_config import MongoConfig
 from app.module.config.llm_config import LLMConfig
+from app.module.config.speech_config import SpeechConfig
 from app.module.logging_module import logging
 
 
@@ -61,6 +62,7 @@ class BaseConfig(object):
     ANKI_SERVER_URL = AnkiConfig(config).get_server_url()
     MONGO_CONFIG = MongoConfig(config)
     LLM_CONFIG = LLMConfig(config)
+    SPEECH_CONFIG = SpeechConfig(config)
 
 
 class LocalConfig(BaseConfig):

@@ -13,43 +13,41 @@ FAKE_TEXT = "テスト"
 
 
 def test_transcribe_delegates(mocker):
-    mock_provider = mock.Mock()
-    mock_provider.transcribe.return_value = "result_text"
-    mocker.patch("app.gateway.speech.stt_provider.stt_provider", mock_provider)
+    mock_stt = mock.Mock()
+    mock_stt.transcribe.return_value = "result_text"
+    mocker.patch("app.module.speech_module.stt_provider", mock_stt)
 
-    out = transcribe(FAKE_AUDIO)
-    assert out == "result_text"
-    mock_provider.transcribe.assert_called_once_with(FAKE_AUDIO)
+    result = transcribe(FAKE_AUDIO)
+    assert result == "result_text"
+    mock_stt.transcribe.assert_called_once_with(FAKE_AUDIO)
 
 
-def test_transcribe_raises_on_none(mocker):
-    mock_provider = mock.Mock()
-    mock_provider.transcribe.return_value = None
-    mocker.patch("app.gateway.speech.stt_provider.stt_provider", mock_provider)
+def test_transcribe_returns_none_on_failure(mocker):
+    mock_stt = mock.Mock()
+    mock_stt.transcribe.return_value = None
+    mocker.patch("app.module.speech_module.stt_provider", mock_stt)
 
-    with pytest.raises(Exception) as exc:
-        transcribe(FAKE_AUDIO)
-    assert "no transcription" in str(exc.value).lower()
+    result = transcribe(FAKE_AUDIO)
+    assert result is None
 
 
 def test_synthesize_delegates(mocker):
-    mock_provider = mock.Mock()
-    mock_provider.synthesize.return_value = b"audio_bytes"
-    mocker.patch("app.gateway.speech.tts_provider.tts_provider", mock_provider)
+    mock_tts = mock.Mock()
+    mock_tts.synthesize.return_value = b"audio_bytes"
+    mocker.patch("app.module.speech_module.tts_provider", mock_tts)
 
-    out = synthesize(FAKE_TEXT)
-    assert out == b"audio_bytes"
-    mock_provider.synthesize.assert_called_once_with(FAKE_TEXT, language="Japanese")
+    result = synthesize(FAKE_TEXT)
+    assert result == b"audio_bytes"
+    mock_tts.synthesize.assert_called_once_with(FAKE_TEXT, language="Japanese")
 
 
-def test_synthesize_raises_on_none(mocker):
-    mock_provider = mock.Mock()
-    mock_provider.synthesize.return_value = None
-    mocker.patch("app.gateway.speech.tts_provider.tts_provider", mock_provider)
+def test_synthesize_returns_none_on_failure(mocker):
+    mock_tts = mock.Mock()
+    mock_tts.synthesize.return_value = None
+    mocker.patch("app.module.speech_module.tts_provider", mock_tts)
 
-    with pytest.raises(Exception) as exc:
-        synthesize(FAKE_TEXT)
-    assert "no audio" in str(exc.value).lower()
+    result = synthesize(FAKE_TEXT)
+    assert result is None
 
 
 def test_get_provider_info(mocker):
@@ -60,8 +58,8 @@ def test_get_provider_info(mocker):
     mock_tts.get_provider_name.return_value = "tts-mock"
     mock_tts.is_available.return_value = False
 
-    mocker.patch("app.gateway.speech.stt_provider.stt_provider", mock_stt)
-    mocker.patch("app.gateway.speech.tts_provider.tts_provider", mock_tts)
+    mocker.patch("app.module.speech_module.stt_provider", mock_stt)
+    mocker.patch("app.module.speech_module.tts_provider", mock_tts)
 
     info = get_provider_info()
     assert info["stt"]["provider"] == "stt-mock"
@@ -72,15 +70,15 @@ def test_get_provider_info(mocker):
 
 def test_is_stt_available(mocker):
     mock_stt = mock.Mock(is_available=mock.Mock(return_value=True))
-    with mock.patch(
-        "app.gateway.speech.stt_provider.stt_provider", return_value=mock_stt
-    ):
-        assert is_stt_available() is True
+    mocker.patch("app.module.speech_module.stt_provider", mock_stt)
+
+    assert is_stt_available() is True
+    mock_stt.is_available.assert_called_once()
 
 
 def test_is_tts_available(mocker):
     mock_tts = mock.Mock(is_available=mock.Mock(return_value=False))
-    with mock.patch(
-        "app.gateway.speech.tts_provider.tts_provider", return_value=mock_tts
-    ):
-        assert is_tts_available() is False
+    mocker.patch("app.module.speech_module.tts_provider", mock_tts)
+
+    assert is_tts_available() is False
+    mock_tts.is_available.assert_called_once()

@@ -7,14 +7,10 @@ from app.gateway.speech.tts_provider import (
 )
 
 
-def test_tts_provider_interface():
-    """TTSProvider abstract methods raise NotImplementedError."""
-    with pytest.raises(NotImplementedError):
-        TTSProvider().synthesize("test")
-    with pytest.raises(NotImplementedError):
-        TTSProvider().is_available()
-    with pytest.raises(NotImplementedError):
-        TTSProvider().get_provider_name()
+def test_tts_provider_cannot_instantiate():
+    """TTSProvider cannot be instantiated without implementing abstract methods."""
+    with pytest.raises(TypeError):
+        TTSProvider()
 
 
 def test_mlx_tts_constructor():
