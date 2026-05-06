@@ -45,6 +45,15 @@ class SpeechConfig:
             ),
         )
 
+        # Path to the voice cloning dataset JSONL file (used by the TTS sidecar)
+        self.tts_dataset_path = os.getenv(
+            "TTS_DATASET_PATH",
+            speech_config.get(
+                "tts_dataset_path",
+                "server/app/mapper/tts_dataset/train.jsonl",
+            ),
+        )
+
         # OpenRouter STT settings
         self.openrouter_api_key = os.getenv(
             "OPENROUTER_API_KEY", speech_config.get("openrouter_api_key")

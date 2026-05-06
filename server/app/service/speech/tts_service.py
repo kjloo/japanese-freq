@@ -2,7 +2,13 @@ from app.gateway.speech import synthesize as tts_gateway_synthesize
 from app.module.logging_module import logger
 
 
-def synthesize_speech(text: str, language: str = "Japanese", **kwargs) -> bytes:
+def synthesize_speech(
+    text: str,
+    language: str = "Japanese",
+    voice: str | None = None,
+    mode: str | None = None,
+    **kwargs,
+) -> bytes:
     """
     Synthesize text to speech audio using the configured TTS provider.
 
@@ -12,6 +18,10 @@ def synthesize_speech(text: str, language: str = "Japanese", **kwargs) -> bytes:
     :raises Exception: If the provider returns no response.
     """
     logger.debug(f"TTS Service: Synthesizing text: {text[:50]}...")
+    if voice is not None:
+        kwargs["voice"] = voice
+    if mode is not None:
+        kwargs["mode"] = mode
     result = tts_gateway_synthesize(text, language=language, **kwargs)
     if result is None:
         logger.error("TTS Service: Provider returned no audio.")

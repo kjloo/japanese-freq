@@ -1,0 +1,18 @@
+{"name": "Kaleb", "label": "calm", "text": "The birch canoe slid on the smooth planks.", "audio": "wavs/kaleb_normal.wav"}
+{"name": "Kaleb", "label": "energetic", "text": "I can't believe we actually made it to the top!", "audio": "wavs/kaleb_excited.wav"}
+{"name": "Kaleb", "label": "mystery", "text": "Softly, she whispered a secret that changed everything.", "audio": "wavs/kaleb_dramatic.wav"}
+{"name": "Megumin", "label": "narrate", "text": "レッドプリズンでの生活は過酷を極めるものだった…。レッドプリズンでの生活は過酷を極めるものだった…。私の覚えたい魔法はそれじゃない。あの日見たあの…", "audio": "wavs/megumin_narrate.wav"}
+{"name": "Megumin", "label": "normal", "text": "私の調べた統計学に照らし合わせるとあなたは将来私の調べた統計学に照らし合わせるとあなたは将来ならば今ここでどちらが上か決めておきましょう。", "audio": "wavs/megumin_normal.wav"}
+{"name": "Megumin", "label": "spell", "text": "あかき黒炎 万界の王天地の法を敷延すれど―我は万象照応のことわり崩壊 破壊の別名なりえいごうのてっついは我がもとに下れエクスプロージョン！", "audio": "wavs/megumin_spell.wav"}
+{"name": "Frieren", "label": "normal", "text": "とても希少なものでね小石ほどの大きさで金貨数枚は下らない。この大きさなら豪邸が買えるね。", "audio": "wavs/frieren_normal.wav"}
+{"name": "Roswaal", "label": "normal", "text": "そーれじゃ スバルくん息災でお土産も失くさないように君との３日間の思い出の分だけちょこーっと上乗せしたから", "audio": "wavs/roswaal_normal.wav"}
+{"name": "Ruby", "label": "actor", "text": "この度深掘りリポーターに任命された星野ルビー１６歳！モ星野アクアの双子の妹で～す！イエーイ！お兄ちゃん見ってるぅ～？", "audio": "wavs/ruby_actor.wav"}
+{"name": "Ruby", "label": "normal", "text": "私がもくろんだことだとでも言うの？こんなの全部計算ずくでできるわけないじゃん。神様でもあるまいし。まぁでもちょっとだけかんでるのは確かかな？", "audio": "wavs/ruby_normal.wav"}
+{"name": "Arima", "label": "sad", "text": "彼女からしたらさぞ安心できる男なんでしょうね。あかねは才能があるし美人ですごく優しくて性格がいいのも知ってる。だから別に私は応援するのに…。", "audio": "wavs/arima_sad.wav"}
+{"name": "Aqua", "label": "normal", "text": "ルビーが休日のたびに行き先も言わず消えるからな。こっそり後をつけた。", "audio": "wavs/aqua_normal.wav"}
+{"name": "Yuyu", "label": "normal", "text": "そして、この動画の最後には、このお酒を飲みながら、僕自身のお酒についてのお話もできたらなと思いますので、ぜひぜひ最後まで見ていってください。それではよろしくお願いします。乾杯い。", "audio": "wavs/yuyu_normal.wav"}
+{"name": "Kaname", "label": "light", "text": "あなた！ねえ、今日どうする？せっかくの休みだし、子どもも海に行きたがってるし、海に行こう？", "audio": "wavs/kaname_light.wav"}
+{"name": "Kaname", "label": "exaggerated", "text": "あ、公園で子供がサッカーしてる。あれ？変な人が近づいてくる。あ、そのことこの人が銃を取り出した。あ！田中さんがやってきた！あ！田中さんがその男の人にドロップキックした！あ！田中さんがその人を取り押さえた！あ、警察が来た！", "audio": "wavs/kaname_exaggerated.wav"}
+{"name": "Teppei", "label": "normal", "text": "僕が子供の時、あの、カラオケによく行きました。家族で行きましたね。そして、ま、高校生ぐらいになると友達とか、ま、彼女とか一緒にカラオケに行きましたね。", "audio": "wavs/teppei_normal.wav"}
+{"name": "Layla", "label": "normal", "text": "正直、あんまり日本語を話せなくって、で、私とジャックが会話をするときは、半分以上は英語ですね。だけど、私の英語もすごい、まだ、全然上手じゃないし、もう、一文、一つ文を言ったら、もう絶対一つ、何か間違えてるみたいなレベルの英語なんですね。", "audio": "wavs/layla_normal.wav"}
+{"name": "Ike", "label": "vlog", "text": "私旅と旅の間普通に2週間とか一ヶ月休憩休憩とってるんだよね実はというかそうというかそのくらいの休憩を取れないと喋ることもできないし自分がどこに向かってるか分からなくなる。", "audio": "wavs/ike_vlog.wav"}

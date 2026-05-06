@@ -55,16 +55,19 @@ class MLXTTSProvider(TTSProvider):
         import requests
 
         try:
+            payload = {
+                "input": text,
+                "model": kwargs.pop(
+                    "model", "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-8bit"
+                ),
+                "voice": kwargs.pop("voice", "default"),
+                "language": language,
+            }
+            # Forward any extra fields (e.g., mode, instruct) to the sidecar
+            payload.update(kwargs)
             response = requests.post(
                 f"{self.server_url}/v1/audio/speech",
-                json={
-                    "input": text,
-                    "model": kwargs.get(
-                        "model", "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-8bit"
-                    ),
-                    "voice": kwargs.get("voice", "default"),
-                    "language": language,
-                },
+                json=payload,
                 timeout=60,
             )
             response.raise_for_status()

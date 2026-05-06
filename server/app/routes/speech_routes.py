@@ -41,7 +41,17 @@ def tts() -> Response:
     language = data.get("language", "Japanese")
 
     try:
-        audio_bytes = tts_service.synthesize_speech(text, language=language)
+        # Forward optional voice and mode parameters if present
+        extra = {}
+        if data.get("voice") is not None:
+            extra["voice"] = data["voice"]
+        if data.get("mode") is not None:
+            extra["mode"] = data["mode"]
+        audio_bytes = tts_service.synthesize_speech(
+            text,
+            language=language,
+            **extra,
+        )
         return Response(audio_bytes, mimetype="audio/mp3")
     except Exception as e:
         logger.error(f"speech_routes.py.tts: TTS failed: {str(e)}")

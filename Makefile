@@ -63,6 +63,13 @@ sidecar/run: ## 🤖 Start the MLX-LM sidecar server (Qwen 3.5 9B)
 	@echo "🚀 Starting Qwen3.5 9B on Metal GPU..."
 	@((nohup mlx_lm server --model mlx-community/Qwen3.5-9B-MLX-4bit --host 0.0.0.0 > sidecar.log 2>&1 < /dev/null) &)
 
+.PHONY: sidecar/tts
+sidecar/tts: ## 🎙️ Start the Qwen 3 TTS sidecar server with voice cloning
+	@echo "Checking if mlx-audio is installed..."
+	@pip show mlx-audio > /dev/null || pip install mlx-audio
+	@echo "🚀 Starting Qwen 3 TTS sidecar server..."
+	@((nohup python server/tts_sidecar.py > tts_sidecar.log 2>&1 < /dev/null) &)
+
 .PHONY: server/run
 server/run: ## ⚡ Run server locally with Gunicorn
 	docker compose up mongodb -d
