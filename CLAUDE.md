@@ -26,3 +26,7 @@ A hybrid Python/Node.js Japanese word frequency analyzer built with:
 - `.envrc` - Shell environment management
 - `.pre-commit-config.yaml` - Automated code quality hooks
 - `Makefile` - Centralized build/test/command interface
+
+## Github Integration
+- Utilize the gh api cli client to access information from GitHub `https://github.com/kjloo/japanese-freq` repo
+- Ensure that gh api is properly installed and setup on the user's machine when executing commands

@@ -3,7 +3,9 @@ from app.module.config.speech_config import SpeechConfig
 from app.gateway.speech.stt_provider import MLXSTTProvider, OpenRouterSTTProvider
 from app.gateway.speech.tts_provider import MLXTTSProvider, OpenRouterTTSProvider
 
-speech_config = SpeechConfig()
+from app.module.config_module import config as app_config
+
+speech_config = SpeechConfig(app_config)
 
 
 def _create_stt_provider():

@@ -114,3 +114,5 @@ Use these files as “golden” references when extending the codebase with new 
 - Integration tests via `make server/test`
 - Cover error handling patterns
 - Enforce module structure
+- For every code change, ensure we have corresponding tests that validate the new functionality and maintain coverage. Test should be written using test driven development (TDD) principles, starting with failing tests that define the expected behavior before implementing the actual code.
+- Tests should be organized in the `server/app/tests` directory that mirrors the structure of the main codebase, allowing for clear mapping between tests and implementation files. Each test file should focus on a specific module or functionality, ensuring comprehensive coverage and maintainability.
