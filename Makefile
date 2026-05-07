@@ -107,6 +107,9 @@ server/clean: ## 🧹 Stop server, kill sidecar, and remove cache/logs
 	docker compose down
 	@pkill -f "mlx_lm server" || true
 	rm -f sidecar.log
+	rm -rf .direnv
+	rm -rf .venv
+	rm -rf .pytest_cache
 	find server -type d -name "__pycache__" -exec rm -rf {} +
 	find server -type d -name ".pytest_cache" -exec rm -rf {} +
 
