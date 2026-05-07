@@ -1,6 +1,6 @@
 import { useState, FunctionComponent, useRef, useEffect } from "react";
 import axios from "axios";
-import styles from "./Chat.module.css"; // Ensure you import as 'styles' for CSS modules
+import styles from "./Chat.module.css";
 
 interface ChatMessage {
   id: string;
@@ -8,7 +8,126 @@ interface ChatMessage {
   content: string;
 }
 
-const Chat: FunctionComponent = () => {
+interface ChatProps {
+  // Add audio state props
+  isRecording?: boolean;
+  setIsRecording?: (recording: boolean) => void;
+}
+
+const AudioInputRecorder: FunctionComponent = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcription, setTranscription] = useState<string>("");
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (recorderRef.current?.state !== "inactive") {
+        recorderRef.current?.stop();
+      }
+    };
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        echoCancellation: true,
+      });
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm; codecs="opus"',
+      });
+
+      const audioChunks: Blob[] = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunks.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        if (audioChunks.length === 0) return;
+
+        const blob = new Blob(audioChunks, {
+          type: 'audio/webm; codecs="opus"',
+        });
+        setAudioBlob(blob);
+
+        // Send to STT endpoint
+        try {
+          const response = await fetch("/api/speech/stt", {
+            method: "POST",
+            body: blob,
+            headers: {
+              "Content-Type": 'audio/webm; codecs="opus"',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setTranscription(data.text || "");
+          } else {
+            console.error("STT request failed");
+            setTranscription("Transcription error");
+          }
+        } catch (error) {
+          console.error("Transcription failed:", error);
+          setTranscription("Transcription failed");
+        }
+      };
+
+      mediaRecorder.start(1500); // 1.5s chunks for better reliability
+      recorderRef.current = mediaRecorder;
+    } catch (error) {
+      console.error("Could not start recording:", error);
+      alert("Could not access microphone");
+      setIsRecording(false);
+    }
+  };
+
+  const stopRecording = async () => {
+    if (recorderRef.current && recorderRef.current.state === "recording") {
+      recorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  return (
+    <div className={styles.audioRecorder}>
+      {isRecording ? (
+        <div className={styles.recordingIndicator}>
+          <span>🔴 Recording...</span>
+          <button onClick={stopRecording} className={styles.stopButton}>
+            ⏹ Stop
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={startRecording}
+          className={[styles.recordButton, !isRecording && styles.active]}
+          aria-label="Start recording"
+        >
+          🎤 Start Recording
+        </button>
+      )}
+
+      {audioBlob && (
+        <div className={styles.transcriptionDisplay}>
+          <strong>Transcription:</strong> {transcription}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Chat: FunctionComponent<ChatProps> = ({
+  isRecording: externalIsRecording,
+  setIsRecording: externalSetIsRecording,
+  // ...other props
+}) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,10 +172,8 @@ const Chat: FunctionComponent = () => {
       let message = "An unexpected error occurred";
 
       if (axios.isAxiosError(error)) {
-        // Now TypeScript knows 'error' is an AxiosError
         message = error.response?.data?.error || error.message;
       } else if (error instanceof Error) {
-        // Handles standard JavaScript errors
         message = error.message;
       }
 
@@ -81,6 +198,12 @@ const Chat: FunctionComponent = () => {
     <div className={styles.chatArea}>
       <h1 className={styles.header}>Chat with AI</h1>
 
+      {/* Add audio recording controls */}
+      <AudioInputRecorder
+        isRecording={externalIsRecording}
+        setIsRecording={externalSetIsRecording}
+      />
+
       <div className={styles.chatMessages}>
         {messages.length === 0 && (
           <div className={styles.emptyState}>
@@ -98,7 +221,7 @@ const Chat: FunctionComponent = () => {
           </div>
         ))}
         {isLoading && (
-          <div className={`${styles.message} styles.assistant`}>
+          <div className={`${styles.message} ${styles.assistant}`}>
             <div className={styles.messageContent}>
               <div className={styles.loadingDots}>
                 <span></span>

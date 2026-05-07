@@ -5,6 +5,11 @@ A hybrid Python/Node.js Japanese word frequency analyzer built with:
 - **Server**: Python Flask/FastAPI backend with MeCab integration
 - **Client**: React/Vite frontend with type-safe TypeScript
 
+## How to use Claude
+- Always create a plan when in plan mode. Use tools to read files and content. Use tools to ask questions to the user. When planning in complete, use tools to ask user for input on whether to execute the plan and switch to edit mode or continue working on the plan.
+- When user chooses to execute plan and enter edit mode, use read and write tools to edit files.
+- Make sure the validate changes.
+
 ## Core Components
 - **Server Stack**:
   - refer to the python-server-helper skill

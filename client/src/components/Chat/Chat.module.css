@@ -1,4 +1,52 @@
 /* Container for the whole component */
+
+/* Audio Recorder */
+.audioRecorder {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.recordButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.recordButton.active {
+  background: #218838;
+}
+
+.stopButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.transcriptionDisplay {
+  margin-top: 0.5rem;
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+}
+
 .chatArea {
   display: flex;
   flex-direction: column;
