@@ -9,6 +9,7 @@ A hybrid Python/Node.js Japanese word frequency analyzer built with:
 - Always create a plan when in plan mode. Use tools to read files and content. Use tools to ask questions to the user. When planning in complete, use tools to ask user for input on whether to execute the plan and switch to edit mode or continue working on the plan.
 - When user chooses to execute plan and enter edit mode, use read and write tools to edit files.
 - Make sure the validate changes.
+- Plan files go into docs/plans and spec files go into docs/spec. Plans should be use to plan several stages of work. Spec should be use to document code as markdown.
 
 ## Core Components
 - **Server Stack**:
