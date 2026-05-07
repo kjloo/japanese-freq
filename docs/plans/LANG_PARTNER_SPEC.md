@@ -57,6 +57,22 @@ Casual Japanese friend (JLPT N3 level).
 
 ## Implementation Approach
 
+### LLM Response JSON Requirements
+- The LLM must return a JSON object.
+- When the assistant's reply should be spoken (persona sentence or correction), include a top‑level `speak` field containing the exact Japanese text to be synthesized.
+- When the reply is purely instructional, omit the `speak` field.
+- The `content` field (or existing response field) continues to hold the visible chat message.
+- Example successful response:
+  ```json
+  { "response": "...visible text...", "speak": "...Japanese to speak..." }
+  ```
+- Example instructional response:
+  ```json
+  { "response": "Remember to press the button before recording." }
+  ```
+
+## Implementation Approach
+
 1. **Define a spec file** `LANG_PARTNER_SPEC.md` describing the above constraints in a structured YAML/JSON block that the assistant code will read.
 2. **Speech Infrastructure** (Implemented) — Low-level STT/TTS stack:
    - `app.gateway.speech.*` – Provider abstractions (`STTProvider`/`TTSProvider`) with MLX and OpenRouter implementations.

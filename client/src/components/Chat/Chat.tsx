@@ -1,5 +1,6 @@
 import { useState, FunctionComponent, useRef, useEffect } from "react";
 import axios from "axios";
+import { TTSPlayer } from "./TTSPlayer";
 import styles from "./Chat.module.css";
 
 interface ChatMessage {
@@ -129,6 +130,16 @@ const Chat: FunctionComponent<ChatProps> = ({
   // ...other props
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [speakText, setSpeakText] = useState<string | null>(null);
+
+  // Reset speakText after playback so subsequent identical texts will retrigger.
+  useEffect(() => {
+    if (speakText) {
+      // Clear after a short tick; the TTSPlayer component will handle playback.
+      const timer = setTimeout(() => setSpeakText(null), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [speakText]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -168,6 +179,18 @@ const Chat: FunctionComponent<ChatProps> = ({
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // If the LLM response includes a "speak" field, render the TTSPlayer component
+      if (response.data.speak) {
+        // Render a hidden component that triggers playback via side‑effects.
+        setMessages((prev) => [
+          ...prev,
+          { ...assistantMessage, content: assistantMessage.content },
+        ]);
+        // After the message is added, render TTSPlayer below the message list.
+        // We'll use a temporary state to hold the current speak text.
+        setSpeakText(response.data.speak);
+      }
     } catch (error: unknown) {
       let message = "An unexpected error occurred";
 
@@ -232,6 +255,7 @@ const Chat: FunctionComponent<ChatProps> = ({
           </div>
         )}
         <div ref={messagesEndRef} />
+        {speakText && <TTSPlayer text={speakText} />}
       </div>
 
       <div className={styles.chatInputArea}>
