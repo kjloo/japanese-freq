@@ -149,7 +149,6 @@ def test_speech_pipeline_with_mocks(
     mock_tts.assert_called_once_with(speak_text, language="Japanese")
 
     print("\n✅  Integration test passed!")
-    return True
 
 
 def test_assistant_naturalness_check(mock_conversation_assistant, mock_mongodb):
@@ -169,7 +168,6 @@ def test_assistant_naturalness_check(mock_conversation_assistant, mock_mongodb):
     print(f"✅ Unnatural Japanese processed: {result['content']}")
 
     print("✅ Naturalness check test passed!")
-    return True
 
 
 def test_assistant_persona_generation(mock_mongodb):
@@ -198,7 +196,6 @@ def test_assistant_persona_generation(mock_mongodb):
     ), f"Location {assistant.location} not in expected list"
 
     print("✅ Persona generation test passed!")
-    return True
 
 
 def test_database_mock_integration(mock_mongodb, mock_word_repository):
@@ -217,4 +214,3 @@ def test_database_mock_integration(mock_mongodb, mock_word_repository):
     mock_repo.add_words.assert_called_once_with(test_words)
 
     print("✅ Database mock integration test passed!")
-    return True

@@ -1,19 +1,18 @@
 import pytest
 
 from app.model.word.word_list import WordList
-
 from test.fixture.mongo_fixture import mongo_test
 
 
 @pytest.fixture(autouse=True)
-def clear_word_list():
+def clear_word_list(mongo_test):
     """
     Automatically clear the WordList collection before each test.
+    Ensures mongo_test initializes the connection first.
     """
     WordList.objects.delete()
 
 
-@pytest.mark.usefixtures("mongo_test")
 def test_add_words():
     from app.repository.word.word_repository import word_repository
 
@@ -28,7 +27,6 @@ def test_add_words():
     )
 
 
-@pytest.mark.usefixtures("mongo_test")
 def test_get_words():
     from app.repository.word.word_repository import word_repository
 
@@ -39,7 +37,6 @@ def test_get_words():
     assert set(current_words) == set(words)
 
 
-@pytest.mark.usefixtures("mongo_test")
 def test_get_words_empty():
     from app.repository.word.word_repository import word_repository
 
@@ -47,7 +44,6 @@ def test_get_words_empty():
     assert current_words == []
 
 
-@pytest.mark.usefixtures("mongo_test")
 def test_remove_word():
     from app.repository.word.word_repository import word_repository
 
