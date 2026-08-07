@@ -163,3 +163,166 @@
 .sendButton:active:not(:disabled) {
   transform: scale(0.98);
 }
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Microphone Button */
+.micButtonContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.micButton {
+  background: #4caf50; /* Green for idle state */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.micButton.recording {
+  background: #f44336; /* Red for recording state */
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+.micButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.micLabel {
+  font-size: 0.875rem;
+  color: #666;
+  min-width: 120px;
+  text-align: center;
+}
+
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1976d2;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+/* Audio Recorder - Updated to use single button */
+.audioRecorder {
+  margin: 1rem 0;
+  display: none; /* Hidden since we integrate directly into chat input area */
+}
+
+/* Microphone Button */
+.micButtonContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.micButton {
+  background: #4caf50; /* Green for idle state */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.micButton.recording {
+  background: #f44336; /* Red for recording state */
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+.micButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.micLabel {
+  font-size: 0.875rem;
+  color: #666;
+  min-width: 120px;
+  text-align: center;
+}
+
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1976d2;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+/* Audio Recorder - Updated to use single button */
+.audioRecorder {
+  margin: 1rem 0;
+  display: none; /* Hidden since we integrate directly into chat input area */
+}

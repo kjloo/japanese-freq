@@ -14,7 +14,7 @@ from app.module.dictionary_module import dictionary
 
 # Initialize shared resources using singleton instances
 # Reuse the shared dictionary instance from dictionary_module
-# (word_service and speech_gateway are optional dependencies for live integration)
+dictionary = dictionary  # Already a singleton from module import
 
 
 class ConversationAssistant:
@@ -94,10 +94,10 @@ class ConversationAssistant:
 
         Format:
         [Output A - Natural]
-        ✅ [Name]: [Short, reactive statement with Kanji(reading)]
+        � ✅ [Name]: [Short, reactive statement with Kanji(reading)]
 
         Example:
-        ✅ Haru: もう遅くまでアニメを見てたんですか？素晴らしいですね！
+        � ✅ Haru: もう�遅くまでアニメを見てたんですか？素�晴らしいですね！
         """
         # Simple reactive template based on situation
         reactive_templates = [
@@ -112,7 +112,7 @@ class ConversationAssistant:
         # Add furigana using the dictionary helper
         furigana = self._add_furigana(template)
         return {
-            "prefix": "✅",
+            "prefix": "��✅",
             "speaker": self.name,
             "content": f"{furigana}",
             "speak": template,
@@ -123,11 +123,11 @@ class ConversationAssistant:
         Output B - Unnatural input template.
 
         Format:
-        🛑 [Name]: (一時停止(いちじていし))
+        �� 🛑 [Name]: (一時停止(いちじていし))
 
         Explanation and correction are provided separately.
         """
-        stop_symbol = "🛑"
+        stop_symbol = "���🛑"
         # Provide a generic stop indicator with furigana
         return {
             "prefix": stop_symbol,
@@ -151,11 +151,12 @@ class ConversationAssistant:
         # containing its hiragana reading using the dictionary.
         def annotate_match(match):
             kanji = match.group(0)
-            reading = self.dictionary.short_lookup(kanji).get("hiragana", "")
+            short_def = self.dictionary.short_lookup(kanji)
+            reading = short_def.hiragana if short_def else ""
             return f"{kanji}({reading})"
 
-        # Find all multi‑byte characters that are likely Kanji (Unicode range)
-        return re.sub(r"[一-鿿]+", annotate_match, text)
+        # Find all multi-byte characters that are likely Kanji (Unicode range)
+        return re.sub(r"[一-��鿿]+", annotate_match, text)
 
     def _correct_phrase(self, input_text: str) -> str:
         """
@@ -164,7 +165,7 @@ class ConversationAssistant:
         """
         # Very simple correction: repeat the input as a generic suggestion.
         # In a real system we would produce a more natural correction.
-        return f"Perhaps you meant: “{input_text}”。"
+        return f"Perhaps you meant: “{input_text}。”"
 
     # --------------------------------------------------------------------- #
     # Public Interface

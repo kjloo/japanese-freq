@@ -145,41 +145,71 @@ Use these files as “golden” references when extending the codebase with new 
 
 ### Execution Guidance
 - Test database initialization: `make server/test`
-- Validate test audio location: `server/test/resources/audio/stt_test.mp3`
+- Validate test audio location: `server/test/integration/resources/audio/stt_test.mp3`
 - Verify output.mp3 generation:
   ```bash
   ls server/output/output.mp3
   ffplay server/output/output.mp3
   ```
 - **Test Pattern**: After implementing a new feature, create a test file `server/test/<module>_test.py` that validates end-to-end functionality
-- **Test Audio**: Put test audio at `server/test/resources/audio/<filename>.mp3` for integration tests
+- **Test Audio**: Put test audio at `server/test/integration/resources/audio/<filename>.mp3` for integration tests
 - **Validation**: All new tests should be integrated with existing pytest configuration
 - **Status**: Run tests via `make server/test` or `make test`
 
 ### Example Test Structure
 ```python
-# server/test/test_speech_integration.py
+# server/test/integration/speech/test_speech_integration.py
 import pytest
 from pathlib import Path
 from app.gateway.speech import transcribe, synthesize
 from app.assistant.conversation_assistant import ConversationAssistant
+from test.fixture.resource_fixture import resource_loader
 
-TEST_AUDIO_PATH = Path(__file__).parent / "resources" / "audio" / "stt_test.mp3"
+def test_speech_pipeline_with_mocks(
+    mock_conversation_assistant, mock_speech_gateway, mock_mongodb, resource_loader
+):
+    """Integration test: STT → Assistant → TTS pipeline"""
+    mock_stt, mock_tts = mock_speech_gateway
 
-def test_speech_pipeline():
-    """Full pipeline test: STT → Assistant → TTS"""
-    # 1. Load test audio
-    audio_bytes = TEST_AUDIO_PATH.read_bytes()
+    # Load test audio using the shared resource loader
+    audio_bytes = resource_loader("audio", "stt_test.mp3")
     
-    # 2. STT test
-    text = transcribe(audio_bytes)
+    # 1. STT test
+    stt_result = mock_stt(audio_bytes)
     
-    # 3. Assistant test
-    assistant = ConversationAssistant()
-    response = assistant.process(text)
+    # 2. Assistant test  
+    assistant_response = mock_conversation_assistant.process(stt_result)
     
-    # 4. TTS test
-    audio = synthesize(text=response.get("content"))
+    # 3. TTS test
+    tts_audio = mock_tts(assistant_response["speak"], language="Japanese")
     
-    return audio
+    assert tts_audio == b"fake audio bytes"
+    print("\n✅  Integration test passed!")
 ```
+
+### Shared Resource Loading
+Tests now use a centralized resource loading pattern via `test.fixture.resource_fixture`:
+
+```python
+# Inside test fixture (server/test/fixture/resource_fixture.py)
+from pathlib import Path
+import pytest
+
+RESOURCES_DIR = Path(__file__).resolve().parent.parent / "integration" / "resources"
+
+def resource_path(*parts: str) -> Path:
+    """Return absolute path to a resource file under test/integration/resources."""
+    path = RESOURCES_DIR / Path(*parts)
+    if not path.is_file():
+        raise FileNotFoundError(f"Test resource not found at {path}")
+    return path
+
+@pytest.fixture
+def resource_loader():
+    """Fixture providing callable to load resource bytes by path segments."""
+    def _load(*parts: str) -> bytes:
+        return resource_path(*parts).read_bytes()
+    return _load
+```
+
+This centralized approach eliminates hardcoded paths and provides consistent resource loading across integration tests.

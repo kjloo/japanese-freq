@@ -121,6 +121,7 @@ def register_all_blueprints(app: Flask):
     from app.routes.speech_routes import speech_routes
     from app.routes.word_routes import word_routes
     from app.routes.video_routes import video_routes
+    from app.routes.chat_routes import chat_routes
 
     blueprints = [
         admin_routes,
@@ -132,6 +133,7 @@ def register_all_blueprints(app: Flask):
         speech_routes,
         word_routes,
         video_routes,
+        chat_routes,
     ]
     # Register all blueprints
     for blueprint in blueprints:

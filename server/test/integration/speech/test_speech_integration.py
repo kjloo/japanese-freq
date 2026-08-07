@@ -4,8 +4,6 @@ Integration test for the Japanese partner chat pipeline.
 
 This test validates the full pipeline: STT → Assistant → TTS
 and follows the existing testing patterns in the codebase.
-
-Test audio file should be located at: server/test/resources/audio/stt_test.mp3
 """
 
 import sys
@@ -16,6 +14,9 @@ from bson import ObjectId
 
 # Add the server package to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# Import shared resource loading fixture
+from test.fixture.resource_fixture import resource_loader
 
 
 # ----------------------------------------------------------------------
@@ -95,11 +96,10 @@ def mock_conversation_assistant(mock_dictionary_module):
 # ----------------------------------------------------------------------
 # Test definitions
 # ----------------------------------------------------------------------
-TEST_AUDIO_PATH = Path(__file__).parent / "resources" / "audio" / "stt_test.mp3"
 
 
 def test_speech_pipeline_with_mocks(
-    mock_conversation_assistant, mock_speech_gateway, mock_mongodb
+    mock_conversation_assistant, mock_speech_gateway, mock_mongodb, resource_loader
 ):
     """
     Integration test: STT → Assistant → TTS pipeline
@@ -109,10 +109,8 @@ def test_speech_pipeline_with_mocks(
     """
     mock_stt, mock_tts = mock_speech_gateway
 
-    # Load test audio (just check it exists)
-    assert TEST_AUDIO_PATH.is_file(), f"Test audio not found at {TEST_AUDIO_PATH}"
-
-    audio_bytes = TEST_AUDIO_PATH.read_bytes()
+    # Load test audio using the shared resource loader
+    audio_bytes = resource_loader("audio", "stt_test.mp3")
     print(f"🔊  Loaded test audio: {len(audio_bytes)} bytes")
 
     # STEP 1: Mock STT to return Japanese text
