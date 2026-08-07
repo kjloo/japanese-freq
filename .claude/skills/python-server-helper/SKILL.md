@@ -12,11 +12,13 @@ Server code generator for Flask architecture following project patterns. Automat
 - Error handling patterns
 
 ### Generator Capabilities
-1. **Route Creation**: Automatic blueprint registration
-2. **Service Generation**: Business logic implementation
-3. **Form Handling**: Validation class creation
-4. **Test Scaffolding**: Unit test templates with mocks
-5. **Dependency Management**: Injected services
+1. **Route Creation**: Automatic blueprint registration with comprehensive test coverage
+2. **Service Generation**: Business logic implementation with async operations
+3. **Form Handling**: Validation class creation with comprehensive error handling
+4. **Test Scaffolding**: Unit test templates with mocks for all dependencies
+5. **Dependency Management**: Injected services with database connection management
+6. **Test Audio Integration**: Creation of test audio fixtures for integration tests
+7. **Output Validation**: Validation of generated test output files
 
 ### Guidelines
 - Always extend BaseForm for validation
@@ -110,9 +112,74 @@ Below are reference implementations (golden files) that illustrate how the core 
 Use these files as “golden” references when extending the codebase with new routes, services, forms, or repositories. The patterns (blueprint registration, BaseForm inheritance, repository usage) are consistent throughout the project.
 
 ### Testing Requirements
-- Unit tests using pytest/mocker
-- Integration tests via `make server/test`
-- Cover error handling patterns
-- Enforce module structure
-- For every code change, ensure we have corresponding tests that validate the new functionality and maintain coverage. Test should be written using test driven development (TDD) principles, starting with failing tests that define the expected behavior before implementing the actual code.
-- Tests should be organized in the `server/app/tests` directory that mirrors the structure of the main codebase, allowing for clear mapping between tests and implementation files. Each test file should focus on a specific module or functionality, ensuring comprehensive coverage and maintainability.
+- Unit tests using pytest/mocker with database mock integration
+- Integration tests via `make server/test` that include:
+  - MongoDB connection mocks
+  - Schema initialization for test data
+  - Connection failure handling
+- Test environment setup including:
+  - Local MongoDB instance (`sudo service mongod restart`)
+  - Test database initialization
+- TDD patterns:
+  - Fail-first tests for new features
+  - Mock-based dependency isolation
+- Test organization:
+  - Mirror main code structure in `server/app/tests`
+  - Fixtures for database contexts
+- Required test components for database-enabled modules:
+  - Mocked database connections
+  - Test fixture for collections
+  - Validation of schema changes
+
+### New Fixtures to Implement
+- `mocked_db_setup` fixture for initializing test collections
+- `mock_collection` fixture for sample data
+- Error handling fixtures for connection failures
+- Database connection Teardown fixture
+
+### Test Script Modifications
+- Add `import pymongo` for connection utilities
+- Implement retry logic for unstable connections
+- Add test assertions for schema validation
+- Include test output validation (e.g., `output.mp3` generation)
+
+### Execution Guidance
+- Test database initialization: `make server/test`
+- Validate test audio location: `server/test/resources/audio/stt_test.mp3`
+- Verify output.mp3 generation:
+  ```bash
+  ls server/output/output.mp3
+  ffplay server/output/output.mp3
+  ```
+- **Test Pattern**: After implementing a new feature, create a test file `server/test/<module>_test.py` that validates end-to-end functionality
+- **Test Audio**: Put test audio at `server/test/resources/audio/<filename>.mp3` for integration tests
+- **Validation**: All new tests should be integrated with existing pytest configuration
+- **Status**: Run tests via `make server/test` or `make test`
+
+### Example Test Structure
+```python
+# server/test/test_speech_integration.py
+import pytest
+from pathlib import Path
+from app.gateway.speech import transcribe, synthesize
+from app.assistant.conversation_assistant import ConversationAssistant
+
+TEST_AUDIO_PATH = Path(__file__).parent / "resources" / "audio" / "stt_test.mp3"
+
+def test_speech_pipeline():
+    """Full pipeline test: STT → Assistant → TTS"""
+    # 1. Load test audio
+    audio_bytes = TEST_AUDIO_PATH.read_bytes()
+    
+    # 2. STT test
+    text = transcribe(audio_bytes)
+    
+    # 3. Assistant test
+    assistant = ConversationAssistant()
+    response = assistant.process(text)
+    
+    # 4. TTS test
+    audio = synthesize(text=response.get("content"))
+    
+    return audio
+```

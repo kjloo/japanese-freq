@@ -143,3 +143,10 @@ client/clean: ## 🧹 Remove node_modules and build artifacts
 	rm -rf client/node_modules
 	rm -rf client/dist
 	rm -rf client/.next
+
+# --- CATCH-ALL UNKNOWN TARGETS ---
+
+%:
+	@echo "⚠️  Unknown target '$@'"
+	@echo ""
+	@$(MAKE) help
