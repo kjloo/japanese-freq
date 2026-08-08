@@ -26,12 +26,14 @@ build: ## 🐳 Build docker containers
 	docker compose build
 
 .PHONY: dev
-dev: build ## 🚀 Start full stack in dev mode (attached)
-	open http://localhost:5000
-	docker compose up japanese-freq
+dev: ## 🚀 Start full stack in interactive dev mode
+	@$(MAKE) sidecar/ensure
+	@echo "Starting server and client in development mode..."
+	@trap 'kill 0' EXIT; $(MAKE) server/run & $(MAKE) client/run & wait
 
 .PHONY: run
-run: ## 🏃 Run full stack in background
+run: build ## 🏃 Run full stack using Docker in background
+	@$(MAKE) sidecar/ensure
 	docker compose up -d
 	open http://localhost:5000
 
@@ -70,24 +72,30 @@ sidecar/tts: ## 🎙️ Start the Qwen 3 TTS sidecar server with voice cloning
 	@echo "🚀 Starting Qwen 3 TTS sidecar server..."
 	@((nohup python server/tts_sidecar.py > tts_sidecar.log 2>&1 < /dev/null) &)
 
+.PHONY: sidecar/ensure
+sidecar/ensure: ## 🔍 Check if MLX sidecar is up; start it if not running
+	@if [ "$(LLM_ENABLED)" = "true" ]; then \
+		echo "Checking for MLX Sidecar..."; \
+		if ! curl -s http://localhost:8080/v1/models > /dev/null; then \
+			echo "Sidecar not detected. Launching..."; \
+			$(MAKE) sidecar/run; \
+			echo "Waiting for MLX to load..."; \
+			while ! curl -s http://localhost:8080/v1/models > /dev/null; do \
+				sleep 5; \
+			done; \
+		fi; \
+	fi
+
 .PHONY: server/run
-server/run: ## ⚡ Run server locally with Gunicorn
+server/run: ## ⚡ Run server locally with Gunicorn (hot-reload enabled)
 	docker compose up mongodb -d
 	@echo "Waiting for MongoDB to be ready..."
 	@until [ "$$(docker inspect --format='{{.State.Health.Status}}' mongodb)" = "healthy" ]; do \
 		sleep 2; \
 	done
-	@echo "Checking for MLX Sidecar..."
-	@if ! curl -s http://localhost:8080/v1/models > /dev/null; then \
-		echo "Sidecar not detected. Launching..."; \
-		$(MAKE) sidecar/run; \
-		echo "Waiting for MLX to load..."; \
-		while ! curl -s http://localhost:8080/v1/models > /dev/null; do \
-			sleep 5; \
-		done; \
-	fi
+	@$(MAKE) sidecar/ensure
 	@echo "All systems green. Starting the server..."
-	cd server && gunicorn -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
+	cd server && gunicorn --reload -w 1 -k eventlet -b 0.0.0.0:5000 app.main:app
 
 .PHONY: server/test
 server/test: ## 🧪 Run server tests

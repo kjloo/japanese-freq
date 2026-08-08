@@ -60,14 +60,14 @@ def send_message():
     # Step 2: Send to LLM for generation
     try:
         llm_response = llm_service.prompt_llm(
-            user_prompt=assistant_output.get("content", input_text),
-            system_prompt=f"{assistant_output.get('speaker', '')}: {assistant_output.get('content', '')}",
+            user_prompt=input_text,
+            system_prompt="You are a Japanese language partner. Respond naturally in Japanese to the user's message.",
             max_tokens=300,
         )
     except Exception as e:
         logger.error(f"chat_routes.send_message: LLM failed: {str(e)}")
         # Fallback to assistant response if LLM fails
-        llm_response = assistant_output.get("content", input_text)
+        llm_response = input_text
 
     # Step 3: Convert response to speech
     try:
@@ -113,18 +113,19 @@ def send_audio_message():
 
     # Step 2: Assistant
     assistant = ConversationAssistant()
-    assistant_output = assistant.process(input_text)
+    assistant.process(input_text)
 
     # Step 3: LLM
     try:
         llm_response = llm_service.prompt_llm(
-            user_prompt=assistant_output.get("content", input_text),
-            system_prompt=f"{assistant_output.get('speaker', '')}: {assistant_output.get('content', '')}",
+            user_prompt=input_text,
+            system_prompt="You are a Japanese language partner. Respond naturally in Japanese to the user's message.",
             max_tokens=300,
         )
     except Exception as e:
         logger.error(f"chat_routes.send_audio_message: LLM failed: {str(e)}")
-        llm_response = assistant_output.get("content", input_text)
+        # Fallback to a simple response if both fallbacks fail
+        llm_response = input_text
 
     # Step 4: TTS
     try:
