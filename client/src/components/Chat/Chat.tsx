@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Chat.module.css";
 import { TTSPlayer } from "./TTSPlayer";
+import ReactFurigana from "react-furigana";
 
 interface ChatMessage {
   id: string;
@@ -229,7 +230,12 @@ const Chat: FunctionComponent = () => {
             }`}
           >
             <div className={styles.messageContent}>
-              <p>{message.content}</p>
+              <ReactFurigana
+                text={message.content}
+                wrapperClassName={styles.furiganaWrapper}
+                rubyClassName={styles.furiganaRuby}
+                rtClassName={styles.furiganaText}
+              />
               {message.isAssistant && message.audio && (
                 <TTSPlayer audio={message.audio} />
               )}

@@ -249,6 +249,38 @@
   display: none; /* Hidden since we integrate directly into chat input area */
 }
 
+/* Furigana Styling - Add these styles at the end of the file */
+.furiganaContainer {
+  display: inline-block;
+  cursor: help;
+  position: relative;
+}
+
+.furiganaRuby {
+  position: absolute;
+  top: -0.5em;
+  left: 0;
+  font-size: 0.8em;
+  color: #444;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.furiganaContainer:hover .furiganaRuby {
+  opacity: 1;
+}
+
+.furiganaText {
+  position: absolute;
+  top: -0.5em;
+  left: 0;
+  font-size: 0.8em;
+  color: #444;
+  opacity: 1;
+  pointer-events: none;
+}
+
 /* Microphone Button */
 .micButtonContainer {
   display: flex;
