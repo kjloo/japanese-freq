@@ -3,12 +3,14 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Chat.module.css";
+import { TTSPlayer } from "./TTSPlayer";
 
 interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
   isAssistant: boolean;
+  audio?: string; // base64 encoded MP3 audio
 }
 
 const Chat: FunctionComponent = () => {
@@ -129,6 +131,7 @@ const Chat: FunctionComponent = () => {
         role: "assistant",
         content: response.data.response || "No response received",
         isAssistant: true,
+        audio: response.data.audio, // base64 audio from server
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -227,6 +230,9 @@ const Chat: FunctionComponent = () => {
           >
             <div className={styles.messageContent}>
               <p>{message.content}</p>
+              {message.isAssistant && message.audio && (
+                <TTSPlayer audio={message.audio} />
+              )}
             </div>
           </div>
         ))}

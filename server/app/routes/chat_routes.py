@@ -12,6 +12,7 @@ This module handles the full conversation flow:
 All endpoints are RESTful and follow the existing architecture patterns.
 """
 
+import base64
 from flask import Blueprint, jsonify, request
 from app.service.speech import stt_service, tts_service
 from app.service.llm import llm_service
@@ -76,6 +77,10 @@ def send_message():
         logger.error(f"chat_routes.send_message: TTS failed: {str(e)}")
         tts_audio = None
 
+    audio_base64 = None
+    if tts_audio:
+        audio_base64 = base64.b64encode(tts_audio).decode("utf-8")
+
     # Step 4: Return full response
     return (
         jsonify(
@@ -84,7 +89,7 @@ def send_message():
                 "transcript": input_text,
                 "assistant": assistant_output,
                 "response": llm_response,
-                "audio": tts_audio,
+                "audio": audio_base64,
                 "audio_format": "audio/mp3" if tts_audio else None,
             }
         ),
