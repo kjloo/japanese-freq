@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Chat.module.css";
 import { TTSPlayer } from "./TTSPlayer";
-import ReactFurigana from "react-furigana";
+import FuriganaMessage from "./FuriganaMessage";
 
 interface ChatMessage {
   id: string;
@@ -230,12 +230,7 @@ const Chat: FunctionComponent = () => {
             }`}
           >
             <div className={styles.messageContent}>
-              <ReactFurigana
-                text={message.content}
-                wrapperClassName={styles.furiganaWrapper}
-                rubyClassName={styles.furiganaRuby}
-                rtClassName={styles.furiganaText}
-              />
+              <FuriganaMessage text={message.content} />
               {message.isAssistant && message.audio && (
                 <TTSPlayer audio={message.audio} />
               )}
@@ -265,9 +260,7 @@ const Chat: FunctionComponent = () => {
         {/* Single Microphone Toggle Button */}
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          className={`${styles.micButton} ${
-            isRecording ? styles.recording : ""
-          }`}
+          className={`${styles.micButton} ${isRecording ? styles.recording : ""}`}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
           disabled={isLoading}
         >

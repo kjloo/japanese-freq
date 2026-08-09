@@ -1,5 +1,162 @@
 /* Container for the whole component */
 
+.chatArea {
+  display: flex;
+  flex-direction: column;
+  padding: 0rem 1rem;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.header {
+  padding: 1.5rem 2.5rem;
+  margin: 0;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.chatMessages {
+  width: 100%;
+  height: 28rem;
+  overflow-y: auto;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: #f7f7f5;
+}
+
+.message {
+  display: flex;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+/* User Messages: Right Aligned */
+.user {
+  justify-content: flex-end;
+}
+
+.user .messageContent {
+  background: #007aff;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+/* Assistant Messages: Left Aligned */
+.assistant {
+  justify-content: flex-start;
+}
+
+.assistant .messageContent {
+  background: #e9e9eb;
+  color: #2c2c2e;
+  border-radius: 18px 18px 18px 4px;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 1rem 1.4rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.chatInputArea {
+  display: flex;
+  padding: 2rem 2.5rem;
+  gap: 1.25rem;
+  background: white;
+  border-top: 1px solid #eee;
+  align-items: center;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  outline: none;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+.chatInput:focus {
+  border-color: #007aff;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.sendButton {
+  height: 100%;
+  min-height: 48px;
+  padding: 0 2rem;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.1s active,
+    opacity 0.2s;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #0063cc;
+}
+
+.sendButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Recording Indicator */
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1976d2;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Audio Recorder */
 .audioRecorder {
   margin: 1rem 0;
@@ -33,10 +190,43 @@
   cursor: pointer;
 }
 
-.recordingIndicator {
+.micButtonContainer {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+}
+
+.micButton {
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.micButton.recording {
+  background: #f44336;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+.micButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.micLabel {
+  font-size: 0.875rem;
+  color: #666;
+  min-width: 120px;
+  text-align: center;
 }
 
 .transcriptionDisplay {
@@ -45,316 +235,4 @@
   padding: 0.5rem 1rem;
   border-radius: 6px;
   width: 100%;
-}
-
-.chatArea {
-  display: flex;
-  flex-direction: column;
-  padding: 0rem 1rem;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-.header {
-  padding: 1.5rem 2.5rem; /* Increased horizontal padding */
-  margin: 0;
-  font-size: 1.25rem;
-  border-bottom: 1px solid #eee;
-  color: #333;
-}
-
-.chatMessages {
-  width: 100%;
-  height: 28rem;
-  overflow-y: auto;
-  padding: 2.5rem; /* Increased padding around the bubbles */
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem; /* Space between bubbles */
-  background: #f7f7f5; /* Off-white background */
-}
-
-.message {
-  display: flex;
-  width: 100%;
-  max-width: 80rem; /* Keeps bubbles from hitting the far edges on wide screens */
-  margin: 0 auto; /* Centers the chat thread area */
-}
-
-/* User Messages: Right Aligned */
-.user {
-  justify-content: flex-end;
-}
-
-.user .messageContent {
-  background: #007aff;
-  color: white;
-  border-radius: 18px 18px 4px 18px;
-}
-
-/* Assistant Messages: Left Aligned */
-.assistant {
-  justify-content: flex-start;
-}
-
-.assistant .messageContent {
-  background: #e9e9eb;
-  color: #2c2c2e;
-  border-radius: 18px 18px 18px 4px;
-}
-
-.messageContent {
-  max-width: 70%;
-  padding: 0rem 1.4rem; /* Padding inside the bubble */
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.chatInputArea {
-  display: flex;
-  padding: 2rem 2.5rem; /* Increased vertical and horizontal padding for the container */
-  gap: 1.25rem; /* Slightly more gap between input and button */
-  background: white;
-  border-top: 1px solid #eee;
-  align-items: center; /* Ensures input and button stay centered vertically */
-}
-
-.chatInput {
-  flex: 1;
-  padding: 1rem 1.5rem; /* Substantial padding inside the text box */
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  outline: none;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: all 0.2s ease;
-  background-color: #fafafa;
-  box-sizing: border-box; /* Prevents padding from increasing the width */
-}
-
-.chatInput:focus {
-  border-color: #007aff;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-}
-
-.sendButton {
-  height: 100%; /* Matches the height of the padded input */
-  min-height: 48px; /* Ensures a comfortable touch/click target */
-  padding: 0 2rem;
-  background: #007aff;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 0.1s active,
-    opacity 0.2s;
-}
-
-.sendButton:hover:not(:disabled) {
-  background: #0063cc;
-}
-
-.sendButton:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.emptyState {
-  text-align: center;
-  padding: 2rem;
-  color: #999;
-  font-style: italic;
-}
-
-/* Microphone Button */
-.micButtonContainer {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.micButton {
-  background: #4caf50; /* Green for idle state */
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-}
-
-.micButton.recording {
-  background: #f44336; /* Red for recording state */
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
-  animation: pulse 1.5s infinite;
-}
-
-.micButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.micLabel {
-  font-size: 0.875rem;
-  color: #666;
-  min-width: 120px;
-  text-align: center;
-}
-
-.recordingIndicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: #f0f7ff;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #1976d2;
-}
-
-.recordingDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f44336;
-  animation: pulse 1.5s infinite;
-}
-
-/* Audio Recorder - Updated to use single button */
-.audioRecorder {
-  margin: 1rem 0;
-  display: none; /* Hidden since we integrate directly into chat input area */
-}
-
-/* Furigana Styling - Add these styles at the end of the file */
-.furiganaContainer {
-  display: inline-block;
-  cursor: help;
-  position: relative;
-}
-
-.furiganaRuby {
-  position: absolute;
-  top: -0.5em;
-  left: 0;
-  font-size: 0.8em;
-  color: #444;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-
-.furiganaContainer:hover .furiganaRuby {
-  opacity: 1;
-}
-
-.furiganaText {
-  position: absolute;
-  top: -0.5em;
-  left: 0;
-  font-size: 0.8em;
-  color: #444;
-  opacity: 1;
-  pointer-events: none;
-}
-
-/* Microphone Button */
-.micButtonContainer {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.micButton {
-  background: #4caf50; /* Green for idle state */
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-}
-
-.micButton.recording {
-  background: #f44336; /* Red for recording state */
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
-  animation: pulse 1.5s infinite;
-}
-
-.micButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.micLabel {
-  font-size: 0.875rem;
-  color: #666;
-  min-width: 120px;
-  text-align: center;
-}
-
-.recordingIndicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: #f0f7ff;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #1976d2;
-}
-
-.recordingDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f44336;
-  animation: pulse 1.5s infinite;
-}
-
-/* Audio Recorder - Updated to use single button */
-.audioRecorder {
-  margin: 1rem 0;
-  display: none; /* Hidden since we integrate directly into chat input area */
 }

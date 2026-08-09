@@ -31,10 +31,10 @@
     "dompurify": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-furigana": "^1.3.9",
     "react-router": "^6.9.0",
     "react-router-dom": "^6.9.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "wanakana": "^5.3.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.5",

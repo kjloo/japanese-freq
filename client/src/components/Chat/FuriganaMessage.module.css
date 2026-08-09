@@ -1,0 +1,40 @@
+/* FuriganaMessage.module.css */
+
+.messageContainer {
+  /* Provide vertical headroom so visible furigana on hover does not clip */
+  line-height: 2.2;
+  font-size: 1.1rem;
+}
+
+/* Native Ruby Element Container */
+.rubyContainer {
+  display: inline-ruby;
+  ruby-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Furigana Annotation Text */
+.furiganaText {
+  /* Increased from 0.55em (~5% increase) */
+  font-size: 0.58em;
+
+  /* Inherits text color (white) directly from parent text styling */
+  color: inherit;
+
+  /* Smooth opacity toggle on hover */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease-in-out,
+    visibility 0.2s ease-in-out;
+
+  /* Ensure browser positions it standardly over the base text */
+  user-select: none;
+}
+
+/* Show Furigana on Hover */
+.rubyContainer:hover .furiganaText {
+  opacity: 1;
+  visibility: visible;
+}

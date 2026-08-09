@@ -128,7 +128,7 @@ client/setup: ## 📦 Install client dependencies
 	cd client && npm install
 
 .PHONY: client/run
-client/run: ## 🌐 Run client dev server
+client/run: client/setup ## 🌐 Run client dev server
 	cd client && npm run dev
 
 .PHONY: client/lint
