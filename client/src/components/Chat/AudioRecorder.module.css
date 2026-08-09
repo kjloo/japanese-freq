@@ -1,0 +1,84 @@
+.audioRecorder {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.recordButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recordButton.active {
+  background: #218838;
+}
+
+.recordButton:hover:not(:disabled) {
+  background: #1e7e34;
+  transform: translateY(-1px);
+}
+
+.stopButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stopButton:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.recordingDot {
+  font-size: 1.2rem;
+  animation: pulse 1.5s infinite;
+}
+
+.recordingText {
+  font-weight: 500;
+  color: #856404;
+}
+
+.transcriptionDisplay {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  width: 100%;
+  min-height: 40px;
+  word-wrap: break-word;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

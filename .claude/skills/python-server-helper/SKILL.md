@@ -12,11 +12,13 @@ Server code generator for Flask architecture following project patterns. Automat
 - Error handling patterns
 
 ### Generator Capabilities
-1. **Route Creation**: Automatic blueprint registration
-2. **Service Generation**: Business logic implementation
-3. **Form Handling**: Validation class creation
-4. **Test Scaffolding**: Unit test templates with mocks
-5. **Dependency Management**: Injected services
+1. **Route Creation**: Automatic blueprint registration with comprehensive test coverage
+2. **Service Generation**: Business logic implementation with async operations
+3. **Form Handling**: Validation class creation with comprehensive error handling
+4. **Test Scaffolding**: Unit test templates with mocks for all dependencies
+5. **Dependency Management**: Injected services with database connection management
+6. **Test Audio Integration**: Creation of test audio fixtures for integration tests
+7. **Output Validation**: Validation of generated test output files
 
 ### Guidelines
 - Always extend BaseForm for validation
@@ -110,7 +112,104 @@ Below are reference implementations (golden files) that illustrate how the core 
 Use these files as “golden” references when extending the codebase with new routes, services, forms, or repositories. The patterns (blueprint registration, BaseForm inheritance, repository usage) are consistent throughout the project.
 
 ### Testing Requirements
-- Unit tests using pytest/mocker
-- Integration tests via `make server/test`
-- Cover error handling patterns
-- Enforce module structure
+- Unit tests using pytest/mocker with database mock integration
+- Integration tests via `make server/test` that include:
+  - MongoDB connection mocks
+  - Schema initialization for test data
+  - Connection failure handling
+- Test environment setup including:
+  - Local MongoDB instance (`sudo service mongod restart`)
+  - Test database initialization
+- TDD patterns:
+  - Fail-first tests for new features
+  - Mock-based dependency isolation
+- Test organization:
+  - Mirror main code structure in `server/app/tests`
+  - Fixtures for database contexts
+- Required test components for database-enabled modules:
+  - Mocked database connections
+  - Test fixture for collections
+  - Validation of schema changes
+
+### New Fixtures to Implement
+- `mocked_db_setup` fixture for initializing test collections
+- `mock_collection` fixture for sample data
+- Error handling fixtures for connection failures
+- Database connection Teardown fixture
+
+### Test Script Modifications
+- Add `import pymongo` for connection utilities
+- Implement retry logic for unstable connections
+- Add test assertions for schema validation
+- Include test output validation (e.g., `output.mp3` generation)
+
+### Execution Guidance
+- Test database initialization: `make server/test`
+- Validate test audio location: `server/test/integration/resources/audio/stt_test.mp3`
+- Verify output.mp3 generation:
+  ```bash
+  ls server/output/output.mp3
+  ffplay server/output/output.mp3
+  ```
+- **Test Pattern**: After implementing a new feature, create a test file `server/test/<module>_test.py` that validates end-to-end functionality
+- **Test Audio**: Put test audio at `server/test/integration/resources/audio/<filename>.mp3` for integration tests
+- **Validation**: All new tests should be integrated with existing pytest configuration
+- **Status**: Run tests via `make server/test` or `make test`
+
+### Example Test Structure
+```python
+# server/test/integration/speech/test_speech_integration.py
+import pytest
+from pathlib import Path
+from app.gateway.speech import transcribe, synthesize
+from app.assistant.conversation_assistant import ConversationAssistant
+from test.fixture.resource_fixture import resource_loader
+
+def test_speech_pipeline_with_mocks(
+    mock_conversation_assistant, mock_speech_gateway, mock_mongodb, resource_loader
+):
+    """Integration test: STT → Assistant → TTS pipeline"""
+    mock_stt, mock_tts = mock_speech_gateway
+
+    # Load test audio using the shared resource loader
+    audio_bytes = resource_loader("audio", "stt_test.mp3")
+    
+    # 1. STT test
+    stt_result = mock_stt(audio_bytes)
+    
+    # 2. Assistant test  
+    assistant_response = mock_conversation_assistant.process(stt_result)
+    
+    # 3. TTS test
+    tts_audio = mock_tts(assistant_response["speak"], language="Japanese")
+    
+    assert tts_audio == b"fake audio bytes"
+    print("\n✅  Integration test passed!")
+```
+
+### Shared Resource Loading
+Tests now use a centralized resource loading pattern via `test.fixture.resource_fixture`:
+
+```python
+# Inside test fixture (server/test/fixture/resource_fixture.py)
+from pathlib import Path
+import pytest
+
+RESOURCES_DIR = Path(__file__).resolve().parent.parent / "integration" / "resources"
+
+def resource_path(*parts: str) -> Path:
+    """Return absolute path to a resource file under test/integration/resources."""
+    path = RESOURCES_DIR / Path(*parts)
+    if not path.is_file():
+        raise FileNotFoundError(f"Test resource not found at {path}")
+    return path
+
+@pytest.fixture
+def resource_loader():
+    """Fixture providing callable to load resource bytes by path segments."""
+    def _load(*parts: str) -> bytes:
+        return resource_path(*parts).read_bytes()
+    return _load
+```
+
+This centralized approach eliminates hardcoded paths and provides consistent resource loading across integration tests.

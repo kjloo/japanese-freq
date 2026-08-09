@@ -54,4 +54,18 @@ def _load_ignore_list() -> set[str]:
     return ignore_list
 
 
-ignore_list: set[str] = _load_ignore_list()
+ignore_list: set[str] = set()
+
+
+def _init_ignore_list():
+    """Initialize the ignore list lazily (deferred DB/Mongo access)."""
+    global ignore_list
+    ignore_list = _load_ignore_list()
+
+
+# Attempt initialization at module load; if MongoDB isn't available (e.g., in tests),
+# fall back gracefully to an empty set.
+try:
+    ignore_list.update(_load_ignore_list())
+except Exception:
+    logger.warning("Could not load ignore list from MongoDB; using empty set.")

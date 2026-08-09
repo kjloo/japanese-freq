@@ -31,7 +31,7 @@ class LLMConfig:
             "OPENROUTER_MODEL", llm_config.get("openrouter_model", "openai/gpt-4-turbo")
         )
         self.openrouter_base_url = llm_config.get(
-            "openrouter_base_url", "https://openrouter.ai/api/v1"
+            "openrouter_base_url", "https://openrouter.ai/api"
         )
 
         # Common configuration

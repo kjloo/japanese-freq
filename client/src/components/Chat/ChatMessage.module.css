@@ -1,0 +1,33 @@
+.message {
+  display: flex;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.user {
+  justify-content: flex-end;
+}
+
+.user .messageContent {
+  background: #007aff;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.assistant {
+  justify-content: flex-start;
+}
+
+.assistant .messageContent {
+  background: #e9e9eb;
+  color: #2c2c2e;
+  border-radius: 18px 18px 18px 4px;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 0rem 1.4rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}

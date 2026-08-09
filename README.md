@@ -190,6 +190,24 @@ make stop
 
 ---
 
+### Environment Variables
+
+- **`LLM_ENABLED`**: Controls whether the MLX sidecar server is started
+  - Set to `true` to start sidecar (requires `mlx-lm` and `mlx-audio` packages)
+  - Set to `false` or unset to skip sidecar startup
+  - Default: `true`
+
+---
+
+### Dev vs Run Mode
+
+| Command | Mode | Description |
+|---------|------|-------------|
+| `make dev` | Dev mode | Runs server and client locally in foreground (MongoDB in Docker) |
+| `make run` | Background | Starts all services in background; starts sidecar if `LLM_ENABLED=true` |
+
+---
+
 ## Local Development
 
 ### Run Server (Local Python)

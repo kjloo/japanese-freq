@@ -1,4 +1,5 @@
 /* Container for the whole component */
+
 .chatArea {
   display: flex;
   flex-direction: column;
@@ -11,7 +12,7 @@
 }
 
 .header {
-  padding: 1.5rem 2.5rem; /* Increased horizontal padding */
+  padding: 1.5rem 2.5rem;
   margin: 0;
   font-size: 1.25rem;
   border-bottom: 1px solid #eee;
@@ -22,18 +23,18 @@
   width: 100%;
   height: 28rem;
   overflow-y: auto;
-  padding: 2.5rem; /* Increased padding around the bubbles */
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem; /* Space between bubbles */
-  background: #f7f7f5; /* Off-white background */
+  gap: 1.25rem;
+  background: #f7f7f5;
 }
 
 .message {
   display: flex;
   width: 100%;
-  max-width: 80rem; /* Keeps bubbles from hitting the far edges on wide screens */
-  margin: 0 auto; /* Centers the chat thread area */
+  max-width: 80rem;
+  margin: 0 auto;
 }
 
 /* User Messages: Right Aligned */
@@ -45,6 +46,7 @@
   background: #007aff;
   color: white;
   border-radius: 18px 18px 4px 18px;
+  margin-right: 1rem;
 }
 
 /* Assistant Messages: Left Aligned */
@@ -60,23 +62,23 @@
 
 .messageContent {
   max-width: 70%;
-  padding: 0rem 1.4rem; /* Padding inside the bubble */
+  padding: 1rem 1.4rem;
   font-size: 1rem;
   line-height: 1.5;
 }
 
 .chatInputArea {
   display: flex;
-  padding: 2rem 2.5rem; /* Increased vertical and horizontal padding for the container */
-  gap: 1.25rem; /* Slightly more gap between input and button */
+  padding: 2rem 2.5rem;
+  gap: 1.25rem;
   background: white;
   border-top: 1px solid #eee;
-  align-items: center; /* Ensures input and button stay centered vertically */
+  align-items: center;
 }
 
 .chatInput {
   flex: 1;
-  padding: 1rem 1.5rem; /* Substantial padding inside the text box */
+  padding: 1rem 1.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   outline: none;
@@ -84,7 +86,7 @@
   font-family: inherit;
   transition: all 0.2s ease;
   background-color: #fafafa;
-  box-sizing: border-box; /* Prevents padding from increasing the width */
+  box-sizing: border-box;
 }
 
 .chatInput:focus {
@@ -94,8 +96,8 @@
 }
 
 .sendButton {
-  height: 100%; /* Matches the height of the padded input */
-  min-height: 48px; /* Ensures a comfortable touch/click target */
+  height: 100%;
+  min-height: 48px;
   padding: 0 2rem;
   background: #007aff;
   color: white;
@@ -114,4 +116,124 @@
 
 .sendButton:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Recording Indicator */
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1976d2;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Audio Recorder */
+.audioRecorder {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.recordButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.recordButton.active {
+  background: #218838;
+}
+
+.stopButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.micButtonContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.micButton {
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.micButton.recording {
+  background: #f44336;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+.micButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.micLabel {
+  font-size: 0.875rem;
+  color: #666;
+  min-width: 120px;
+  text-align: center;
+}
+
+.transcriptionDisplay {
+  margin-top: 0.5rem;
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  width: 100%;
 }

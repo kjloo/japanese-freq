@@ -1,10 +1,18 @@
 from unittest import mock
 import pytest
 
+from app.model.word.word_list import WordList
 from test.fixture.mongo_fixture import mongo_test
 
 
-@pytest.mark.usefixtures("mongo_test")
+@pytest.fixture(autouse=True)
+def clear_word_list(mongo_test):
+    """
+    Ensure mongo_test is initialized first, then clear WordList before each test.
+    """
+    WordList.objects.delete()
+
+
 @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
 def test_style_subtitles(mock_ignore_list):
     from app.service import subtitle_service
@@ -21,7 +29,8 @@ def test_style_subtitles(mock_ignore_list):
         "",
         "00:00:04.671 --> 00:00:07.007",
         "美味しいりんごを食べている。",
-        "" "00:00:14.381 --> 00:00:16.066",
+        "",
+        "00:00:14.381 --> 00:00:16.066",
         "雨に降られた。",
         "",
     ]
@@ -35,7 +44,7 @@ def test_style_subtitles(mock_ignore_list):
         "<span class='new-word'>青い</span><span class='new-word'>空</span>が綺麗です。",
         "00:00:04.671 --> 00:00:07.007",
         "<span class='new-word'>美味しい</span><span class='new-word'>りんご</span>を食べている。",
-        "" "00:00:14.381 --> 00:00:16.066",
+        "00:00:14.381 --> 00:00:16.066",
         "<span class='new-word'>雨</span>に<span class='new-word'>降ら</span>れた。",
     ]
     mock_ignore_list.return_value = {"好き", "飲む", "ルンゴ", "綺麗", "食べる", "いる"}
@@ -43,7 +52,6 @@ def test_style_subtitles(mock_ignore_list):
     assert styled_subtitles == expected
 
 
-@pytest.mark.usefixtures("mongo_test")
 @mock.patch("app.service.subtitle_service.word_service.get_ignore_list")
 def test_get_base_words(mock_ignore_list):
     from app.service import subtitle_service
